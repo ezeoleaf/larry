@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -10,7 +11,7 @@ import (
 
 var repositories *github.RepositoriesSearchResult
 
-func getRepositories(cfg Config) ([]github.Repository, *int) {
+func getRepositories(cfg Config) ([]github.Repository, int) {
 	if repositories == nil {
 		ctx := context.Background()
 		ts := oauth2.StaticTokenSource(
@@ -36,13 +37,13 @@ func getRepositories(cfg Config) ([]github.Repository, *int) {
 		}
 	}
 
-	return repositories.Repositories, repositories.Total
+	return repositories.Repositories, *repositories.Total
 }
 
 func getRepo(config Config) github.Repository {
 	repos, total := getRepositories(config)
-	repo := repos[0]
-	fmt.Println("Quantity", total)
-	fmt.Println("Language", *repo.Language)
+	fmt.Println(len(repos))
+	randPos := rand.Intn(total)
+	repo := repos[randPos]
 	return repo
 }

@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-
+	// var s string
+	// var cfg Config
 	cfg := Config{}
 
 	app := &cli.App{
@@ -24,14 +25,21 @@ func main() {
 			},
 			&cli.StringFlag{
 				Name:        "lang",
-				Value:       "golang",
+				Value:       "",
 				Usage:       "language for searching repos",
 				Destination: &cfg.Language,
 			},
+			&cli.StringFlag{
+				Name:        "cfg",
+				Value:       "./config.json",
+				Usage:       "path to config file",
+				Destination: &cfg.ConfigFile,
+			},
 		},
 		Action: func(c *cli.Context) error {
+			cfg.SetConfigAccess()
 			r := getRepo(cfg)
-			fmt.Println(r)
+			fmt.Println(*r.URL)
 			return nil
 		},
 	}
