@@ -10,19 +10,24 @@ import (
 
 var repositories *github.RepositoriesSearchResult
 
-func getRepositories(cfg Config) *github.RepositoriesSearchResult {
+func getRepositories(cfg Config) ([]github.Repository, *int) {
 	if repositories == nil {
 		ctx := context.Background()
 		ts := oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: "1d54942d4646ccd4eb673d8eedf569e554ae4f20"},
+			&oauth2.Token{AccessToken: cfg.AccessCfg.GithubAccessToken},
 		)
 		tc := oauth2.NewClient(ctx, ts)
 
 		client := github.NewClient(tc)
 
 		var e error
+		var qs string
 
-		qs := fmt.Sprintf("language:%s", cfg.Language)
+		if cfg.Topic != "" {
+			qs = fmt.Sprintf("topic:%s", cfg.Topic)
+		} else {
+			qs = fmt.Sprintf("language:%s", cfg.Language)
+		}
 
 		repositories, _, e = client.Search.Repositories(ctx, qs, nil)
 
@@ -31,11 +36,13 @@ func getRepositories(cfg Config) *github.RepositoriesSearchResult {
 		}
 	}
 
-	return repositories
+	return repositories.Repositories, repositories.Total
 }
 
 func getRepo(config Config) github.Repository {
-	repos := getRepositories(config)
-	repo := repos.Repositories[0]
+	repos, total := getRepositories(config)
+	repo := repos[0]
+	fmt.Println("Quantity", total)
+	fmt.Println("Language", *repo.Language)
 	return repo
 }
