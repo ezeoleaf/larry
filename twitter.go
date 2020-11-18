@@ -2,16 +2,36 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/google/go-github/github"
 )
 
 func tweetRepo(cfg Config, repo github.Repository) {
+	if repo.HTMLURL == nil {
+		return
+	}
 
-	hashtags := "#" + *repo.Language + " #github" + "\n"
-	title := *repo.FullName + ": " + *repo.Description + "\n"
-	stargazers := "⭐️: " + strconv.Itoa(*repo.StargazersCount) + "\n"
+	hashtags, title, stargazers := "", "", ""
+
+	if repo.Language != nil {
+		hashtags += "#" + *repo.Language + " "
+	}
+
+	hashtags += "#github" + "\n"
+
+	if repo.Name != nil {
+		title += *repo.Name + ": "
+	}
+
+	if repo.Description != nil {
+		title += *repo.Description + "\n"
+	}
+
+	if repo.StargazersCount != nil {
+		stargazers += "⭐️: " + strconv.Itoa(*repo.StargazersCount) + "\n"
+	}
 
 	toTweet := title + stargazers + hashtags + *repo.HTMLURL
 
@@ -19,7 +39,7 @@ func tweetRepo(cfg Config, repo github.Repository) {
 	_, _, err := client.Statuses.Update(toTweet, nil)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	fmt.Println("Tweet Published")
 }
