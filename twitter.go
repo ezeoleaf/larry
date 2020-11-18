@@ -8,7 +8,9 @@ import (
 )
 
 func tweetRepo(cfg Config, repo github.Repository) {
-	toTweet := *repo.FullName + ": " + *repo.Description + "\n⭐️: " + strconv.Itoa(*repo.StargazersCount) + "\n " + *repo.HTMLURL
+
+	hashtags := "\n#" + *repo.Language + " #github"
+	toTweet := *repo.FullName + ": " + *repo.Description + "\n⭐️: " + strconv.Itoa(*repo.StargazersCount) + hashtags + "\n " + *repo.HTMLURL
 
 	client := cfg.AccessCfg.GetTwitterClient()
 	_, _, err := client.Statuses.Update(toTweet, nil)
