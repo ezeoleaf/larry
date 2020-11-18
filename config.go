@@ -20,6 +20,7 @@ type Config struct {
 	Periodicity int64
 }
 
+// AccessConfig is a struct that contains configuration for the clients
 type AccessConfig struct {
 	GithubAccessToken     string `json:"github_access_token"`
 	TwitterConsumerKey    string `json:"twitter_consumer_key"`
@@ -28,12 +29,14 @@ type AccessConfig struct {
 	TwitterAccessSecret   string `json:"twitter_access_secret"`
 }
 
+// SetConfigAccess reads a configuration file and unmarshall to struct
 func (c *Config) SetConfigAccess() {
 	file, _ := ioutil.ReadFile(c.ConfigFile)
 
 	_ = json.Unmarshal([]byte(file), &c.AccessCfg)
 }
 
+// GetGithubClient returns a client for using Github API from the config struct
 func (a *AccessConfig) GetGithubClient() (context.Context, *github.Client) {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
@@ -46,6 +49,7 @@ func (a *AccessConfig) GetGithubClient() (context.Context, *github.Client) {
 	return ctx, client
 }
 
+// GetTwitterClient returns a client for using Twitter API from the config struct
 func (a *AccessConfig) GetTwitterClient() *twitter.Client {
 	config := oauth1.NewConfig(a.TwitterConsumerKey, a.TwitterConsumerSecret)
 	token := oauth1.NewToken(a.TwitterAccessToken, a.TwitterAccessSecret)

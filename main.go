@@ -17,24 +17,28 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "topic",
+				Aliases:     []string{"t"},
 				Value:       "golang",
 				Usage:       "topic for searching repos",
 				Destination: &cfg.Topic,
 			},
 			&cli.StringFlag{
 				Name:        "lang",
+				Aliases:     []string{"l"},
 				Value:       "",
 				Usage:       "language for searching repos",
 				Destination: &cfg.Language,
 			},
 			&cli.StringFlag{
-				Name:        "cfg",
+				Name:        "config",
+				Aliases:     []string{"c"},
 				Value:       "./config.json",
 				Usage:       "path to config file",
 				Destination: &cfg.ConfigFile,
 			},
 			&cli.Int64Flag{
 				Name:        "time",
+				Aliases:     []string{"x"},
 				Value:       15,
 				Usage:       "periodicity of tweet",
 				Destination: &cfg.Periodicity,
