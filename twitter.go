@@ -39,7 +39,7 @@ func tweetRepo(cfg Config, repo github.Repository) {
 	_, _, err := client.Statuses.Update(toTweet, nil)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	fmt.Println("Tweet Published")
 }
