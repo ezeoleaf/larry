@@ -1,16 +1,20 @@
 package main
 
 import (
-	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oauth1"
+	"fmt"
+	"strconv"
+
+	"github.com/google/go-github/github"
 )
 
-func twitterClient() *twitter.Client {
-	config := oauth1.NewConfig("rvBUw3Jn2KDEA3YTV7AgqmL9f", "eVcymJznO9zv2C5qifJOSTcbqsuhX5At4qCX4LkvQ6CVE3kgkj")
-	token := oauth1.NewToken("1328795920666931203-1btfihoHYnBdkyfvRV33Ahfr1ywUpB", "vs4Y6HcCxkOVASvzEwGOKgCXsy02rEEjWrMQNEy4wYse6")
+func tweetRepo(cfg Config, repo github.Repository) {
+	toTweet := *repo.FullName + ": " + *repo.Description + "\n⭐️: " + strconv.Itoa(*repo.StargazersCount) + "\n " + *repo.HTMLURL
 
-	httpClient := config.Client(oauth1.NoContext, token)
+	client := cfg.AccessCfg.GetTwitterClient()
+	_, _, err := client.Statuses.Update(toTweet, nil)
 
-	// Twitter client
-	return twitter.NewClient(httpClient)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Tweet Published")
 }

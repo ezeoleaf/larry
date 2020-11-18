@@ -1,16 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	// var s string
-	// var cfg Config
 	cfg := Config{}
 
 	app := &cli.App{
@@ -35,12 +33,20 @@ func main() {
 				Usage:       "path to config file",
 				Destination: &cfg.ConfigFile,
 			},
+			&cli.Int64Flag{
+				Name:        "time",
+				Value:       15,
+				Usage:       "periodicity of tweet",
+				Destination: &cfg.Periodicity,
+			},
 		},
 		Action: func(c *cli.Context) error {
 			cfg.SetConfigAccess()
-			r := getRepo(cfg)
-			fmt.Println(*r.URL)
-			return nil
+			for {
+				r := getRepo(cfg)
+				tweetRepo(cfg, r)
+				time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
+			}
 		},
 	}
 

@@ -1,25 +1,18 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/google/go-github/github"
-	"golang.org/x/oauth2"
 )
 
 var repositories *github.RepositoriesSearchResult
 
 func getRepositories(cfg Config) ([]github.Repository, int) {
 	if repositories == nil {
-		ctx := context.Background()
-		ts := oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: cfg.AccessCfg.GithubAccessToken},
-		)
-		tc := oauth2.NewClient(ctx, ts)
-
-		client := github.NewClient(tc)
+		ctx, client := cfg.AccessCfg.GetGithubClient()
 
 		var e error
 		var qs string
@@ -30,7 +23,9 @@ func getRepositories(cfg Config) ([]github.Repository, int) {
 			qs = fmt.Sprintf("language:%s", cfg.Language)
 		}
 
-		repositories, _, e = client.Search.Repositories(ctx, qs, nil)
+		so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1}}
+
+		repositories, _, e = client.Search.Repositories(ctx, qs, &so)
 
 		if e != nil {
 			panic(e)
@@ -40,10 +35,38 @@ func getRepositories(cfg Config) ([]github.Repository, int) {
 	return repositories.Repositories, *repositories.Total
 }
 
+func getSpecificRepo(cfg Config, pos int) github.Repository {
+	ctx, client := cfg.AccessCfg.GetGithubClient()
+
+	var e error
+	var qs string
+
+	if cfg.Topic != "" {
+		qs = fmt.Sprintf("topic:%s", cfg.Topic)
+	} else {
+		qs = fmt.Sprintf("language:%s", cfg.Language)
+	}
+
+	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1, Page: pos}}
+
+	repositories, _, e = client.Search.Repositories(ctx, qs, &so)
+
+	if e != nil {
+		panic(e)
+	}
+
+	return repositories.Repositories[0]
+}
+
 func getRepo(config Config) github.Repository {
-	repos, total := getRepositories(config)
-	fmt.Println(len(repos))
-	randPos := rand.Intn(total)
-	repo := repos[randPos]
+	_, total := getRepositories(config)
+
+	var repo github.Repository
+
+	rand.Seed(time.Now().UTC().UnixNano())
+	randPos := rand.Intn(total / 100)
+
+	repo = getSpecificRepo(config, randPos)
+
 	return repo
 }
