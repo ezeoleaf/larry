@@ -32,9 +32,9 @@ func getTweet(repo github.Repository) string {
 	return title + stargazers + hashtags + *repo.HTMLURL
 }
 
-func tweetRepo(cfg Config, repo github.Repository) {
+func tweetRepo(cfg Config, repo github.Repository) bool {
 	if repo.HTMLURL == nil {
-		return
+		return false
 	}
 
 	client := cfg.AccessCfg.GetTwitterClient()
@@ -42,6 +42,9 @@ func tweetRepo(cfg Config, repo github.Repository) {
 
 	if err != nil {
 		log.Print(err)
+		return false
 	}
+
 	fmt.Println("Tweet Published")
+	return true
 }

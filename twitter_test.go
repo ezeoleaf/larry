@@ -21,3 +21,20 @@ func TestGetTweet(t *testing.T) {
 		t.Errorf("Expected: %s, got %s", expected, result)
 	}
 }
+
+func TestTweetRepoWithoutURL(t *testing.T) {
+	c := Config{}
+
+	lang := "lang"
+	name := "name"
+	desc := "desc"
+	star := 10
+
+	r := github.Repository{Language: &lang, Name: &name, Description: &desc, StargazersCount: &star}
+
+	result := tweetRepo(c, r)
+
+	if result {
+		t.Error("Expected: false, got true")
+	}
+}
