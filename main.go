@@ -45,7 +45,10 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			cfg.SetConfigAccess()
+			e := cfg.SetConfigAccess()
+			if e != nil {
+				panic(e)
+			}
 			for {
 				r := getRepo(cfg)
 				tweetRepo(cfg, r)

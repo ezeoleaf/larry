@@ -30,10 +30,10 @@ type AccessConfig struct {
 }
 
 // SetConfigAccess reads a configuration file and unmarshall to struct
-func (c *Config) SetConfigAccess() {
+func (c *Config) SetConfigAccess() error {
 	file, _ := ioutil.ReadFile(c.ConfigFile)
 
-	_ = json.Unmarshal([]byte(file), &c.AccessCfg)
+	return json.Unmarshal([]byte(file), &c.AccessCfg)
 }
 
 // GetGithubClient returns a client for using Github API from the config struct

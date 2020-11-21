@@ -26,7 +26,7 @@ func getTweet(repo github.Repository) string {
 	}
 
 	if repo.StargazersCount != nil {
-		stargazers += "⭐️: " + strconv.Itoa(*repo.StargazersCount) + "\n"
+		stargazers += "⭐️ " + strconv.Itoa(*repo.StargazersCount) + "\n"
 	}
 
 	return title + stargazers + hashtags + *repo.HTMLURL

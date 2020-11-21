@@ -14,7 +14,7 @@ func TestGetTweet(t *testing.T) {
 	url := "url"
 	r := github.Repository{Language: &lang, Name: &name, Description: &desc, StargazersCount: &star, HTMLURL: &url}
 
-	expected := "name: desc\n⭐️: 10\n#lang #github\nurl"
+	expected := "name: desc\n⭐️ 10\n#lang #github\nurl"
 	result := getTweet(r)
 
 	if expected != result {
