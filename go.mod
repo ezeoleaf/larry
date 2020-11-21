@@ -1,4 +1,4 @@
-module github.com/ezeoleaf/tweet-random-repo
+module github.com/ezeoleaf/GobotTweet
 
 go 1.14
 
