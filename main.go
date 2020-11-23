@@ -40,7 +40,7 @@ func main() {
 				Name:        "time",
 				Aliases:     []string{"x"},
 				Value:       15,
-				Usage:       "periodicity of tweet",
+				Usage:       "periodicity of tweet in minutes",
 				Destination: &cfg.Periodicity,
 			},
 		},
