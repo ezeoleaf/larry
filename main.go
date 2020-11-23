@@ -12,8 +12,8 @@ func main() {
 	cfg := Config{}
 
 	app := &cli.App{
-		Name:  "Tweet Random Repo",
-		Usage: "Tweet random repositories",
+		Name:  "GobotTweet",
+		Usage: "Twitter bot that tweets random repositories",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "topic",
