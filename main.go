@@ -18,7 +18,7 @@ func main() {
 			&cli.StringFlag{
 				Name:        "topic",
 				Aliases:     []string{"t"},
-				Value:       "golang",
+				Value:       "",
 				Usage:       "topic for searching repos",
 				Destination: &cfg.Topic,
 			},
