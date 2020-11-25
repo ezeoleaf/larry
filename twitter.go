@@ -8,10 +8,14 @@ import (
 	"github.com/google/go-github/github"
 )
 
-func getTweet(repo github.Repository) string {
+func getTweet(cfg Config, repo github.Repository) string {
 	hashtags, title, stargazers := "", "", ""
 
-	if repo.Language != nil {
+	if cfg.Topic != "" {
+		hashtags += "#" + cfg.Topic + " "
+	} else if cfg.Language != "" {
+		hashtags += "#" + cfg.Language + " "
+	} else if repo.Language != nil {
 		hashtags += "#" + *repo.Language + " "
 	}
 
@@ -38,7 +42,7 @@ func tweetRepo(cfg Config, repo github.Repository) bool {
 	}
 
 	client := cfg.AccessCfg.GetTwitterClient()
-	_, _, err := client.Statuses.Update(getTweet(repo), nil)
+	_, _, err := client.Statuses.Update(getTweet(cfg, repo), nil)
 
 	if err != nil {
 		log.Print(err)
