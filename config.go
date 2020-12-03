@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"strings"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
@@ -18,6 +20,7 @@ type Config struct {
 	ConfigFile  string
 	AccessCfg   AccessConfig
 	Periodicity int64
+	Hashtags    string
 }
 
 // AccessConfig is a struct that contains configuration for the clients
@@ -57,4 +60,20 @@ func (a *AccessConfig) GetTwitterClient() *twitter.Client {
 	httpClient := config.Client(oauth1.NoContext, token)
 
 	return twitter.NewClient(httpClient)
+}
+
+// GetHashtags return a list of hashtags from a comma separated string
+func (c *Config) GetHashtags() []string {
+
+	if c.Hashtags == "" {
+		return []string{}
+	}
+
+	hs := strings.Split(c.Hashtags, ",")
+
+	for i, h := range hs {
+		hs[i] = fmt.Sprintf("#%s", strings.TrimSpace(h))
+	}
+
+	return hs
 }

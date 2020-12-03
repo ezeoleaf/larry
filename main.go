@@ -43,6 +43,13 @@ func main() {
 				Usage:       "periodicity of tweet in minutes",
 				Destination: &cfg.Periodicity,
 			},
+			&cli.StringFlag{
+				Name:        "hashtag",
+				Aliases:     []string{"ht"},
+				Value:       "",
+				Usage:       "list of comma separated hashtags",
+				Destination: &cfg.Hashtags,
+			},
 		},
 		Action: func(c *cli.Context) error {
 			e := cfg.SetConfigAccess()

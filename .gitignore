@@ -1,4 +1,5 @@
 .config
 tweet-random-repo
 config.json
+config*.json
 GobotTweet

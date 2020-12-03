@@ -11,15 +11,27 @@ import (
 func getTweet(cfg Config, repo github.Repository) string {
 	hashtags, title, stargazers := "", "", ""
 
-	if cfg.Topic != "" {
-		hashtags += "#" + cfg.Topic + " "
-	} else if cfg.Language != "" {
-		hashtags += "#" + cfg.Language + " "
-	} else if repo.Language != nil {
-		hashtags += "#" + *repo.Language + " "
-	}
+	hs := cfg.GetHashtags()
 
-	hashtags += "#github" + "\n"
+	if len(hs) == 0 {
+		if cfg.Topic != "" {
+			hashtags += "#" + cfg.Topic + " "
+		} else if cfg.Language != "" {
+			hashtags += "#" + cfg.Language + " "
+		} else if repo.Language != nil {
+			hashtags += "#" + *repo.Language + " "
+		}
+
+		hashtags += "#github" + "\n"
+	} else {
+		for _, h := range hs {
+			if hashtags != "" {
+				hashtags += " "
+			}
+			hashtags += h
+		}
+		hashtags += " \n"
+	}
 
 	if repo.Name != nil {
 		title += *repo.Name + ": "
