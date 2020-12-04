@@ -25,7 +25,7 @@ func getTweet(cfg Config, repo github.Repository) string {
 		hashtags += "#github" + "\n"
 	} else {
 		for _, h := range hs {
-			if hashtags != "" {
+			if hashtags != "" {
 				hashtags += " "
 			}
 			hashtags += h
