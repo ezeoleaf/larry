@@ -30,6 +30,7 @@ type AccessConfig struct {
 	TwitterConsumerSecret string `json:"twitter_consumer_secret"`
 	TwitterAccessToken    string `json:"twitter_access_token"`
 	TwitterAccessSecret   string `json:"twitter_access_secret"`
+	DevMode               bool   `json:"dev_mode"` //If DevMode is true then it wont post any tweet
 }
 
 // SetConfigAccess reads a configuration file and unmarshall to struct

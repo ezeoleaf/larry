@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-github/github"
 )
 
-func getTweet(cfg Config, repo github.Repository) string {
+func getTweet(cfg Config, repo *github.Repository) string {
 	hashtags, title, stargazers := "", "", ""
 
 	hs := cfg.GetHashtags()
@@ -48,9 +48,14 @@ func getTweet(cfg Config, repo github.Repository) string {
 	return title + stargazers + hashtags + *repo.HTMLURL
 }
 
-func tweetRepo(cfg Config, repo github.Repository) bool {
+func tweetRepo(cfg Config, repo *github.Repository) bool {
 	if repo.HTMLURL == nil {
 		return false
+	}
+
+	if cfg.AccessCfg.DevMode {
+		log.Print("Runnin in Dev Mode")
+		return true
 	}
 
 	client := cfg.AccessCfg.GetTwitterClient()

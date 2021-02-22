@@ -18,7 +18,7 @@ func TestGetTweet(t *testing.T) {
 
 	mockConfig := Config{Topic: "asd"}
 
-	result := getTweet(mockConfig, r)
+	result := getTweet(mockConfig, &r)
 
 	if expected != result {
 		t.Errorf("Expected: %s, got %s", expected, result)
@@ -37,7 +37,7 @@ func TestGetTweetNoTopic(t *testing.T) {
 
 	mockConfig := Config{Language: "lasd"}
 
-	result := getTweet(mockConfig, r)
+	result := getTweet(mockConfig, &r)
 
 	if expected != result {
 		t.Errorf("Expected: %s, got %s", expected, result)
@@ -56,7 +56,7 @@ func TestGetTweetNoTopicNoLang(t *testing.T) {
 
 	mockConfig := Config{}
 
-	result := getTweet(mockConfig, r)
+	result := getTweet(mockConfig, &r)
 
 	if expected != result {
 		t.Errorf("Expected: %s, got %s", expected, result)
@@ -73,7 +73,7 @@ func TestTweetRepoWithoutURL(t *testing.T) {
 
 	r := github.Repository{Language: &lang, Name: &name, Description: &desc, StargazersCount: &star}
 
-	result := tweetRepo(c, r)
+	result := tweetRepo(c, &r)
 
 	if result {
 		t.Error("Expected: false, got true")
