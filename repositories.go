@@ -8,8 +8,6 @@ import (
 	"github.com/google/go-github/github"
 )
 
-const cacheSize = 25
-
 var repositories *github.RepositoriesSearchResult
 var repositoriesCache []int64
 
@@ -74,14 +72,13 @@ func getRepo(config Config) *github.Repository {
 
 		repo = getSpecificRepo(config, randPos)
 
-		found = repo != nil && isRepoNotInCache(repo)
+		found = repo != nil && isRepoNotInCache(repo, config.CacheSize)
 	}
 
 	return repo
 }
 
-func isRepoNotInCache(r *github.Repository) bool {
-	fmt.Println(*r.ID)
+func isRepoNotInCache(r *github.Repository, cacheSize int) bool {
 	for _, x := range repositoriesCache {
 		if x == *r.ID {
 			return false

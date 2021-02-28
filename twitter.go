@@ -53,13 +53,16 @@ func tweetRepo(cfg Config, repo *github.Repository) bool {
 		return false
 	}
 
+	tweet := getTweet(cfg, repo)
+
 	if cfg.AccessCfg.DevMode {
-		log.Print("Runnin in Dev Mode")
+		log.Print("Running in Dev Mode")
+		log.Print(tweet)
 		return true
 	}
 
 	client := cfg.AccessCfg.GetTwitterClient()
-	_, _, err := client.Statuses.Update(getTweet(cfg, repo), nil)
+	_, _, err := client.Statuses.Update(tweet, nil)
 
 	if err != nil {
 		log.Print(err)

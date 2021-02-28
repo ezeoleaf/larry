@@ -43,6 +43,13 @@ func main() {
 				Usage:       "periodicity of tweet in minutes",
 				Destination: &cfg.Periodicity,
 			},
+			&cli.IntFlag{
+				Name:        "cache",
+				Aliases:     []string{"r"},
+				Value:       50,
+				Usage:       "size of cache for no repeating repositories",
+				Destination: &cfg.CacheSize,
+			},
 			&cli.StringFlag{
 				Name:        "hashtag",
 				Aliases:     []string{"ht"},

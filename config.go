@@ -21,6 +21,7 @@ type Config struct {
 	AccessCfg   AccessConfig
 	Periodicity int64
 	Hashtags    string
+	CacheSize   int
 }
 
 // AccessConfig is a struct that contains configuration for the clients
