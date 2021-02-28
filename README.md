@@ -75,6 +75,8 @@ GLOBAL OPTIONS:
    --lang value, -l value    language for searching repos
    --config value, -c value  path to config file (default: "./config.json")
    --time value, -x value    periodicity of tweet in minutes (default: 15)
+   --cache value, -r value      size of cache for no repeating repositories (default: 50)
+   --hashtag value, --ht value  list of comma separated hashtags
    --help, -h                show help (default: false)
 ```
 
