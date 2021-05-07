@@ -10,7 +10,7 @@ import (
 
 func TestIsRepoNotInRedis(t *testing.T) {
 	mr, _ := miniredis.Run()
-	redis.NewClient(&redis.Options{
+	rdb = redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
 
