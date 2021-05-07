@@ -3,6 +3,7 @@ module github.com/ezeoleaf/GobotTweet
 go 1.14
 
 require (
+	github.com/alicebob/miniredis/v2 v2.14.3 // indirect
 	github.com/dghubble/go-twitter v0.0.0-20201011215211-4b180d0cc78d
 	github.com/dghubble/oauth1 v0.6.0
 	github.com/go-redis/redis/v8 v8.8.2
