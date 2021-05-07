@@ -3,3 +3,4 @@ tweet-random-repo
 config.json
 config*.json
 GobotTweet
+bin/

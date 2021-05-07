@@ -1,12 +1,25 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/urfave/cli/v2"
 )
+
+var rdb *redis.Client
+var ctx = context.Background()
+
+func init() {
+	rdb = redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+}
 
 func main() {
 	cfg := Config{}
@@ -36,7 +49,7 @@ func main() {
 				Usage:       "path to config file",
 				Destination: &cfg.ConfigFile,
 			},
-			&cli.Int64Flag{
+			&cli.IntFlag{
 				Name:        "time",
 				Aliases:     []string{"x"},
 				Value:       15,

@@ -6,16 +6,14 @@ import (
 	"github.com/google/go-github/github"
 )
 
-func TestIsRepoNotInCache(t *testing.T) {
-
+func TestIsRepoNotInRedis(t *testing.T) {
 	cacheSize := 1
-	repositoriesCache = []int64{}
 
 	var id int64 = 1
 
 	r := github.Repository{ID: &id}
 
-	result := isRepoNotInCache(&r, cacheSize)
+	result := isRepoNotInRedis(&r, cacheSize)
 
 	if !result {
 		t.Errorf("Expected not in cache, got %v", result)
@@ -24,15 +22,26 @@ func TestIsRepoNotInCache(t *testing.T) {
 	id = 2
 	r = github.Repository{ID: &id}
 
-	result = isRepoNotInCache(&r, cacheSize)
+	result = isRepoNotInRedis(&r, cacheSize)
 
 	if !result {
 		t.Errorf("Expected not in cache, got %v", result)
 	}
 
-	result = isRepoNotInCache(&r, cacheSize)
+	id = 2
+	r = github.Repository{ID: &id}
+
+	result = isRepoNotInRedis(&r, cacheSize)
 
 	if result {
 		t.Errorf("Expected in cache, got %v", result)
+	}
+
+	rdb.Del(ctx, "2")
+
+	result = isRepoNotInRedis(&r, cacheSize)
+
+	if !result {
+		t.Errorf("Expected not in cache because of expiration, got %v", result)
 	}
 }
