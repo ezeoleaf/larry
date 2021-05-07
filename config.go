@@ -19,7 +19,7 @@ type Config struct {
 	Topic       string
 	ConfigFile  string
 	AccessCfg   AccessConfig
-	Periodicity int64
+	Periodicity int
 	Hashtags    string
 	CacheSize   int
 }

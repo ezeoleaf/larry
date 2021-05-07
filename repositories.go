@@ -3,13 +3,14 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/google/go-github/github"
 )
 
 var repositories *github.RepositoriesSearchResult
-var repositoriesCache []int64
 
 func getRepositories(cfg Config) ([]github.Repository, int) {
 	if repositories == nil {
@@ -72,28 +73,27 @@ func getRepo(config Config) *github.Repository {
 
 		repo = getSpecificRepo(config, randPos)
 
-		found = repo != nil && isRepoNotInCache(repo, config.CacheSize)
+		found = repo != nil && isRepoNotInRedis(repo, config.CacheSize*config.Periodicity)
 	}
 
 	return repo
 }
 
-func isRepoNotInCache(r *github.Repository, cacheSize int) bool {
-	for _, x := range repositoriesCache {
-		if x == *r.ID {
-			return false
+func isRepoNotInRedis(r *github.Repository, t int) bool {
+	k := strconv.FormatInt(*r.ID, 10)
+	_, err := rdb.Get(ctx, k).Result()
+
+	switch {
+	case err == redis.Nil:
+		err := rdb.Set(ctx, k, true, time.Duration(t)*time.Minute).Err()
+		if err != nil {
+			panic(err)
 		}
+
+		return true
+	case err != nil:
+		fmt.Println("Get failed", err)
 	}
 
-	if len(repositoriesCache) == cacheSize {
-		repositoriesCache = repositoriesCache[1:]
-	}
-
-	repositoriesCache = append(repositoriesCache, *r.ID)
-
-	return true
-}
-
-func init() {
-	repositoriesCache = []int64{}
+	return false
 }
