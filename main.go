@@ -70,6 +70,13 @@ func main() {
 				Usage:       "list of comma separated hashtags",
 				Destination: &cfg.Hashtags,
 			},
+			&cli.BoolFlag{
+				Name:        "tweetlanguage",
+				Aliases:     []string{"tl"},
+				Value:       false,
+				Usage:       "bool for allowing twetting the language of the repo",
+				Destination: &cfg.TweetLanguage,
+			},
 		},
 		Action: func(c *cli.Context) error {
 			e := cfg.SetConfigAccess()

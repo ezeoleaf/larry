@@ -79,3 +79,41 @@ func TestTweetRepoWithoutURL(t *testing.T) {
 		t.Error("Expected: false, got true")
 	}
 }
+
+func TestTweetRepoWithLangConfig(t *testing.T) {
+	lang := "lang"
+	name := "name"
+	desc := "desc"
+	star := 10
+	url := "url"
+	r := github.Repository{Language: &lang, Name: &name, Description: &desc, StargazersCount: &star, HTMLURL: &url}
+
+	expected := "name: desc\nLang: lang\n⭐️ 10\n#lang #github\nurl"
+
+	mockConfig := Config{TweetLanguage: true}
+
+	result := getTweet(mockConfig, &r)
+
+	if expected != result {
+		t.Errorf("Expected: %s, got %s", expected, result)
+	}
+}
+
+func TestTweetRepoWithHashtags(t *testing.T) {
+	lang := "lang"
+	name := "name"
+	desc := "desc"
+	star := 10
+	url := "url"
+	r := github.Repository{Language: &lang, Name: &name, Description: &desc, StargazersCount: &star, HTMLURL: &url}
+
+	expected := "name: desc\n⭐️ 10\n#a #b\nurl"
+
+	mockConfig := Config{Hashtags: "a,b"}
+
+	result := getTweet(mockConfig, &r)
+
+	if expected != result {
+		t.Errorf("Expected: %s, got %s", expected, result)
+	}
+}
