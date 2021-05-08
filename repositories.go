@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
 	"time"
@@ -74,6 +75,12 @@ func getRepo(config Config) *github.Repository {
 		repo = getSpecificRepo(config, randPos)
 
 		found = repo != nil && isRepoNotInRedis(repo, config.CacheSize*config.Periodicity)
+
+		if found && *repo.Archived {
+			found = false
+			log.Print("Repository archived")
+			log.Print(*repo.ID)
+		}
 	}
 
 	return repo
