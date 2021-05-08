@@ -30,7 +30,7 @@ func getTweet(cfg Config, repo *github.Repository) string {
 			}
 			hashtags += h
 		}
-		hashtags += " \n"
+		hashtags += "\n"
 	}
 
 	if repo.Name != nil {
@@ -39,6 +39,12 @@ func getTweet(cfg Config, repo *github.Repository) string {
 
 	if repo.Description != nil {
 		title += *repo.Description + "\n"
+	}
+
+	if cfg.TweetLanguage {
+		if repo.Language != nil {
+			title += "Lang: " + *repo.Language + "\n"
+		}
 	}
 
 	if repo.StargazersCount != nil {

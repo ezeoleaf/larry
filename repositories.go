@@ -74,7 +74,7 @@ func getRepo(config Config) *github.Repository {
 
 		repo = getSpecificRepo(config, randPos)
 
-		found = repo != nil && isRepoNotInRedis(repo, config.CacheSize*config.Periodicity)
+		found = repo != nil && isRepoNotInRedis(repo, config.CacheSize*config.Periodicity, config.Topic)
 
 		if found && *repo.Archived {
 			found = false
@@ -86,8 +86,8 @@ func getRepo(config Config) *github.Repository {
 	return repo
 }
 
-func isRepoNotInRedis(r *github.Repository, t int) bool {
-	k := strconv.FormatInt(*r.ID, 10)
+func isRepoNotInRedis(r *github.Repository, t int, topic string) bool {
+	k := topic + "-" + strconv.FormatInt(*r.ID, 10)
 	_, err := rdb.Get(ctx, k).Result()
 
 	switch {

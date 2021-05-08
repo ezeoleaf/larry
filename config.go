@@ -15,13 +15,14 @@ import (
 
 // Config is a struct that contains configuration for the app
 type Config struct {
-	Language    string
-	Topic       string
-	ConfigFile  string
-	AccessCfg   AccessConfig
-	Periodicity int
-	Hashtags    string
-	CacheSize   int
+	Language      string
+	Topic         string
+	ConfigFile    string
+	AccessCfg     AccessConfig
+	Periodicity   int
+	Hashtags      string
+	CacheSize     int
+	TweetLanguage bool
 }
 
 // AccessConfig is a struct that contains configuration for the clients
@@ -31,7 +32,7 @@ type AccessConfig struct {
 	TwitterConsumerSecret string `json:"twitter_consumer_secret"`
 	TwitterAccessToken    string `json:"twitter_access_token"`
 	TwitterAccessSecret   string `json:"twitter_access_secret"`
-	DevMode               bool   `json:"dev_mode"` //If DevMode is true then it wont post any tweet
+	DevMode               bool   `json:"dev_mode"` //If DevMode is true then it wont post any tweet //TODO: Move to arg as safe mode
 }
 
 // SetConfigAccess reads a configuration file and unmarshall to struct
