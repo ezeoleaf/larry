@@ -117,3 +117,20 @@ func TestTweetRepoWithHashtags(t *testing.T) {
 		t.Errorf("Expected: %s, got %s", expected, result)
 	}
 }
+
+func TestTweetRepoInSafeMode(t *testing.T) {
+	c := Config{SafeMode: true}
+
+	lang := "lang"
+	name := "name"
+	desc := "desc"
+	star := 10
+	url := "url"
+	r := github.Repository{Language: &lang, Name: &name, Description: &desc, StargazersCount: &star, HTMLURL: &url}
+
+	result := tweetRepo(c, &r)
+
+	if !result {
+		t.Error("Expected: true, got false")
+	}
+}

@@ -71,11 +71,18 @@ func main() {
 				Destination: &cfg.Hashtags,
 			},
 			&cli.BoolFlag{
-				Name:        "tweetlanguage",
+				Name:        "tweet-language",
 				Aliases:     []string{"tl"},
 				Value:       false,
 				Usage:       "bool for allowing twetting the language of the repo",
 				Destination: &cfg.TweetLanguage,
+			},
+			&cli.BoolFlag{
+				Name:        "safe-mode",
+				Aliases:     []string{"sf"},
+				Value:       false,
+				Usage:       "bool for safe mode. If safe mode is enabled, no repository is published",
+				Destination: &cfg.SafeMode,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -92,6 +99,7 @@ func main() {
 	}
 
 	err := app.Run(os.Args)
+
 	if err != nil {
 		log.Fatal(err)
 	}

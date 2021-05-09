@@ -77,7 +77,8 @@ GLOBAL OPTIONS:
    --time value, -x value       periodicity of tweet in minutes (default: 15)
    --cache value, -r value      size of cache for no repeating repositories (default: 50)
    --hashtag value, --ht value  list of comma separated hashtags
-   --tweetlanguage, --tl        bool for allowing twetting the language of the repo (default: false)
+   --tweet-language, --tl       bool for allowing twetting the language of the repo (default: false)
+   --safe-mode, --sf            bool for safe mode. If safe mode is enabled, no repository is published (default: false)
    --help, -h                   show help (default: false)
 ```
 

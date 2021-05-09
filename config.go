@@ -23,6 +23,7 @@ type Config struct {
 	Hashtags      string
 	CacheSize     int
 	TweetLanguage bool
+	SafeMode      bool
 }
 
 // AccessConfig is a struct that contains configuration for the clients

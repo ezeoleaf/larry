@@ -61,8 +61,8 @@ func tweetRepo(cfg Config, repo *github.Repository) bool {
 
 	tweet := getTweet(cfg, repo)
 
-	if cfg.AccessCfg.DevMode {
-		log.Print("Running in Dev Mode")
+	if cfg.SafeMode {
+		log.Print("Running in Safe Mode")
 		log.Print(tweet)
 		return true
 	}
