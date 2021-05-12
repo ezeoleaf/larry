@@ -10,16 +10,18 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var rdb *redis.Client
+var rdb Repository
 var ctx = context.Background()
 var cfg Config
 
 func init() {
-	rdb = redis.NewClient(&redis.Options{
+	ro := &redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
-	})
+	}
+
+	rdb = NewRedisRepository(ro)
 
 	cfg = Config{}
 }

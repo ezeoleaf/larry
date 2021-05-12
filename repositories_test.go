@@ -10,43 +10,45 @@ import (
 
 func TestIsRepoNotInRedis(t *testing.T) {
 	mr, _ := miniredis.Run()
-	rdb = redis.NewClient(&redis.Options{
+	ro := &redis.Options{
 		Addr: mr.Addr(),
-	})
+	}
+
+	rdb = NewRedisRepository(ro)
 
 	cacheSize := 1
 
 	var id int64 = 1
 
-	r := github.Repository{ID: &id}
+	repo := github.Repository{ID: &id}
 
-	result := isRepoNotInRedis(&r, cacheSize, "t")
-
-	if !result {
-		t.Errorf("Expected not in cache, got %v", result)
-	}
-
-	id = 2
-	r = github.Repository{ID: &id}
-
-	result = isRepoNotInRedis(&r, cacheSize, "t")
+	result := isRepoNotInRedis(&repo, cacheSize, "t")
 
 	if !result {
 		t.Errorf("Expected not in cache, got %v", result)
 	}
 
 	id = 2
-	r = github.Repository{ID: &id}
+	repo = github.Repository{ID: &id}
 
-	result = isRepoNotInRedis(&r, cacheSize, "t")
+	result = isRepoNotInRedis(&repo, cacheSize, "t")
+
+	if !result {
+		t.Errorf("Expected not in cache, got %v", result)
+	}
+
+	id = 2
+	repo = github.Repository{ID: &id}
+
+	result = isRepoNotInRedis(&repo, cacheSize, "t")
 
 	if result {
 		t.Errorf("Expected in cache, got %v", result)
 	}
 
-	rdb.Del(ctx, "t-2")
+	rdb.Del("t-2")
 
-	result = isRepoNotInRedis(&r, cacheSize, "t")
+	result = isRepoNotInRedis(&repo, cacheSize, "t")
 
 	if !result {
 		t.Errorf("Expected not in cache because of expiration, got %v", result)
@@ -55,9 +57,11 @@ func TestIsRepoNotInRedis(t *testing.T) {
 
 func TestIsRepoNotInRedisWithOtherTopic(t *testing.T) {
 	mr, _ := miniredis.Run()
-	rdb = redis.NewClient(&redis.Options{
+	ro := &redis.Options{
 		Addr: mr.Addr(),
-	})
+	}
+
+	rdb = NewRedisRepository(ro)
 
 	cacheSize := 1
 
