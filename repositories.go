@@ -88,11 +88,11 @@ func getRepo(config Config) *github.Repository {
 
 func isRepoNotInRedis(r *github.Repository, t int, topic string) bool {
 	k := topic + "-" + strconv.FormatInt(*r.ID, 10)
-	_, err := rdb.Get(ctx, k).Result()
+	_, err := rdb.Get(k)
 
 	switch {
 	case err == redis.Nil:
-		err := rdb.Set(ctx, k, true, time.Duration(t)*time.Minute).Err()
+		err := rdb.Set(k, true, time.Duration(t)*time.Minute)
 		if err != nil {
 			panic(err)
 		}

@@ -10,16 +10,17 @@ import (
 type Repository interface {
 	Set(key string, value interface{}, exp time.Duration) error
 	Get(key string) (string, error)
+	Del(key string) error
 }
 
 // repository represent the repository model
 type repository struct {
-	Client redis.Cmdable
+	Client *redis.Client
 }
 
 // NewRedisRepository will create an object that represent the Repository interface
-func NewRedisRepository(Client redis.Cmdable) Repository {
-	return &repository{Client}
+func NewRedisRepository(ro *redis.Options) Repository {
+	return &repository{redis.NewClient(ro)}
 }
 
 // Set attaches the redis repository and set the data
@@ -31,4 +32,8 @@ func (r *repository) Set(key string, value interface{}, exp time.Duration) error
 func (r *repository) Get(key string) (string, error) {
 	get := r.Client.Get(ctx, key)
 	return get.Result()
+}
+
+func (r *repository) Del(key string) error {
+	return r.Client.Del(ctx, key).Err()
 }
