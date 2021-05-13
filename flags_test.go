@@ -2,10 +2,12 @@ package main
 
 import (
 	"testing"
+
+	"github.com/ezeoleaf/GobotTweet/config"
 )
 
 func TestGetFlags(t *testing.T) {
-	mockConfig := Config{}
+	mockConfig := config.Config{}
 	flags := getFlags(&mockConfig)
 	if flags == nil {
 		t.Errorf("Expected flags, got %s", flags)

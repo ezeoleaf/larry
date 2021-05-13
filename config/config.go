@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"context"
@@ -24,6 +24,7 @@ type Config struct {
 	CacheSize     int
 	TweetLanguage bool
 	SafeMode      bool
+	Provider      string
 }
 
 // AccessConfig is a struct that contains configuration for the clients
@@ -33,7 +34,6 @@ type AccessConfig struct {
 	TwitterConsumerSecret string `json:"twitter_consumer_secret"`
 	TwitterAccessToken    string `json:"twitter_access_token"`
 	TwitterAccessSecret   string `json:"twitter_access_secret"`
-	DevMode               bool   `json:"dev_mode"` //If DevMode is true then it wont post any tweet //TODO: Move to arg as safe mode
 }
 
 // SetConfigAccess reads a configuration file and unmarshall to struct
