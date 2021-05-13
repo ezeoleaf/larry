@@ -67,19 +67,23 @@ NAME:
 USAGE:
    GobotTweet [global options] command [command options] [arguments...]
 
+AUTHOR:
+   Ezequiel Olea figueroa <ezeoleaf@gmail.com>
+
 COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --topic value, -t value      topic for searching repos
-   --lang value, -l value       language for searching repos
-   --config value, -c value     path to config file (default: "./config.json")
-   --time value, -x value       periodicity of tweet in minutes (default: 15)
-   --cache value, -r value      size of cache for no repeating repositories (default: 50)
-   --hashtag value, --ht value  list of comma separated hashtags
-   --tweet-language, --tl       bool for allowing twetting the language of the repo (default: false)
-   --safe-mode, --sf            bool for safe mode. If safe mode is enabled, no repository is published (default: false)
-   --help, -h                   show help (default: false)
+   --topic value, -t value       topic for searching repos
+   --lang value, -l value        language for searching repos
+   --config value, -c value      path to config file (default: "./config.json")
+   --time value, -x value        periodicity of tweet in minutes (default: 15)
+   --cache value, -r value       size of cache for no repeating repositories (default: 50)
+   --hashtag value, --ht value   list of comma separated hashtags
+   --tweet-language, --tl        bool for allowing twetting the language of the repo (default: false)
+   --safe-mode, --sf             bool for safe mode. If safe mode is enabled, no repository is published (default: false)
+   --provider value, --pr value  provider where publishable content comes from (default: "github")
+   --help, -h                    show help (default: false)
 ```
 
 For running the bot, the command will depend on whatever you want to tweet, but, for tweeting about React repositories every 30 minutes, you could use

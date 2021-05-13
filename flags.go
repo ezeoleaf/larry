@@ -67,7 +67,7 @@ func getFlags(c *config.Config) []cli.Flag {
 			Name:        "provider",
 			Aliases:     []string{"pr"},
 			Value:       "github",
-			Usage:       "Provider where tweetable content comes from",
+			Usage:       "provider where publishable content comes from",
 			Destination: &cfg.Provider,
 		},
 	}
