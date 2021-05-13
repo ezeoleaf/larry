@@ -37,6 +37,8 @@ func main() {
 				if provider != nil {
 					content := provider.GetContentToPublish()
 					tweetContent(cfg, content)
+				} else {
+					log.Fatal("No valid provider! " + providers.GetValidProvidersToString())
 				}
 
 				time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
