@@ -8,7 +8,11 @@ start:
 
 ## run-dev: runs the application in dev mode
 run-dev:
-	go run . -t golang -x 1
+	go run . -t golang -x 1 --safe-mode
+
+## test: runs tests
+tests:
+	go test ./... --cover
 
 ## compile: compiles the application for multiple environments and place the output executables under the bin folder
 compile:
