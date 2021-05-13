@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/ezeoleaf/GobotTweet/config"
@@ -30,6 +31,7 @@ func main() {
 			}
 			for {
 				var provider providers.IContent
+				cfg.Provider = strings.ToLower(cfg.Provider)
 				if cfg.Provider == providers.Github {
 					provider = github.NewGithubRepository(cfg)
 				}
@@ -38,7 +40,7 @@ func main() {
 					content := provider.GetContentToPublish()
 					tweetContent(cfg, content)
 				} else {
-					log.Fatal("No valid provider! " + providers.GetValidProvidersToString())
+					log.Fatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
 				}
 
 				time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
