@@ -1,44 +1,46 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/ezeoleaf/GobotTweet/config"
+	"github.com/ezeoleaf/GobotTweet/providers"
+	"github.com/ezeoleaf/GobotTweet/providers/github"
 	"github.com/urfave/cli/v2"
 )
 
-var rdb Repository
-var ctx = context.Background()
-var cfg Config
+var cfg config.Config
 
 func init() {
-	ro := &redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	}
-
-	rdb = NewRedisRepository(ro)
-
-	cfg = Config{}
+	cfg = config.Config{}
 }
 
 func main() {
 	app := &cli.App{
-		Name:  "GobotTweet",
-		Usage: "Twitter bot that tweets random repositories",
-		Flags: getFlags(&cfg),
+		Name:    "GobotTweet",
+		Usage:   "Twitter bot that tweets random repositories",
+		Flags:   getFlags(&cfg),
+		Authors: []*cli.Author{{Name: "Ezequiel Olea figueroa", Email: "ezeoleaf@gmail.com"}},
 		Action: func(c *cli.Context) error {
 			e := cfg.SetConfigAccess()
 			if e != nil {
 				panic(e)
 			}
 			for {
-				r := getRepo(cfg)
-				tweetRepo(cfg, r)
+				var provider providers.IContent
+				if cfg.Provider == providers.Github {
+					provider = github.NewGithubRepository(cfg)
+				}
+
+				if provider != nil {
+					content := provider.GetContentToPublish()
+					tweetContent(cfg, content)
+				} else {
+					log.Fatal("No valid provider! " + providers.GetValidProvidersToString())
+				}
+
 				time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
 			}
 		},

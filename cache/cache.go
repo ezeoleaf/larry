@@ -1,10 +1,13 @@
-package main
+package cache
 
 import (
+	"context"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 )
+
+var ctx = context.Background()
 
 // Repository represent the repositories
 type Repository interface {

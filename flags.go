@@ -1,8 +1,11 @@
 package main
 
-import "github.com/urfave/cli/v2"
+import (
+	"github.com/ezeoleaf/GobotTweet/config"
+	"github.com/urfave/cli/v2"
+)
 
-func getFlags(c *Config) []cli.Flag {
+func getFlags(c *config.Config) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
 			Name:        "topic",
@@ -59,6 +62,13 @@ func getFlags(c *Config) []cli.Flag {
 			Value:       false,
 			Usage:       "bool for safe mode. If safe mode is enabled, no repository is published",
 			Destination: &cfg.SafeMode,
+		},
+		&cli.StringFlag{
+			Name:        "provider",
+			Aliases:     []string{"pr"},
+			Value:       "github",
+			Usage:       "provider where publishable content comes from",
+			Destination: &cfg.Provider,
 		},
 	}
 }
