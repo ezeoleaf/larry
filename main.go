@@ -32,6 +32,16 @@ func main() {
 			for {
 				var provider providers.IContent
 				cfg.Provider = strings.ToLower(cfg.Provider)
+
+				if cfg.Provider == "" {
+					log.Fatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
+				}
+
+				// TODO: Add publishers validation
+				// if cfg.Publishers == "" {
+				// 	log.Fatalf("%s is not a valid publisher! %s", cfg.Provider, providers.GetValidProvidersToString())
+				// }
+
 				if cfg.Provider == providers.Github {
 					provider = github.NewGithubRepository(cfg)
 				}

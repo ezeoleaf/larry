@@ -70,5 +70,12 @@ func getFlags(c *config.Config) []cli.Flag {
 			Usage:       "provider where publishable content comes from",
 			Destination: &cfg.Provider,
 		},
+		&cli.StringFlag{
+			Name:        "publisher",
+			Aliases:     []string{"pub"},
+			Value:       "twitter",
+			Usage:       "list of comma separared publishers",
+			Destination: &cfg.Publishers,
+		},
 	}
 }

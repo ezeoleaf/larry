@@ -25,6 +25,7 @@ type Config struct {
 	TweetLanguage bool
 	SafeMode      bool
 	Provider      string
+	Publishers    string
 }
 
 // AccessConfig is a struct that contains configuration for the clients
