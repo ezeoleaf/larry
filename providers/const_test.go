@@ -9,8 +9,24 @@ func TestConsts(t *testing.T) {
 }
 
 func TestGetValidProvidersToString(t *testing.T) {
+	ValidProviders = []string{
+		"a",
+	}
+
 	r := GetValidProvidersToString()
-	expected := "The valid providers are: " + Github
+	expected := "The valid providers are: a"
+
+	if r != expected {
+		t.Errorf("The provides are wrong. Expected: %s got %s", expected, r)
+	}
+
+	ValidProviders = []string{
+		"a",
+		"b",
+	}
+
+	r = GetValidProvidersToString()
+	expected = "The valid providers are: a, b"
 
 	if r != expected {
 		t.Errorf("The provides are wrong. Expected: %s got %s", expected, r)

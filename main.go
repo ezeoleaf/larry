@@ -10,10 +10,15 @@ import (
 	"github.com/ezeoleaf/GobotTweet/providers"
 	"github.com/ezeoleaf/GobotTweet/providers/github"
 	"github.com/ezeoleaf/GobotTweet/publishers"
+	"github.com/ezeoleaf/GobotTweet/publishers/twitter"
 	"github.com/urfave/cli/v2"
 )
 
-var cfg config.Config
+var (
+	cfg       config.Config
+	logFatalf = log.Fatalf
+	logFatal  = log.Fatal
+)
 
 func init() {
 	cfg = config.Config{}
@@ -31,10 +36,13 @@ func main() {
 				panic(e)
 			}
 			for {
-				provider, _ := getProviderAndPublishers(&cfg)
+				provider, pubs := getProviderAndPublishers()
 
 				content := provider.GetContentToPublish()
-				tweetContent(cfg, content)
+
+				for _, ps := range pubs {
+					ps.PublishContent(content)
+				}
 
 				time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
 			}
@@ -44,17 +52,17 @@ func main() {
 	err := app.Run(os.Args)
 
 	if err != nil {
-		log.Fatal(err)
+		logFatal(err)
 	}
 }
 
-func getProviderAndPublishers(c *config.Config) (providers.IContent, []publishers.IPublish) {
+func getProviderAndPublishers() (providers.IContent, map[string]publishers.IPublish) {
 	if cfg.Provider == "" {
-		log.Fatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
+		logFatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
 	}
 
 	if cfg.Publishers == "" {
-		log.Fatalf("%s is not a valid publisher! %s", cfg.Provider, publishers.GetValidPublishersToString())
+		logFatalf("%s is not a valid publisher! %s", cfg.Provider, publishers.GetValidPublishersToString())
 	}
 
 	pr := getProvider(strings.ToLower(cfg.Provider))
@@ -62,11 +70,11 @@ func getProviderAndPublishers(c *config.Config) (providers.IContent, []publisher
 	ps := getPublishers(strings.ToLower(cfg.Publishers))
 
 	if pr == nil {
-		log.Fatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
+		logFatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
 	}
 
 	if len(ps) == 0 {
-		log.Fatalf("%s are not a valid publishers! %s", cfg.Publishers, publishers.GetValidPublishersToString())
+		logFatalf("%s are not a valid publishers! %s", cfg.Publishers, publishers.GetValidPublishersToString())
 	}
 
 	return pr, ps
@@ -80,7 +88,22 @@ func getProvider(p string) providers.IContent {
 	return nil
 }
 
-func getPublishers(p string) []publishers.IPublish {
+func getPublishers(p string) map[string]publishers.IPublish {
+	pubs := make(map[string]publishers.IPublish)
 
-	return []publishers.IPublish{}
+	ps := strings.Split(p, ",")
+
+	for _, v := range ps {
+		v = strings.TrimSpace(v)
+
+		if _, ok := pubs[v]; ok {
+			continue
+		}
+
+		if v == publishers.Twitter {
+			pubs[v] = twitter.NewTwitterPublisher(cfg)
+		}
+	}
+
+	return pubs
 }
