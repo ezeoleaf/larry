@@ -9,10 +9,16 @@ import (
 	"github.com/ezeoleaf/GobotTweet/config"
 	"github.com/ezeoleaf/GobotTweet/providers"
 	"github.com/ezeoleaf/GobotTweet/providers/github"
+	"github.com/ezeoleaf/GobotTweet/publishers"
+	"github.com/ezeoleaf/GobotTweet/publishers/twitter"
 	"github.com/urfave/cli/v2"
 )
 
-var cfg config.Config
+var (
+	cfg       config.Config
+	logFatalf = log.Fatalf
+	logFatal  = log.Fatal
+)
 
 func init() {
 	cfg = config.Config{}
@@ -30,17 +36,12 @@ func main() {
 				panic(e)
 			}
 			for {
-				var provider providers.IContent
-				cfg.Provider = strings.ToLower(cfg.Provider)
-				if cfg.Provider == providers.Github {
-					provider = github.NewGithubRepository(cfg)
-				}
+				provider, pubs := getProviderAndPublishers()
 
-				if provider != nil {
-					content := provider.GetContentToPublish()
-					tweetContent(cfg, content)
-				} else {
-					log.Fatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
+				content := provider.GetContentToPublish()
+
+				for _, ps := range pubs {
+					ps.PublishContent(content)
 				}
 
 				time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
@@ -51,6 +52,58 @@ func main() {
 	err := app.Run(os.Args)
 
 	if err != nil {
-		log.Fatal(err)
+		logFatal(err)
 	}
+}
+
+func getProviderAndPublishers() (providers.IContent, map[string]publishers.IPublish) {
+	if cfg.Provider == "" {
+		logFatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
+	}
+
+	if cfg.Publishers == "" {
+		logFatalf("%s is not a valid publisher! %s", cfg.Provider, publishers.GetValidPublishersToString())
+	}
+
+	pr := getProvider(strings.ToLower(cfg.Provider))
+
+	ps := getPublishers(strings.ToLower(cfg.Publishers))
+
+	if pr == nil {
+		logFatalf("%s is not a valid provider! %s", cfg.Provider, providers.GetValidProvidersToString())
+	}
+
+	if len(ps) == 0 {
+		logFatalf("%s are not a valid publishers! %s", cfg.Publishers, publishers.GetValidPublishersToString())
+	}
+
+	return pr, ps
+}
+
+func getProvider(p string) providers.IContent {
+	if cfg.Provider == providers.Github {
+		return github.NewGithubRepository(cfg)
+	}
+
+	return nil
+}
+
+func getPublishers(p string) map[string]publishers.IPublish {
+	pubs := make(map[string]publishers.IPublish)
+
+	ps := strings.Split(p, ",")
+
+	for _, v := range ps {
+		v = strings.TrimSpace(v)
+
+		if _, ok := pubs[v]; ok {
+			continue
+		}
+
+		if v == publishers.Twitter {
+			pubs[v] = twitter.NewTwitterPublisher(cfg)
+		}
+	}
+
+	return pubs
 }
