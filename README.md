@@ -1,4 +1,7 @@
 # GobotTweet
+[![Go](https://github.com/ezeoleaf/GobotTweet/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/ezeoleaf/GobotTweet/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ezeoleaf/GobotTweet)](https://goreportcard.com/report/github.com/ezeoleaf/GobotTweet)
+[![MIT License](https://img.shields.io/github/license/ezeoleaf/GobotTweet?style=flat-square)](https://github.com/ezeoleaf/GobotTweet/blob/main/LICENSE)
 
 A Golang cli bot that tweets random Github repositories.
 
