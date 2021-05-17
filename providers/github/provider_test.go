@@ -1,9 +1,12 @@
 package github
 
 import (
+	"context"
+	"errors"
 	"testing"
 
 	"github.com/alicebob/miniredis/v2"
+
 	"github.com/ezeoleaf/GobotTweet/cache"
 	"github.com/ezeoleaf/GobotTweet/config"
 	"github.com/go-redis/redis/v8"
@@ -188,5 +191,77 @@ func TestTweetRepoWithHashtags(t *testing.T) {
 
 	if expected != result {
 		t.Errorf("Expected: %s, got %s", expected, result)
+	}
+}
+
+type MockClient struct {
+	RepositoriesFunc func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error)
+}
+
+var GetRepositoriesFunc func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error)
+
+// Do is the mock client's `Do` func
+func (m *MockClient) Repositories(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
+	return GetRepositoriesFunc(ctx, query, opt)
+}
+
+func TestGetRepositories(t *testing.T) {
+	GetRepositoriesFunc = func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
+		i := 1
+		var repId int64 = 1
+		reps := []github.Repository{
+			{ID: &repId},
+		}
+		r := github.RepositoriesSearchResult{Total: &i, Repositories: reps}
+		return &r, nil, nil
+	}
+
+	client = &MockClient{}
+	repos, total := getRepositories()
+
+	if total != 1 {
+		t.Errorf("Expected total one repository, got %v", total)
+	}
+
+	if len(repos) != 1 {
+		t.Errorf("Expected one repo in slice, got %v", len(repos))
+	}
+}
+
+func TestGetSpecificRepo(t *testing.T) {
+	GetRepositoriesFunc = func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
+		i := 1
+		var repId int64 = 1
+		reps := []github.Repository{
+			{ID: &repId},
+		}
+		r := github.RepositoriesSearchResult{Total: &i, Repositories: reps}
+		return &r, nil, nil
+	}
+
+	client = &MockClient{}
+	repo := getSpecificRepo(1)
+
+	if repo == nil {
+		t.Error("Expected repository got nil")
+	}
+
+	cfg.Topic = "topic"
+	repo = getSpecificRepo(1)
+	if repo == nil {
+		t.Error("Expected repository got nil")
+	}
+}
+
+func TestGetSpecificRepoError(t *testing.T) {
+	GetRepositoriesFunc = func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
+		return nil, nil, errors.New("Error")
+	}
+
+	client = &MockClient{}
+	repo := getSpecificRepo(1)
+
+	if repo != nil {
+		t.Error("Expected nil got repository")
 	}
 }

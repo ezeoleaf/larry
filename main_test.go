@@ -31,7 +31,6 @@ func TestGetEmptyProviderAndEmptyPublishers(t *testing.T) {
 	errors := []string{}
 
 	logFatalf = func(format string, args ...interface{}) {
-		fmt.Println("alksndlaksndlaksndlaksndalksdnalksnd")
 		if len(args) > 0 {
 			errors = append(errors, fmt.Sprintf(format, args))
 		} else {
