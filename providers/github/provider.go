@@ -19,12 +19,16 @@ import (
 var repositories *github.RepositoriesSearchResult
 var rdb cache.Repository
 var cfg config.Config
-var client *github.Client
+var client githubClient
 var ctx context.Context
 
 // repository represent the repository model
 type githubProvider struct {
 	Provider interface{}
+}
+
+type githubClient interface {
+	Repositories(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error)
 }
 
 func NewGithubRepository(config config.Config) providers.IContent {
@@ -95,12 +99,14 @@ func getContent(repo *github.Repository) string {
 
 func setClient() {
 	ctx = context.Background()
+
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: cfg.AccessCfg.GithubAccessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
-	client = github.NewClient(tc)
+	client = github.NewClient(tc).Search
+
 }
 
 func getRepositories() ([]github.Repository, int) {
@@ -116,7 +122,7 @@ func getRepositories() ([]github.Repository, int) {
 
 		so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1}}
 
-		repositories, _, e = client.Search.Repositories(ctx, qs, &so)
+		repositories, _, e = client.Repositories(ctx, qs, &so)
 
 		if e != nil {
 			panic(e)
@@ -138,7 +144,7 @@ func getSpecificRepo(pos int) *github.Repository {
 
 	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1, Page: pos}}
 
-	repositories, _, e = client.Search.Repositories(ctx, qs, &so)
+	repositories, _, e = client.Repositories(ctx, qs, &so)
 
 	if e != nil {
 		return nil
