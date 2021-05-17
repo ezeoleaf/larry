@@ -1,6 +1,7 @@
 package github
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"math/rand"
@@ -12,11 +13,14 @@ import (
 	"github.com/ezeoleaf/GobotTweet/providers"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 )
 
 var repositories *github.RepositoriesSearchResult
 var rdb cache.Repository
 var cfg config.Config
+var client *github.Client
+var ctx context.Context
 
 // repository represent the repository model
 type githubProvider struct {
@@ -32,6 +36,8 @@ func NewGithubRepository(config config.Config) providers.IContent {
 	}
 
 	rdb = cache.NewRedisRepository(ro)
+
+	setClient()
 
 	return &githubProvider{}
 }
@@ -87,10 +93,18 @@ func getContent(repo *github.Repository) string {
 	return title + stargazers + hashtags + *repo.HTMLURL
 }
 
+func setClient() {
+	ctx = context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: cfg.AccessCfg.GithubAccessToken},
+	)
+	tc := oauth2.NewClient(ctx, ts)
+
+	client = github.NewClient(tc)
+}
+
 func getRepositories() ([]github.Repository, int) {
 	if repositories == nil {
-		ctx, client := cfg.AccessCfg.GetGithubClient()
-
 		var e error
 		var qs string
 
@@ -113,8 +127,6 @@ func getRepositories() ([]github.Repository, int) {
 }
 
 func getSpecificRepo(pos int) *github.Repository {
-	ctx, client := cfg.AccessCfg.GetGithubClient()
-
 	var e error
 	var qs string
 
