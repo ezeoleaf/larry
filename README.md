@@ -1,9 +1,9 @@
-# GobotTweet
-[![Go](https://github.com/ezeoleaf/GobotTweet/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/ezeoleaf/GobotTweet/actions/workflows/go.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ezeoleaf/GobotTweet)](https://goreportcard.com/report/github.com/ezeoleaf/GobotTweet)
-[![MIT License](https://img.shields.io/github/license/ezeoleaf/GobotTweet?style=flat-square)](https://github.com/ezeoleaf/GobotTweet/blob/main/LICENSE)
+# Larry 🐦
+[![Go](https://github.com/ezeoleaf/larry/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/ezeoleaf/larry/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ezeoleaf/larry)](https://goreportcard.com/report/github.com/ezeoleaf/larry)
+[![MIT License](https://img.shields.io/github/license/ezeoleaf/larry?style=flat-square)](https://github.com/ezeoleaf/larry/blob/main/LICENSE)
 
-A Golang cli bot that tweets random Github repositories.
+Larry is a Golang cli bot that tweets random Github repositories.
 
 You can check a fuctional version working [here](https://twitter.com/GolangRepos)
 
@@ -13,18 +13,18 @@ I hold no liability for what you do with this bot or what happens to you by usin
 
 ## Installation
 
-You can install the GobotTweet bot by cloning the repo and using `go install`
+You can install Larry by cloning the repo and using `go install`
 
 ```bash
-git clone https://github.com/ezeoleaf/GobotTweet.git
-cd GobotTweet
+git clone https://github.com/ezeoleaf/larry.git
+cd larry
 go install
 ```
 
 Or you can run it on the go
 ```bash
-git clone https://github.com/ezeoleaf/GobotTweet.git
-cd GobotTweet
+git clone https://github.com/ezeoleaf/larry.git
+cd larry
 go run . [options]
 ```
 
@@ -52,23 +52,23 @@ For getting Twitter keys and secrets you can follow this [guide](https://develop
 To run the bot, you have two ways.
 
 If you have installed the bot, you can run it using
-  `GobotTweet [options]`
+  `larry [options]`
 
 If you want to run it without installing it globally you can use
   `go run . [options]`
 
 Example:
 
-`GobotTweet -h`
+`larry -h`
 
 As a response you will see the entire options available
 
 ```
 NAME:
-   GobotTweet - Twitter bot that tweets random repositories
+   larry - Twitter bot that tweets random repositories
 
 USAGE:
-   GobotTweet [global options] command [command options] [arguments...]
+   larry [global options] command [command options] [arguments...]
 
 AUTHOR:
    Ezequiel Olea figueroa <ezeoleaf@gmail.com>
@@ -92,15 +92,15 @@ GLOBAL OPTIONS:
 
 For running the bot, the command will depend on whatever you want to tweet, but, for tweeting about React repositories every 30 minutes, you could use
 
-&nbsp;&nbsp;`GobotTweet --topic react --config "path_to_react_config.json" --time 30`
+&nbsp;&nbsp;`larry --topic react --config "path_to_react_config.json" --time 30`
 
 For running the bot for Rust tweets every 15 minutes
 
-&nbsp;&nbsp;`GobotTweet --lang rust --config "path_to_rust_config.json" --time 15`
+&nbsp;&nbsp;`larry --lang rust --config "path_to_rust_config.json" --time 15`
 
 
 ## Have questions? Need help with the bot?
 
-If you're having issues with or have questions about the bot, [file an issue](https://github.com/ezeoleaf/GobotTweet/issues) in this repository so anyone can get back to you.
+If you're having issues with or have questions about the bot, [file an issue](https://github.com/ezeoleaf/larry/issues) in this repository so anyone can get back to you.
 
 Or feel free to contact me <ezeoleaf@gmail.com> :)
