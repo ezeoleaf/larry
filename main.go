@@ -26,7 +26,7 @@ func init() {
 
 func main() {
 	app := &cli.App{
-		Name:    "GobotTweet",
+		Name:    "Larry",
 		Usage:   "Twitter bot that tweets random repositories",
 		Flags:   getFlags(&cfg),
 		Authors: []*cli.Author{{Name: "Ezequiel Olea figueroa", Email: "ezeoleaf@gmail.com"}},
