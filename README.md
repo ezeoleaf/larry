@@ -5,11 +5,15 @@
 
 Larry is a Golang cli bot that tweets random Github repositories.
 
-You can check a fuctional version working [here](https://twitter.com/GolangRepos)
-
 ## Disclaimer
 
 I hold no liability for what you do with this bot or what happens to you by using this bot. Abusing this bot *can* get you banned from Twitter, so make sure to read up on [proper usage](https://support.twitter.com/articles/76915-automation-rules-and-best-practices) of the Twitter API.
+
+## Running bots
+
+[GolangRepos](https://twitter.com/GolangRepos): Tweets repositories from Github that contain the "golang" topic
+[RustRepos](https://twitter.com/RustRepos): Tweets repositories from Github that contain the "rust" topic
+[MLRepositories](https://twitter.com/MLRepositories): Tweets repositories from Github that contain the "machine-learning" topic
 
 ## Installation
 
