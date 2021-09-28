@@ -14,6 +14,7 @@ I hold no liability for what you do with this bot or what happens to you by usin
 - [GolangRepos](https://twitter.com/GolangRepos): Tweets repositories from Github that contain the "golang" topic
 - [RustRepos](https://twitter.com/RustRepos): Tweets repositories from Github that contain the "rust" topic
 - [MLRepositories](https://twitter.com/MLRepositories): Tweets repositories from Github that contain the "machine-learning" topic
+- [CryptoRepos](https://twitter.com/CryptoRepos): Tweets repositories from Github that contain the "crypto" topic
 
 ## Installation
 
