@@ -114,7 +114,9 @@ func getRepositories() ([]github.Repository, int) {
 		var e error
 		var qs string
 
-		if cfg.Topic != "" {
+		if cfg.Topic != "" && cfg.Language != ""{
+			qs = fmt.Sprintf("topic:%s+language:%s", cfg.Topic, cfg.Language)
+		}else if cfg.Topic != "" {
 			qs = fmt.Sprintf("topic:%s", cfg.Topic)
 		} else {
 			qs = fmt.Sprintf("language:%s", cfg.Language)
