@@ -81,7 +81,7 @@ func getProviderAndPublishers() (providers.IContent, map[string]publishers.IPubl
 }
 
 func getProvider(p string) providers.IContent {
-	if cfg.Provider == providers.Github {
+	if p == providers.Github {
 		return github.NewGithubRepository(cfg)
 	}
 
