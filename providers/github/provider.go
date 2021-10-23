@@ -12,7 +12,7 @@ import (
 	"github.com/ezeoleaf/GobotTweet/config"
 	"github.com/ezeoleaf/GobotTweet/providers"
 	"github.com/go-redis/redis/v8"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v39/github"
 	"golang.org/x/oauth2"
 )
 
@@ -109,7 +109,7 @@ func setClient() {
 
 }
 
-func getRepositories() ([]github.Repository, int) {
+func getRepositories() ([]*github.Repository, int) {
 	if repositories == nil {
 		var e error
 		var qs string
@@ -155,7 +155,7 @@ func getSpecificRepo(pos int) *github.Repository {
 		return nil
 	}
 
-	return &repositories.Repositories[0]
+	return repositories.Repositories[0]
 }
 
 func getRepo() *github.Repository {
