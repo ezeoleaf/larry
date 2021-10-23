@@ -52,7 +52,7 @@ func (g *githubProvider) GetContentToPublish() string {
 }
 
 func getContent(repo *github.Repository) string {
-	hashtags, title, stargazers := "", "", ""
+	hashtags, title, stargazers, author := "", "", "", ""
 
 	hs := cfg.GetHashtags()
 
@@ -93,8 +93,12 @@ func getContent(repo *github.Repository) string {
 	if repo.StargazersCount != nil {
 		stargazers += "⭐️ " + strconv.Itoa(*repo.StargazersCount) + "\n"
 	}
+	
+	if repo.Owner.GetTwitterUsername() != "" {
+		author += "Author: @" + repo.Owner.GetTwitterUsername() + "\n"
+	}
 
-	return title + stargazers + hashtags + *repo.HTMLURL
+	return title + stargazers + hashtags + author + *repo.HTMLURL
 }
 
 func setClient() {
