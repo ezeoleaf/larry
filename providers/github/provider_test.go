@@ -194,6 +194,25 @@ func TestTweetRepoWithHashtags(t *testing.T) {
 	}
 }
 
+func TestTweetRepoWithAuthor(t *testing.T){
+	lang := "lang"
+	name := "name"
+	url := "url"
+	twitterUsername := "beesafe"
+	author := github.User{TwitterUsername: &twitterUsername}
+	r := github.Repository{Language: &lang, Name: &name, HTMLURL: &url, Owner: &author}
+	
+	expected := "name: #lang #github\nAuthor: @beesafe\nurl"
+	
+	cfg = config.Config{}
+
+	result := getContent(&r)
+
+	if expected != result {
+		t.Errorf("Expected: %s, got %s", expected, result)
+	}
+}
+
 type MockClient struct {
 	RepositoriesFunc func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error)
 }
