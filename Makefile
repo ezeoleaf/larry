@@ -1,6 +1,6 @@
 ## build: build the application and place the built app in the bin folder
 build:
-	go build -o bin/gobot .
+	go build -o bin/larry .
 
 ## start: start container
 start:
@@ -18,13 +18,13 @@ tests:
 compile:
 	# 64-Bit
 	# FreeBDS
-	GOOS=freebsd GOARCH=amd64 go build -o bin/gobot-freebsd-64 .
+	GOOS=freebsd GOARCH=amd64 go build -o bin/larry-freebsd-64 .
 	# MacOS
-	GOOS=darwin GOARCH=amd64 go build -o bin/gobot-macos-64 .
+	GOOS=darwin GOARCH=amd64 go build -o bin/larry-macos-64 .
 	# Linux
-	GOOS=linux GOARCH=amd64 go build -o bin/gobot-linux-64 .
+	GOOS=linux GOARCH=amd64 go build -o bin/larry-linux-64 .
 	# Windows
-	GOOS=windows GOARCH=amd64 go build -o bin/gobot-windows-64 .
+	GOOS=windows GOARCH=amd64 go build -o bin/larry-windows-64 .
 
 ## help: prints this help message
 help:

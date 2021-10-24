@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   redis:
-    container_name: gobot-redis
+    container_name: larry-redis
     image: redis
     ports:
       - 6379:6379
