@@ -12,7 +12,7 @@ import (
 	"github.com/ezeoleaf/GobotTweet/config"
 	"github.com/ezeoleaf/GobotTweet/providers"
 	"github.com/go-redis/redis/v8"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v39/github"
 	"golang.org/x/oauth2"
 )
 
@@ -52,7 +52,7 @@ func (g *githubProvider) GetContentToPublish() string {
 }
 
 func getContent(repo *github.Repository) string {
-	hashtags, title, stargazers := "", "", ""
+	hashtags, title, stargazers, author := "", "", "", ""
 
 	hs := cfg.GetHashtags()
 
@@ -93,8 +93,12 @@ func getContent(repo *github.Repository) string {
 	if repo.StargazersCount != nil {
 		stargazers += "⭐️ " + strconv.Itoa(*repo.StargazersCount) + "\n"
 	}
+	
+	if repo.Owner.GetTwitterUsername() != "" {
+		author += "Author: @" + repo.Owner.GetTwitterUsername() + "\n"
+	}
 
-	return title + stargazers + hashtags + *repo.HTMLURL
+	return title + stargazers + hashtags + author + *repo.HTMLURL
 }
 
 func setClient() {
@@ -109,7 +113,7 @@ func setClient() {
 
 }
 
-func getRepositories() ([]github.Repository, int) {
+func getRepositories() ([]*github.Repository, int) {
 	if repositories == nil {
 		var e error
 		var qs string
@@ -155,7 +159,7 @@ func getSpecificRepo(pos int) *github.Repository {
 		return nil
 	}
 
-	return &repositories.Repositories[0]
+	return repositories.Repositories[0]
 }
 
 func getRepo() *github.Repository {

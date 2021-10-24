@@ -10,7 +10,7 @@ import (
 	"github.com/ezeoleaf/GobotTweet/cache"
 	"github.com/ezeoleaf/GobotTweet/config"
 	"github.com/go-redis/redis/v8"
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v39/github"
 )
 
 func TestIsRepoNotInRedis(t *testing.T) {
@@ -194,6 +194,25 @@ func TestTweetRepoWithHashtags(t *testing.T) {
 	}
 }
 
+func TestTweetRepoWithAuthor(t *testing.T){
+	lang := "lang"
+	name := "name"
+	url := "url"
+	twitterUsername := "beesafe"
+	author := github.User{TwitterUsername: &twitterUsername}
+	r := github.Repository{Language: &lang, Name: &name, HTMLURL: &url, Owner: &author}
+	
+	expected := "name: #lang #github\nAuthor: @beesafe\nurl"
+	
+	cfg = config.Config{}
+
+	result := getContent(&r)
+
+	if expected != result {
+		t.Errorf("Expected: %s, got %s", expected, result)
+	}
+}
+
 type MockClient struct {
 	RepositoriesFunc func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error)
 }
@@ -209,7 +228,7 @@ func TestGetRepositories(t *testing.T) {
 	GetRepositoriesFunc = func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
 		i := 1
 		var repId int64 = 1
-		reps := []github.Repository{
+		reps := []*github.Repository{
 			{ID: &repId},
 		}
 		r := github.RepositoriesSearchResult{Total: &i, Repositories: reps}
@@ -232,7 +251,7 @@ func TestGetSpecificRepo(t *testing.T) {
 	GetRepositoriesFunc = func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
 		i := 1
 		var repId int64 = 1
-		reps := []github.Repository{
+		reps := []*github.Repository{
 			{ID: &repId},
 		}
 		r := github.RepositoriesSearchResult{Total: &i, Repositories: reps}
