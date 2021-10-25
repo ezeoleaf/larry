@@ -3,7 +3,7 @@ package twitter
 import (
 	"testing"
 
-	"github.com/ezeoleaf/GobotTweet/config"
+	"github.com/ezeoleaf/larry/config"
 )
 
 func TestNewPublisher(t *testing.T) {

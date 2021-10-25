@@ -4,7 +4,7 @@ We'd love to accept your patches and contributions to this project. There are ju
 
 ## Fork and merge into the main branch
 
-All development for GobotTweet must happen in the [main branch](https://github.com/ezeoleaf/GobotTweet/tree/main).
+All development for GobotTweet must happen in the [main branch](https://github.com/ezeoleaf/larry/tree/main).
 
 When you are creating a pull request, be sure to pull back into the main branch.
 

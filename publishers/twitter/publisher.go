@@ -6,8 +6,8 @@ import (
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
-	"github.com/ezeoleaf/GobotTweet/config"
-	"github.com/ezeoleaf/GobotTweet/publishers"
+	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/publishers"
 )
 
 var cfg config.Config

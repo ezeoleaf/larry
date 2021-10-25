@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ezeoleaf/GobotTweet/config"
-	"github.com/ezeoleaf/GobotTweet/providers"
-	"github.com/ezeoleaf/GobotTweet/providers/github"
-	"github.com/ezeoleaf/GobotTweet/publishers"
-	"github.com/ezeoleaf/GobotTweet/publishers/twitter"
+	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/providers"
+	"github.com/ezeoleaf/larry/providers/github"
+	"github.com/ezeoleaf/larry/publishers"
+	"github.com/ezeoleaf/larry/publishers/twitter"
 	"github.com/urfave/cli/v2"
 )
 

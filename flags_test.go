@@ -3,7 +3,7 @@ package main
 import (
 	"testing"
 
-	"github.com/ezeoleaf/GobotTweet/config"
+	"github.com/ezeoleaf/larry/config"
 )
 
 func TestGetFlags(t *testing.T) {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ezeoleaf/GobotTweet/config"
+	"github.com/ezeoleaf/larry/config"
 	"github.com/urfave/cli/v2"
 )
 

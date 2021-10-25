@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ezeoleaf/GobotTweet/cache"
-	"github.com/ezeoleaf/GobotTweet/config"
-	"github.com/ezeoleaf/GobotTweet/providers"
+	"github.com/ezeoleaf/larry/cache"
+	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/providers"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/go-github/v39/github"
 	"golang.org/x/oauth2"
@@ -20,6 +20,7 @@ var repositories *github.RepositoriesSearchResult
 var rdb cache.Repository
 var cfg config.Config
 var client githubClient
+var uClient userClient
 var ctx context.Context
 
 // repository represent the repository model
@@ -29,6 +30,9 @@ type githubProvider struct {
 
 type githubClient interface {
 	Repositories(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error)
+}
+type userClient interface {
+	Get(ctx context.Context, user string) (*github.User, *github.Response, error)
 }
 
 func NewGithubRepository(config config.Config) providers.IContent {
@@ -93,12 +97,27 @@ func getContent(repo *github.Repository) string {
 	if repo.StargazersCount != nil {
 		stargazers += "⭐️ " + strconv.Itoa(*repo.StargazersCount) + "\n"
 	}
-	
-	if repo.Owner.GetTwitterUsername() != "" {
-		author += "Author: @" + repo.Owner.GetTwitterUsername() + "\n"
+
+	owner := getRepoUser(repo.Owner)
+	if owner != "" {
+		author += "Author: @" + owner + "\n"
 	}
 
 	return title + stargazers + hashtags + author + *repo.HTMLURL
+}
+
+func getRepoUser(owner *github.User) string {
+	if owner == nil || owner.Login == nil {
+		return ""
+	}
+
+	gUser, _, err := uClient.Get(ctx, *owner.Login)
+
+	if err != nil {
+		return ""
+	}
+
+	return gUser.GetTwitterUsername()
 }
 
 func setClient() {
@@ -110,7 +129,7 @@ func setClient() {
 	tc := oauth2.NewClient(ctx, ts)
 
 	client = github.NewClient(tc).Search
-
+	uClient = github.NewClient(tc).Users
 }
 
 func getRepositories() ([]*github.Repository, int) {
@@ -118,9 +137,9 @@ func getRepositories() ([]*github.Repository, int) {
 		var e error
 		var qs string
 
-		if cfg.Topic != "" && cfg.Language != ""{
+		if cfg.Topic != "" && cfg.Language != "" {
 			qs = fmt.Sprintf("topic:%s+language:%s", cfg.Topic, cfg.Language)
-		}else if cfg.Topic != "" {
+		} else if cfg.Topic != "" {
 			qs = fmt.Sprintf("topic:%s", cfg.Topic)
 		} else {
 			qs = fmt.Sprintf("language:%s", cfg.Language)
@@ -142,10 +161,9 @@ func getSpecificRepo(pos int) *github.Repository {
 	var e error
 	var qs string
 
-
-	if cfg.Topic != "" && cfg.Language != ""{
+	if cfg.Topic != "" && cfg.Language != "" {
 		qs = fmt.Sprintf("topic:%s+language:%s", cfg.Topic, cfg.Language)
-	}else if cfg.Topic != "" {
+	} else if cfg.Topic != "" {
 		qs = fmt.Sprintf("topic:%s", cfg.Topic)
 	} else {
 		qs = fmt.Sprintf("language:%s", cfg.Language)

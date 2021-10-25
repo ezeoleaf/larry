@@ -7,8 +7,8 @@ import (
 
 	"github.com/alicebob/miniredis/v2"
 
-	"github.com/ezeoleaf/GobotTweet/cache"
-	"github.com/ezeoleaf/GobotTweet/config"
+	"github.com/ezeoleaf/larry/cache"
+	"github.com/ezeoleaf/larry/config"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/go-github/v39/github"
 )
@@ -109,6 +109,12 @@ func TestGetContent(t *testing.T) {
 
 	expected := "name: desc\n⭐️ 10\n#asd #github\nurl"
 
+	GetFunc = func(ctx context.Context, user string) (*github.User, *github.Response, error) {
+		return nil, nil, errors.New("some error")
+	}
+
+	uClient = &MockUserClient{}
+
 	cfg = config.Config{Topic: "asd"}
 
 	result := getContent(&r)
@@ -194,17 +200,30 @@ func TestTweetRepoWithHashtags(t *testing.T) {
 	}
 }
 
-func TestTweetRepoWithAuthor(t *testing.T){
+func TestTweetRepoWithAuthor(t *testing.T) {
 	lang := "lang"
 	name := "name"
 	url := "url"
 	twitterUsername := "beesafe"
-	author := github.User{TwitterUsername: &twitterUsername}
+	login := "test"
+	author := github.User{TwitterUsername: &twitterUsername, Login: &login}
 	r := github.Repository{Language: &lang, Name: &name, HTMLURL: &url, Owner: &author}
-	
+
 	expected := "name: #lang #github\nAuthor: @beesafe\nurl"
-	
+
 	cfg = config.Config{}
+
+	GetFunc = func(ctx context.Context, user string) (*github.User, *github.Response, error) {
+		var login = "test"
+		var twitterUser = "beesafe"
+		u := github.User{
+			Login:           &login,
+			TwitterUsername: &twitterUser,
+		}
+		return &u, nil, nil
+	}
+
+	uClient = &MockUserClient{}
 
 	result := getContent(&r)
 
@@ -219,9 +238,20 @@ type MockClient struct {
 
 var GetRepositoriesFunc func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error)
 
+type MockUserClient struct {
+	GetFunc func(ctx context.Context, user string) (*github.User, *github.Response, error)
+}
+
+var GetFunc func(ctx context.Context, user string) (*github.User, *github.Response, error)
+
 // Do is the mock client's `Do` func
 func (m *MockClient) Repositories(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
 	return GetRepositoriesFunc(ctx, query, opt)
+}
+
+// Do is the mock client's `Do` func
+func (m *MockUserClient) Get(ctx context.Context, user string) (*github.User, *github.Response, error) {
+	return GetFunc(ctx, user)
 }
 
 func TestGetRepositories(t *testing.T) {
