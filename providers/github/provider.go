@@ -10,61 +10,140 @@ import (
 
 	"github.com/ezeoleaf/larry/cache"
 	"github.com/ezeoleaf/larry/config"
-	"github.com/ezeoleaf/larry/providers"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/go-github/v39/github"
 	"golang.org/x/oauth2"
 )
 
-var repositories *github.RepositoriesSearchResult
-var rdb cache.Repository
-var cfg config.Config
-var client githubClient
-var uClient userClient
-var ctx context.Context
-
-// repository represent the repository model
-type githubProvider struct {
-	Provider interface{}
-}
-
-type githubClient interface {
+type searchClient interface {
 	Repositories(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error)
 }
 type userClient interface {
 	Get(ctx context.Context, user string) (*github.User, *github.Response, error)
 }
 
-func NewGithubRepository(config config.Config) providers.IContent {
-	cfg = config
-	ro := &redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+type Provider struct {
+	GithubSearchClient searchClient
+	GithubUserClient   userClient
+	CacheClient        cache.Client
+	Config             config.Config
+}
+
+func NewProvider(apiKey string, cfg config.Config, cacheClient cache.Client) Provider {
+	p := Provider{Config: cfg, CacheClient: cacheClient}
+
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: cfg.AccessCfg.GithubAccessToken},
+	)
+	tc := oauth2.NewClient(context.Background(), ts)
+
+	p.GithubSearchClient = github.NewClient(tc).Search
+	p.GithubUserClient = github.NewClient(tc).Users
+
+	return p
+}
+
+func (p Provider) GetContentToPublish() (string, error) {
+	r := p.getRepo()
+	return p.getContent(r), nil
+}
+
+func (p Provider) getRepositories() ([]*github.Repository, *int, error) {
+	// TODO: Improve
+	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1}}
+
+	repositories, _, e := p.GithubSearchClient.Repositories(context.Background(), p.getQueryString(), &so)
+
+	if e != nil {
+		return nil, nil, e
 	}
 
-	rdb = cache.NewRedisRepository(ro)
-
-	setClient()
-
-	return &githubProvider{}
+	return repositories.Repositories, repositories.Total, nil
 }
 
-func (g *githubProvider) GetContentToPublish() string {
-	r := getRepo()
-	return getContent(r)
+func (p Provider) getRepo() *github.Repository {
+	_, total, err := p.getRepositories()
+	if err != nil {
+		panic(err)
+	}
+
+	var repo *github.Repository
+
+	var found bool
+
+	for !found {
+		rand.Seed(time.Now().UTC().UnixNano())
+		randPos := rand.Intn(*total / 100)
+
+		repo = p.getSpecificRepo(randPos)
+
+		found = repo != nil && p.isRepoNotInRedis(*repo.ID)
+
+		if found && *repo.Archived {
+			found = false
+			log.Print("Repository archived")
+			log.Print(*repo.ID)
+		}
+	}
+
+	return repo
 }
 
-func getContent(repo *github.Repository) string {
+func (p Provider) getQueryString() string {
+	var qs string
+
+	if p.Config.Topic != "" && p.Config.Language != "" {
+		qs = fmt.Sprintf("topic:%s+language:%s", p.Config.Topic, p.Config.Language)
+	} else if p.Config.Topic != "" {
+		qs = fmt.Sprintf("topic:%s", p.Config.Topic)
+	} else {
+		qs = fmt.Sprintf("language:%s", p.Config.Language)
+	}
+
+	return qs
+}
+
+func (p Provider) getSpecificRepo(pos int) *github.Repository {
+	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1, Page: pos}}
+
+	repositories, _, e := p.GithubSearchClient.Repositories(context.Background(), p.getQueryString(), &so)
+
+	if e != nil {
+		return nil
+	}
+
+	return repositories.Repositories[0]
+}
+
+func (p Provider) isRepoNotInRedis(repoID int64) bool {
+	k := p.Config.Topic + "-" + strconv.FormatInt(repoID, 10)
+	_, err := p.CacheClient.Get(k)
+
+	switch {
+	case err == redis.Nil:
+		err := p.CacheClient.Set(k, true, time.Duration(p.Config.Periodicity)*time.Minute)
+		if err != nil {
+			panic(err)
+		}
+
+		return true
+	case err != nil:
+		fmt.Println("Get failed", err)
+	}
+
+	return false
+}
+
+func (p Provider) getContent(repo *github.Repository) string {
 	hashtags, title, stargazers, author := "", "", "", ""
 
-	hs := cfg.GetHashtags()
+	hs := p.Config.GetHashtags()
 
 	if len(hs) == 0 {
-		if cfg.Topic != "" {
-			hashtags += "#" + cfg.Topic + " "
-		} else if cfg.Language != "" {
-			hashtags += "#" + cfg.Language + " "
+		if p.Config.Topic != "" {
+			hashtags += "#" + p.Config.Topic + " "
+		} else if p.Config.Language != "" {
+			hashtags += "#" + p.Config.Language + " "
 		} else if repo.Language != nil {
 			hashtags += "#" + *repo.Language + " "
 		}
@@ -88,7 +167,7 @@ func getContent(repo *github.Repository) string {
 		title += *repo.Description + "\n"
 	}
 
-	if cfg.TweetLanguage {
+	if p.Config.TweetLanguage {
 		if repo.Language != nil {
 			title += "Lang: " + *repo.Language + "\n"
 		}
@@ -98,7 +177,7 @@ func getContent(repo *github.Repository) string {
 		stargazers += "⭐️ " + strconv.Itoa(*repo.StargazersCount) + "\n"
 	}
 
-	owner := getRepoUser(repo.Owner)
+	owner := p.getRepoUser(repo.Owner)
 	if owner != "" {
 		author += "Author: @" + owner + "\n"
 	}
@@ -106,120 +185,16 @@ func getContent(repo *github.Repository) string {
 	return title + stargazers + hashtags + author + *repo.HTMLURL
 }
 
-func getRepoUser(owner *github.User) string {
+func (p Provider) getRepoUser(owner *github.User) string {
 	if owner == nil || owner.Login == nil {
 		return ""
 	}
 
-	gUser, _, err := uClient.Get(ctx, *owner.Login)
+	gUser, _, err := p.GithubUserClient.Get(context.Background(), *owner.Login)
 
 	if err != nil {
 		return ""
 	}
 
 	return gUser.GetTwitterUsername()
-}
-
-func setClient() {
-	ctx = context.Background()
-
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: cfg.AccessCfg.GithubAccessToken},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-
-	client = github.NewClient(tc).Search
-	uClient = github.NewClient(tc).Users
-}
-
-func getRepositories() ([]*github.Repository, int) {
-	if repositories == nil {
-		var e error
-		var qs string
-
-		if cfg.Topic != "" && cfg.Language != "" {
-			qs = fmt.Sprintf("topic:%s+language:%s", cfg.Topic, cfg.Language)
-		} else if cfg.Topic != "" {
-			qs = fmt.Sprintf("topic:%s", cfg.Topic)
-		} else {
-			qs = fmt.Sprintf("language:%s", cfg.Language)
-		}
-
-		so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1}}
-
-		repositories, _, e = client.Repositories(ctx, qs, &so)
-
-		if e != nil {
-			panic(e)
-		}
-	}
-
-	return repositories.Repositories, *repositories.Total
-}
-
-func getSpecificRepo(pos int) *github.Repository {
-	var e error
-	var qs string
-
-	if cfg.Topic != "" && cfg.Language != "" {
-		qs = fmt.Sprintf("topic:%s+language:%s", cfg.Topic, cfg.Language)
-	} else if cfg.Topic != "" {
-		qs = fmt.Sprintf("topic:%s", cfg.Topic)
-	} else {
-		qs = fmt.Sprintf("language:%s", cfg.Language)
-	}
-
-	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1, Page: pos}}
-
-	repositories, _, e = client.Repositories(ctx, qs, &so)
-
-	if e != nil {
-		return nil
-	}
-
-	return repositories.Repositories[0]
-}
-
-func getRepo() *github.Repository {
-	_, total := getRepositories()
-
-	var repo *github.Repository
-
-	var found bool
-
-	for !found {
-		rand.Seed(time.Now().UTC().UnixNano())
-		randPos := rand.Intn(total / 100)
-
-		repo = getSpecificRepo(randPos)
-
-		found = repo != nil && isRepoNotInRedis(repo, cfg.CacheSize*cfg.Periodicity, cfg.Topic)
-
-		if found && *repo.Archived {
-			found = false
-			log.Print("Repository archived")
-			log.Print(*repo.ID)
-		}
-	}
-
-	return repo
-}
-
-func isRepoNotInRedis(r *github.Repository, t int, topic string) bool {
-	k := topic + "-" + strconv.FormatInt(*r.ID, 10)
-	_, err := rdb.Get(k)
-
-	switch {
-	case err == redis.Nil:
-		err := rdb.Set(k, true, time.Duration(t)*time.Minute)
-		if err != nil {
-			panic(err)
-		}
-
-		return true
-	case err != nil:
-		fmt.Println("Get failed", err)
-	}
-
-	return false
 }
