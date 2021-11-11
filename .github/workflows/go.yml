@@ -30,7 +30,7 @@ jobs:
         fi
 
     - name: Build
-      run: go build -v ./cmd/larry/.
+      run: go build -v -o larry-build ./cmd/larry/.
 
     - name: Test
       run: go test -v ./...
