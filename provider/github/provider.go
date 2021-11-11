@@ -132,7 +132,8 @@ func (p Provider) isRepoNotInRedis(repoID int64) bool {
 
 		return true
 	case err != nil:
-		fmt.Println("Get failed", err)
+		log.Println("Get failed", err)
+		return false
 	}
 
 	return false

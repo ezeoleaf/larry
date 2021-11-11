@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -11,10 +10,10 @@ import (
 	"github.com/ezeoleaf/larry/cache"
 	"github.com/ezeoleaf/larry/config"
 	"github.com/ezeoleaf/larry/larry"
-	"github.com/ezeoleaf/larry/providers"
-	"github.com/ezeoleaf/larry/providers/github"
-	"github.com/ezeoleaf/larry/publishers"
-	"github.com/ezeoleaf/larry/publishers/twitter"
+	"github.com/ezeoleaf/larry/provider"
+	"github.com/ezeoleaf/larry/provider/github"
+	"github.com/ezeoleaf/larry/publisher"
+	"github.com/ezeoleaf/larry/publisher/twitter"
 	"github.com/go-redis/redis/v8"
 	"github.com/urfave/cli/v2"
 )
@@ -37,7 +36,6 @@ func main() {
 		Flags:   larry.GetFlags(&cfg),
 		Authors: []*cli.Author{{Name: "Ezequiel Olea figueroa", Email: "ezeoleaf@gmail.com"}},
 		Action: func(c *cli.Context) error {
-			fmt.Println(cfg)
 			prov, err := getProvider(cfg)
 			if err != nil {
 				log.Fatal(err)
@@ -56,7 +54,7 @@ func main() {
 				log.Fatalln("no publishers initialized")
 			}
 
-			s := larry.Service{Provider: prov, Publishers: pubs, Config: cfg}
+			s := larry.Service{Provider: prov, Publishers: pubs}
 
 			for {
 				err := s.Run()
@@ -84,7 +82,7 @@ func getProvider(cfg config.Config) (larry.Provider, error) {
 	}
 
 	cacheClient := cache.NewClient(ro)
-	if cfg.Provider == providers.Github {
+	if cfg.Provider == provider.Github {
 		np := github.NewProvider(githubAccessToken, cfg, cacheClient)
 		return np, nil
 	}
@@ -104,7 +102,7 @@ func getPublishers(cfg config.Config) (map[string]larry.Publisher, error) {
 			continue
 		}
 
-		if v == publishers.Twitter {
+		if v == publisher.Twitter {
 			accessKeys := twitter.AccessKeys{
 				TwitterConsumerKey:    twitterConsumerKey,
 				TwitterConsumerSecret: twitterConsumerSecret,

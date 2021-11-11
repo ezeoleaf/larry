@@ -4,3 +4,4 @@ config.json
 config*.json
 GobotTweet
 bin/
+coverage.out

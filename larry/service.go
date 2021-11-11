@@ -4,14 +4,10 @@ import (
 	"log"
 )
 
-type config interface {
-}
-
 // Service braze service.
 type Service struct {
 	Publishers map[string]Publisher
 	Provider   Provider
-	Config     config
 	Logger     log.Logger
 }
 

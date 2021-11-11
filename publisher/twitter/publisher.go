@@ -1,7 +1,6 @@
 package twitter
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -51,6 +50,6 @@ func (p Publisher) PublishContent(content string) (bool, error) {
 		return false, err
 	}
 
-	fmt.Println("Content Published")
+	log.Println("Content Published")
 	return true, nil
 }

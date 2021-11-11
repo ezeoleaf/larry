@@ -12,19 +12,19 @@ run-dev:
 
 ## test: runs tests
 test:
-	go test ./... --cover
+	go test -v ./... --cover
 
 ## compile: compiles the application for multiple environments and place the output executables under the bin folder
 compile:
 	# 64-Bit
 	# FreeBDS
-	GOOS=freebsd GOARCH=amd64 go build -o bin/larry-freebsd-64 .
+	GOOS=freebsd GOARCH=amd64 go build -o ./bin/larry-freebsd-64 ./cmd/larry/.
 	# MacOS
-	GOOS=darwin GOARCH=amd64 go build -o bin/larry-macos-64 .
+	GOOS=darwin GOARCH=amd64 go build -o ./bin/larry-macos-64 ./cmd/larry/.
 	# Linux
-	GOOS=linux GOARCH=amd64 go build -o bin/larry-linux-64 .
+	GOOS=linux GOARCH=amd64 go build -o ./bin/larry-linux-64 ./cmd/larry/.
 	# Windows
-	GOOS=windows GOARCH=amd64 go build -o bin/larry-windows-64 .
+	GOOS=windows GOARCH=amd64 go build -o ./bin/larry-windows-64 ./cmd/larry/.
 
 ## help: prints this help message
 help:
