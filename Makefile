@@ -1,6 +1,6 @@
 ## build: build the application and place the built app in the bin folder
 build:
-	go build -o bin/larry .
+	go build -o bin/larry ./cmd/larry/.
 
 ## start: start container
 start:
