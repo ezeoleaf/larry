@@ -45,7 +45,10 @@ func NewProvider(apiKey string, cfg config.Config, cacheClient cache.Client) Pro
 }
 
 func (p Provider) GetContentToPublish() (string, error) {
-	r := p.getRepo()
+	r, err := p.getRepo()
+	if err != nil {
+		return "", err
+	}
 	return p.getContent(r), nil
 }
 
@@ -62,10 +65,10 @@ func (p Provider) getRepositories() ([]*github.Repository, *int, error) {
 	return repositories.Repositories, repositories.Total, nil
 }
 
-func (p Provider) getRepo() *github.Repository {
+func (p Provider) getRepo() (*github.Repository, error) {
 	_, total, err := p.getRepositories()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var repo *github.Repository
@@ -87,7 +90,7 @@ func (p Provider) getRepo() *github.Repository {
 		}
 	}
 
-	return repo
+	return repo, nil
 }
 
 func (p Provider) getQueryString() string {
@@ -124,7 +127,7 @@ func (p Provider) isRepoNotInRedis(repoID int64) bool {
 	case err == redis.Nil:
 		err := p.CacheClient.Set(k, true, time.Duration(p.Config.Periodicity)*time.Minute)
 		if err != nil {
-			panic(err)
+			return false
 		}
 
 		return true

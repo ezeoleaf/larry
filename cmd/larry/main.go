@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -33,18 +34,28 @@ func main() {
 	app := &cli.App{
 		Name:    "Larry",
 		Usage:   "Twitter bot that publishes random information from providers",
-		Flags:   larry.GetFlags(cfg),
+		Flags:   larry.GetFlags(&cfg),
 		Authors: []*cli.Author{{Name: "Ezequiel Olea figueroa", Email: "ezeoleaf@gmail.com"}},
 		Action: func(c *cli.Context) error {
+			fmt.Println(cfg)
 			prov, err := getProvider(cfg)
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
+			}
+
+			if prov == nil {
+				log.Fatalf("could not initialize provider for %v", cfg.Provider)
 			}
 
 			pubs, err := getPublishers(cfg)
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
+
+			if len(pubs) == 0 {
+				log.Fatalln("no publishers initialized")
+			}
+
 			s := larry.Service{Provider: prov, Publishers: pubs, Config: cfg}
 
 			for {

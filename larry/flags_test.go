@@ -8,7 +8,7 @@ import (
 
 func TestGetFlags(t *testing.T) {
 	mockConfig := cfg.Config{}
-	flags := GetFlags(mockConfig)
+	flags := GetFlags(&mockConfig)
 	if flags == nil {
 		t.Errorf("Expected flags, got %s", flags)
 	}

@@ -16,7 +16,6 @@ type Service struct {
 }
 
 func (s Service) Run() error {
-
 	content, err := s.Provider.GetContentToPublish()
 	if err != nil {
 		return err

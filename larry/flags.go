@@ -5,7 +5,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func GetFlags(cfg cfg.Config) []cli.Flag {
+func GetFlags(cfg *cfg.Config) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
 			Name:        "topic",
