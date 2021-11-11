@@ -7,48 +7,50 @@ import (
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/ezeoleaf/larry/config"
-	"github.com/ezeoleaf/larry/publishers"
 )
 
-var cfg config.Config
-var client *twitter.Client
-
-// twitterProvider represent the repository model
-type twitterPublisher struct {
-	Publisher interface{}
+type Publisher struct {
+	Client *twitter.Client
+	Config config.Config
 }
 
-func NewTwitterPublisher(config config.Config) publishers.IPublish {
+type AccessKeys struct {
+	TwitterConsumerKey    string
+	TwitterConsumerSecret string
+	TwitterAccessToken    string
+	TwitterAccessSecret   string
+}
+
+func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 	log.Print("New Twitter Publisher")
 
-	cfg = config
+	oauthCfg := oauth1.NewConfig(accessKeys.TwitterConsumerKey, accessKeys.TwitterConsumerSecret)
+	oauthToken := oauth1.NewToken(accessKeys.TwitterAccessToken, accessKeys.TwitterAccessSecret)
 
-	setClient()
+	client := twitter.NewClient(oauthCfg.Client(oauth1.NoContext, oauthToken))
 
-	return &twitterPublisher{}
-}
-
-func setClient() {
-	oauthCfg := oauth1.NewConfig(cfg.AccessCfg.TwitterConsumerKey, cfg.AccessCfg.TwitterConsumerSecret)
-	oauthToken := oauth1.NewToken(cfg.AccessCfg.TwitterAccessToken, cfg.AccessCfg.TwitterAccessSecret)
-
-	client = twitter.NewClient(oauthCfg.Client(oauth1.NoContext, oauthToken))
-}
-
-func (g *twitterPublisher) PublishContent(c string) bool {
-	if cfg.SafeMode {
-		log.Print("Running in Safe Mode")
-		log.Print(c)
-		return true
+	p := Publisher{
+		Config: cfg,
+		Client: client,
 	}
 
-	_, _, err := client.Statuses.Update(c, nil)
+	return p
+}
+
+func (p Publisher) PublishContent(content string) (bool, error) {
+	if p.Config.SafeMode {
+		log.Print("Running in Safe Mode")
+		log.Print(content)
+		return true, nil
+	}
+
+	_, _, err := p.Client.Statuses.Update(content, nil)
 
 	if err != nil {
 		log.Print(err)
-		return false
+		return false, err
 	}
 
 	fmt.Println("Content Published")
-	return true
+	return true, nil
 }

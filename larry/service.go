@@ -1,25 +1,16 @@
 package larry
 
 import (
-	"fmt"
 	"log"
 )
-
-type publisher interface {
-	PublishContent(content string) error
-}
-
-type provider interface {
-	GetContentToPublish() (string, error)
-}
 
 type config interface {
 }
 
 // Service braze service.
 type Service struct {
-	Publishers map[string]publisher
-	Provider   provider
+	Publishers map[string]Publisher
+	Provider   Provider
 	Config     config
 	Logger     log.Logger
 }
@@ -31,7 +22,9 @@ func (s Service) Run() error {
 		return err
 	}
 
-	fmt.Println(content)
+	for _, pub := range s.Publishers {
+		pub.PublishContent(content)
+	}
 
 	return nil
 }

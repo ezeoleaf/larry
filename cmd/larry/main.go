@@ -3,30 +3,28 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 	"syscall"
+	"time"
 
 	"github.com/ezeoleaf/larry/cache"
 	"github.com/ezeoleaf/larry/config"
-	"github.com/ezeoleaf/larry/domain"
 	"github.com/ezeoleaf/larry/larry"
 	"github.com/ezeoleaf/larry/providers"
 	"github.com/ezeoleaf/larry/providers/github"
+	"github.com/ezeoleaf/larry/publishers"
+	"github.com/ezeoleaf/larry/publishers/twitter"
 	"github.com/go-redis/redis/v8"
 	"github.com/urfave/cli/v2"
 )
 
 var (
-	logFatalf = log.Fatalf
-	logFatal  = log.Fatal
-)
-
-func init() {
-	// cfg = config.Config{}
-}
-
-var (
-	githubAccessToken = envString("GITHUB_ACCESS_TOKEN", "")
-	redisAddress      = envString("REDIS_ADDRESS", "localhost:6379")
+	githubAccessToken     = envString("GITHUB_ACCESS_TOKEN", "")
+	redisAddress          = envString("REDIS_ADDRESS", "localhost:6379")
+	twitterConsumerKey    = envString("TWITTER_CONSUMER_KEY", "")
+	twitterConsumerSecret = envString("TWITTER_CONSUMER_SECRET", "")
+	twitterAccessToken    = envString("TWITTER_ACCESS_TOKEN", "")
+	twitterAccessSecret   = envString("TWITTER_ACCESS_SECRET", "")
 )
 
 func main() {
@@ -42,38 +40,32 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			s := larry.Service{Provider: prov}
-			return nil
-			// e := cfg.SetConfigAccess()
-			// if e != nil {
-			// 	panic(e)
-			// }
-			// for {
-			// 	err := s.Run()
-			// 	if err != nil {
-			// 		return err
-			// 	}
-			// 	// provider, pubs := getProviderAndPublishers()
 
-			// 	// content := provider.GetContentToPublish()
+			pubs, err := getPublishers(cfg)
+			if err != nil {
+				panic(err)
+			}
+			s := larry.Service{Provider: prov, Publishers: pubs, Config: cfg}
 
-			// 	// for _, ps := range pubs {
-			// 	// 	ps.PublishContent(content)
-			// 	// }
+			for {
+				err := s.Run()
+				if err != nil {
+					return err
+				}
 
-			// 	time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
-			// }
+				time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
+			}
 		},
 	}
 
 	err := app.Run(os.Args)
 
 	if err != nil {
-		logFatal(err)
+		log.Fatalln(err)
 	}
 }
 
-func getProvider(cfg config.Config) (domain.Client, error) {
+func getProvider(cfg config.Config) (larry.Provider, error) {
 	ro := &redis.Options{
 		Addr:     redisAddress,
 		Password: "", // no password set
@@ -89,25 +81,31 @@ func getProvider(cfg config.Config) (domain.Client, error) {
 	return nil, nil
 }
 
-// func getPublishers(p string) map[string]publishers.IPublish {
-// 	pubs := make(map[string]publishers.IPublish)
+func getPublishers(cfg config.Config) (map[string]larry.Publisher, error) {
+	pubs := make(map[string]larry.Publisher)
 
-// 	ps := strings.Split(p, ",")
+	ps := strings.Split(cfg.Publishers, ",")
 
-// 	for _, v := range ps {
-// 		v = strings.TrimSpace(v)
+	for _, v := range ps {
+		v = strings.ToLower(strings.TrimSpace(v))
 
-// 		if _, ok := pubs[v]; ok {
-// 			continue
-// 		}
+		if _, ok := pubs[v]; ok {
+			continue
+		}
 
-// 		if v == publishers.Twitter {
-// 			pubs[v] = twitter.NewTwitterPublisher(cfg)
-// 		}
-// 	}
+		if v == publishers.Twitter {
+			accessKeys := twitter.AccessKeys{
+				TwitterConsumerKey:    twitterConsumerKey,
+				TwitterConsumerSecret: twitterConsumerSecret,
+				TwitterAccessToken:    twitterAccessToken,
+				TwitterAccessSecret:   twitterAccessSecret,
+			}
+			pubs[v] = twitter.NewPublisher(accessKeys, cfg)
+		}
+	}
 
-// 	return pubs
-// }
+	return pubs, nil
+}
 
 func envString(key string, fallback string) string {
 	if value, ok := syscall.Getenv(key); ok {

@@ -21,13 +21,6 @@ func GetFlags(cfg cfg.Config) []cli.Flag {
 			Usage:       "language for searching repos",
 			Destination: &cfg.Language,
 		},
-		&cli.StringFlag{
-			Name:        "config",
-			Aliases:     []string{"c"},
-			Value:       "./config.json",
-			Usage:       "path to config file",
-			Destination: &cfg.ConfigFile,
-		},
 		&cli.IntFlag{
 			Name:        "time",
 			Aliases:     []string{"x"},

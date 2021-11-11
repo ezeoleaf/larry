@@ -30,10 +30,11 @@ type Provider struct {
 }
 
 func NewProvider(apiKey string, cfg config.Config, cacheClient cache.Client) Provider {
+	log.Print("New Github Provider")
 	p := Provider{Config: cfg, CacheClient: cacheClient}
 
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: cfg.AccessCfg.GithubAccessToken},
+		&oauth2.Token{AccessToken: apiKey},
 	)
 	tc := oauth2.NewClient(context.Background(), ts)
 
