@@ -37,20 +37,20 @@ go run . [options]
 
 ### Configuring the bot
 
-Before running the bot, you must first set it up so it can connect to Github and Twitter API. Create a config.json (or rename the config.example.json) file and fill in the following information:
-```json
-{
-    "github_access_token": "xxxxx",
-    "twitter_consumer_key": "xxxxx",
-    "twitter_consumer_secret": "xxxxx",
-    "twitter_access_token": "xxxxx",
-    "twitter_access_secret": "xxxxx"
-}
+Before running the bot, you must first set it up so it can connect to Github and Twitter API.
+To do this, you will need to setup the following environment variables:
+```
+- GITHUB_ACCESS_TOKEN
+- TWITTER_CONSUMER_KEY
+- TWITTER_CONSUMER_SECRET
+- TWITTER_ACCESS_TOKEN
+- TWITTER_ACCESS_SECRET
 ```
 
 For generating Github access token you can follow this [guide](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
 
 For getting Twitter keys and secrets you can follow this [guide](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide)
+Note: You will to generate both consumer and access pair of keys/tokens and secrets
 
 ### Running the bot
 
@@ -70,13 +70,14 @@ As a response you will see the entire options available
 
 ```
 NAME:
-   larry - Twitter bot that tweets random repositories
+   Larry - Twitter bot that publishes random information from providers
 
 USAGE:
    larry [global options] command [command options] [arguments...]
 
-AUTHOR:
-   Ezequiel Olea figueroa <ezeoleaf@gmail.com>
+AUTHORS:
+   @ezeoleaf <ezeoleaf@gmail.com>
+   @beesaferoot <hikenike6@gmail.com>
 
 COMMANDS:
    help, h  Shows a list of commands or help for one command
@@ -84,7 +85,6 @@ COMMANDS:
 GLOBAL OPTIONS:
    --topic value, -t value         topic for searching repos
    --lang value, -l value          language for searching repos
-   --config value, -c value        path to config file (default: "./config.json")
    --time value, -x value          periodicity of tweet in minutes (default: 15)
    --cache value, -r value         size of cache for no repeating repositories (default: 50)
    --hashtag value, --ht value     list of comma separated hashtags
@@ -97,11 +97,11 @@ GLOBAL OPTIONS:
 
 For running the bot, the command will depend on whatever you want to tweet, but, for tweeting about React repositories every 30 minutes, you could use
 
-&nbsp;&nbsp;`larry --topic react --config "path_to_react_config.json" --time 30`
+&nbsp;&nbsp;`larry --topic react --time 30 --safe-mode`
 
 For running the bot for Rust tweets every 15 minutes
 
-&nbsp;&nbsp;`larry --lang rust --config "path_to_rust_config.json" --time 15`
+&nbsp;&nbsp;`larry --lang rust --time 15`
 
 
 ## Have questions? Need help with the bot?

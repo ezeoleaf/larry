@@ -31,10 +31,12 @@ func main() {
 	cfg := config.Config{}
 
 	app := &cli.App{
-		Name:    "Larry",
-		Usage:   "Twitter bot that publishes random information from providers",
-		Flags:   larry.GetFlags(&cfg),
-		Authors: []*cli.Author{{Name: "Ezequiel Olea figueroa", Email: "ezeoleaf@gmail.com"}},
+		Name:  "Larry",
+		Usage: "Twitter bot that publishes random information from providers",
+		Flags: larry.GetFlags(&cfg),
+		Authors: []*cli.Author{
+			{Name: "@ezeoleaf", Email: "ezeoleaf@gmail.com"},
+			{Name: "@beesaferoot", Email: "hikenike6@gmail.com"}},
 		Action: func(c *cli.Context) error {
 			prov, err := getProvider(cfg)
 			if err != nil {
