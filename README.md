@@ -38,6 +38,7 @@ go run . [options]
 ### Configuring the bot
 
 Before running the bot, you must first set it up so it can connect to Github and Twitter API.
+
 To do this, you will need to setup the following environment variables:
 ```
 - GITHUB_ACCESS_TOKEN
@@ -50,7 +51,8 @@ To do this, you will need to setup the following environment variables:
 For generating Github access token you can follow this [guide](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
 
 For getting Twitter keys and secrets you can follow this [guide](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide)
-Note: You will to generate both consumer and access pair of keys/tokens and secrets
+
+#### Note: You will to generate both consumer and access pair of keys/tokens and secrets
 
 ### Running the bot
 
