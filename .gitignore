@@ -5,3 +5,4 @@ config*.json
 GobotTweet
 bin/
 coverage.out
+.env
