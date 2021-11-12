@@ -51,7 +51,6 @@ func TestRun(t *testing.T) {
 
 			resp := s.Run()
 
-			// If we expected an error, don't check the rest.
 			if tc.returnValue != nil {
 				if resp == nil {
 					t.Errorf("expected resp but got %v instead", resp)

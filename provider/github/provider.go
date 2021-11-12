@@ -81,7 +81,7 @@ func (p Provider) getRepo() (*github.Repository, error) {
 
 		repo = p.getSpecificRepo(randPos)
 
-		found = repo != nil && p.isRepoNotInRedis(*repo.ID)
+		found = repo != nil && p.isRepoNotInCache(*repo.ID)
 
 		if found && *repo.Archived {
 			found = false
@@ -119,7 +119,7 @@ func (p Provider) getSpecificRepo(pos int) *github.Repository {
 	return repositories.Repositories[0]
 }
 
-func (p Provider) isRepoNotInRedis(repoID int64) bool {
+func (p Provider) isRepoNotInCache(repoID int64) bool {
 	k := p.Config.Topic + "-" + strconv.FormatInt(repoID, 10)
 	_, err := p.CacheClient.Get(k)
 
