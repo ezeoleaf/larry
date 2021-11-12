@@ -4,4 +4,5 @@ config.json
 config*.json
 GobotTweet
 bin/
-larry
+coverage.out
+.env

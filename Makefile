@@ -1,6 +1,6 @@
 ## build: build the application and place the built app in the bin folder
 build:
-	go build -o bin/larry .
+	go build -o bin/larry ./cmd/larry/.
 
 ## start: start container
 start:
@@ -8,23 +8,23 @@ start:
 
 ## run-dev: runs the application in dev mode
 run-dev:
-	go run . -t golang -x 1 --safe-mode
+	go run ./cmd/larry/. -t golang -x 1 --safe-mode
 
 ## test: runs tests
-tests:
-	go test ./... --cover
+test:
+	go test -v ./... --cover
 
 ## compile: compiles the application for multiple environments and place the output executables under the bin folder
 compile:
 	# 64-Bit
 	# FreeBDS
-	GOOS=freebsd GOARCH=amd64 go build -o bin/larry-freebsd-64 .
+	GOOS=freebsd GOARCH=amd64 go build -o ./bin/larry-freebsd-64 ./cmd/larry/.
 	# MacOS
-	GOOS=darwin GOARCH=amd64 go build -o bin/larry-macos-64 .
+	GOOS=darwin GOARCH=amd64 go build -o ./bin/larry-macos-64 ./cmd/larry/.
 	# Linux
-	GOOS=linux GOARCH=amd64 go build -o bin/larry-linux-64 .
+	GOOS=linux GOARCH=amd64 go build -o ./bin/larry-linux-64 ./cmd/larry/.
 	# Windows
-	GOOS=windows GOARCH=amd64 go build -o bin/larry-windows-64 .
+	GOOS=windows GOARCH=amd64 go build -o ./bin/larry-windows-64 ./cmd/larry/.
 
 ## help: prints this help message
 help:

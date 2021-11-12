@@ -9,8 +9,8 @@ import (
 
 var ctx = context.Background()
 
-// Repository represent the repositories
-type Repository interface {
+// Client represent the repositories
+type Client interface {
 	Set(key string, value interface{}, exp time.Duration) error
 	Get(key string) (string, error)
 	Del(key string) error
@@ -22,7 +22,7 @@ type repository struct {
 }
 
 // NewRedisRepository will create an object that represent the Repository interface
-func NewRedisRepository(ro *redis.Options) Repository {
+func NewClient(ro *redis.Options) Client {
 	return &repository{redis.NewClient(ro)}
 }
 

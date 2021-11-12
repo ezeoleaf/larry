@@ -13,7 +13,7 @@ func TestGetKey(t *testing.T) {
 		Addr: mr.Addr(),
 	}
 
-	r := NewRedisRepository(ro)
+	r := NewClient(ro)
 
 	_, e := r.Get("key")
 
@@ -36,7 +36,7 @@ func TestSetKey(t *testing.T) {
 		Addr: mr.Addr(),
 	}
 
-	r := NewRedisRepository(ro)
+	r := NewClient(ro)
 
 	r.Set("key", "v", 1)
 
@@ -57,7 +57,7 @@ func TestDetKey(t *testing.T) {
 		Addr: mr.Addr(),
 	}
 
-	r := NewRedisRepository(ro)
+	r := NewClient(ro)
 
 	r.Set("key", "v", 1)
 

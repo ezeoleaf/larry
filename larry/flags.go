@@ -1,11 +1,11 @@
-package main
+package larry
 
 import (
-	"github.com/ezeoleaf/larry/config"
+	cfg "github.com/ezeoleaf/larry/config"
 	"github.com/urfave/cli/v2"
 )
 
-func getFlags(c *config.Config) []cli.Flag {
+func GetFlags(cfg *cfg.Config) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
 			Name:        "topic",
@@ -20,13 +20,6 @@ func getFlags(c *config.Config) []cli.Flag {
 			Value:       "",
 			Usage:       "language for searching repos",
 			Destination: &cfg.Language,
-		},
-		&cli.StringFlag{
-			Name:        "config",
-			Aliases:     []string{"c"},
-			Value:       "./config.json",
-			Usage:       "path to config file",
-			Destination: &cfg.ConfigFile,
 		},
 		&cli.IntFlag{
 			Name:        "time",
