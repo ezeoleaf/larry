@@ -1,5 +1,6 @@
 # Larry 🐦
 [![Go](https://github.com/ezeoleaf/larry/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/ezeoleaf/larry/actions/workflows/go.yml)
+[![Coverage Status](https://coveralls.io/repos/github/ezeoleaf/larry/badge.svg?branch=feature/coverage-in-action)](https://coveralls.io/github/ezeoleaf/larry?branch=feature/coverage-in-action)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ezeoleaf/larry)](https://goreportcard.com/report/github.com/ezeoleaf/larry)
 [![MIT License](https://img.shields.io/github/license/ezeoleaf/larry?style=flat-square)](https://github.com/ezeoleaf/larry/blob/main/LICENSE)
 
