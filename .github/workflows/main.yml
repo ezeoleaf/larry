@@ -22,4 +22,4 @@ jobs:
     - name: Send coverage
       env:
         COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-      run: ~/go/bin/goveralls -coverprofile=covprofile -service=github
+      run: ~/go/bin/goveralls -coverprofile=covprofile -service=travis-pro
