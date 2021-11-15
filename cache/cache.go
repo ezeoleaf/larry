@@ -21,7 +21,7 @@ type repository struct {
 	Client *redis.Client
 }
 
-// NewRedisRepository will create an object that represent the Repository interface
+// NewClient will create an object that represent the Repository interface
 func NewClient(ro *redis.Options) Client {
 	return &repository{redis.NewClient(ro)}
 }

@@ -1,5 +1,6 @@
 package mock
 
+// ProviderMock is a mock Provider
 type ProviderMock struct {
 	GetContentToPublishFn func() (string, error)
 }

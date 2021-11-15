@@ -22,6 +22,7 @@ type userClient interface {
 	Get(ctx context.Context, user string) (*github.User, *github.Response, error)
 }
 
+// Provider represents the provider client
 type Provider struct {
 	GithubSearchClient searchClient
 	GithubUserClient   userClient
@@ -29,6 +30,7 @@ type Provider struct {
 	Config             config.Config
 }
 
+// NewProvider returns a new provider client
 func NewProvider(apiKey string, cfg config.Config, cacheClient cache.Client) Provider {
 	log.Print("New Github Provider")
 	p := Provider{Config: cfg, CacheClient: cacheClient}
@@ -44,6 +46,7 @@ func NewProvider(apiKey string, cfg config.Config, cacheClient cache.Client) Pro
 	return p
 }
 
+// GetContentToPublish returns a string with the content to publish to be used by the publishers
 func (p Provider) GetContentToPublish() (string, error) {
 	r, err := p.getRepo()
 	if err != nil {

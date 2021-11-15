@@ -1,5 +1,6 @@
 package mock
 
+// PublisherMock is a mock Publisher
 type PublisherMock struct {
 	PublishContentFn func(content string) (bool, error)
 }

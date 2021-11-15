@@ -5,6 +5,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// GetFlags returns a list of flags used the application
 func GetFlags(cfg *cfg.Config) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
