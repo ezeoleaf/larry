@@ -8,11 +8,13 @@ import (
 	"github.com/ezeoleaf/larry/config"
 )
 
+// Publisher represents the publisher client
 type Publisher struct {
 	Client *twitter.Client
 	Config config.Config
 }
 
+// AccessKeys represents the keys and tokens needed for comunication with the client
 type AccessKeys struct {
 	TwitterConsumerKey    string
 	TwitterConsumerSecret string
@@ -20,6 +22,7 @@ type AccessKeys struct {
 	TwitterAccessSecret   string
 }
 
+// NewPublisher returns a new publisher
 func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 	log.Print("New Twitter Publisher")
 
@@ -36,6 +39,7 @@ func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 	return p
 }
 
+// PublishContent receives a content to publish and try to publish
 func (p Publisher) PublishContent(content string) (bool, error) {
 	if p.Config.SafeMode {
 		log.Print("Running in Safe Mode")
