@@ -55,23 +55,36 @@ func (p Provider) GetContentToPublish() (string, error) {
 	return p.getContent(r), nil
 }
 
-func (p Provider) getRepositories() ([]*github.Repository, *int, error) {
-	// TODO: Improve
-	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1}}
+func (p Provider) getRepositories(randomChar string) ([]*github.Repository, int, error) {
+	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1}, TextMatch: true}
 
-	repositories, _, e := p.GithubSearchClient.Repositories(context.Background(), p.getQueryString(), &so)
+	_, t, e := p.GithubSearchClient.Repositories(context.Background(), p.getQueryString(randomChar), &so)
 
 	if e != nil {
-		return nil, nil, e
+		return nil, -1, e
 	}
 
-	return repositories.Repositories, repositories.Total, nil
+	return nil, t.LastPage, nil
+}
+
+func (p Provider) getRandomChar() string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	return string(letters[rand.Intn(len(letters))])
 }
 
 func (p Provider) getRepo() (*github.Repository, error) {
-	_, total, err := p.getRepositories()
+	rand.Seed(time.Now().UTC().UnixNano())
+	rc := p.getRandomChar()
+
+	_, total, err := p.getRepositories(rc)
 	if err != nil {
 		return nil, err
+	}
+
+	if total < 1 {
+		log.Printf("char %s returned 0 repositories\n", rc)
+		return nil, fmt.Errorf("char %s returned 0 repositories", rc)
 	}
 
 	var repo *github.Repository
@@ -79,16 +92,15 @@ func (p Provider) getRepo() (*github.Repository, error) {
 	var found bool
 
 	for !found {
-		rand.Seed(time.Now().UTC().UnixNano())
-		randPos := rand.Intn(*total / 100)
+		randPos := rand.Intn(total)
 
-		repo = p.getSpecificRepo(randPos)
+		repo = p.getSpecificRepo(rc, randPos)
 
 		found = repo != nil && p.isRepoNotInCache(*repo.ID)
 
 		if found && *repo.Archived {
 			found = false
-			log.Print("Repository archived")
+			log.Print("repository archived")
 			log.Print(*repo.ID)
 		}
 	}
@@ -96,24 +108,24 @@ func (p Provider) getRepo() (*github.Repository, error) {
 	return repo, nil
 }
 
-func (p Provider) getQueryString() string {
+func (p Provider) getQueryString(randomChar string) string {
 	var qs string
 
 	if p.Config.Topic != "" && p.Config.Language != "" {
-		qs = fmt.Sprintf("topic:%s+language:%s", p.Config.Topic, p.Config.Language)
+		qs = fmt.Sprintf("%s+topic:%s+language:%s", randomChar, p.Config.Topic, p.Config.Language)
 	} else if p.Config.Topic != "" {
-		qs = fmt.Sprintf("topic:%s", p.Config.Topic)
+		qs = fmt.Sprintf("%s+topic:%s", randomChar, p.Config.Topic)
 	} else {
-		qs = fmt.Sprintf("language:%s", p.Config.Language)
+		qs = fmt.Sprintf("%s+language:%s", randomChar, p.Config.Language)
 	}
 
 	return qs
 }
 
-func (p Provider) getSpecificRepo(pos int) *github.Repository {
-	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1, Page: pos}}
+func (p Provider) getSpecificRepo(randomChar string, pos int) *github.Repository {
+	so := github.SearchOptions{ListOptions: github.ListOptions{PerPage: 1, Page: pos}, TextMatch: true}
 
-	repositories, _, e := p.GithubSearchClient.Repositories(context.Background(), p.getQueryString(), &so)
+	repositories, _, e := p.GithubSearchClient.Repositories(context.Background(), p.getQueryString(randomChar), &so)
 
 	if e != nil {
 		return nil
