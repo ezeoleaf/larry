@@ -33,31 +33,31 @@ func TestQueryString(t *testing.T) {
 				Language: "g",
 				Topic:    "x",
 			},
-			returnValue: "topic:x+language:g",
+			returnValue: "a+topic:x+language:g",
 		},
 		{
 			Name: "Test get topic",
 			mockConfig: config.Config{
 				Topic: "x",
 			},
-			returnValue: "topic:x",
+			returnValue: "a+topic:x",
 		},
 		{
 			Name: "Test get language",
 			mockConfig: config.Config{
 				Language: "g",
 			},
-			returnValue: "language:g",
+			returnValue: "a+language:g",
 		},
 		{
 			Name:        "Test get nothing",
 			mockConfig:  config.Config{},
-			returnValue: "language:",
+			returnValue: "a+language:",
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			p := Provider{Config: tc.mockConfig, CacheClient: rdb}
-			resp := p.getQueryString()
+			resp := p.getQueryString("a")
 
 			if tc.returnValue != resp {
 				t.Errorf("expected %v as value, got %v instead", tc.returnValue, resp)
@@ -303,7 +303,8 @@ func TestGetSpecificRepo(t *testing.T) {
 			searchClient: mock.SearchClientMock{
 				RepositoriesFn: func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
 					resp := github.RepositoriesSearchResult{Repositories: []*github.Repository{&repo1, &repo2}}
-					return &resp, nil, nil
+					ghResp := github.Response{LastPage: 1}
+					return &resp, &ghResp, nil
 				},
 			},
 			returnValue: &repo1,
@@ -313,7 +314,8 @@ func TestGetSpecificRepo(t *testing.T) {
 			searchClient: mock.SearchClientMock{
 				RepositoriesFn: func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
 					resp := github.RepositoriesSearchResult{Repositories: []*github.Repository{&repo2}}
-					return &resp, nil, nil
+					ghResp := github.Response{LastPage: 1}
+					return &resp, &ghResp, nil
 				},
 			},
 			returnValue: &repo2,
@@ -321,7 +323,7 @@ func TestGetSpecificRepo(t *testing.T) {
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			p := Provider{GithubSearchClient: tc.searchClient}
-			resp := p.getSpecificRepo(1)
+			resp := p.getSpecificRepo("a", 1)
 
 			if tc.returnValue == nil && resp != nil {
 				t.Errorf("expected no value, got %v instead", resp)
@@ -361,6 +363,17 @@ func TestGetRepo(t *testing.T) {
 			shouldError: true,
 		},
 		{
+			Name: "Test get no error but no repos in search",
+			searchClient: mock.SearchClientMock{
+				RepositoriesFn: func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
+					ghResp := github.Response{LastPage: 0}
+					return nil, &ghResp, nil
+				},
+			},
+			returnValue: nil,
+			shouldError: true,
+		},
+		{
 			Name: "Test get repo not in cache",
 			searchClient: mock.SearchClientMock{
 				RepositoriesFn: func(ctx context.Context, query string, opt *github.SearchOptions) (*github.RepositoriesSearchResult, *github.Response, error) {
@@ -369,7 +382,8 @@ func TestGetRepo(t *testing.T) {
 						Repositories: []*github.Repository{&repo1, &repo2},
 						Total:        &t,
 					}
-					return &resp, nil, nil
+					ghResp := github.Response{LastPage: 1}
+					return &resp, &ghResp, nil
 				},
 			},
 			cacheClient: mock.CacheClientMock{
