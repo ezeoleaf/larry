@@ -30,6 +30,8 @@ type Provider struct {
 	Config             config.Config
 }
 
+const emptyChar = " "
+
 // NewProvider returns a new provider client
 func NewProvider(apiKey string, cfg config.Config, cacheClient cache.Client) Provider {
 	log.Print("New Github Provider")
@@ -68,7 +70,7 @@ func (p Provider) getRepositories(randomChar string) ([]*github.Repository, int,
 }
 
 func (p Provider) getRandomChar() string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
 
 	return string(letters[rand.Intn(len(letters))])
 }
@@ -112,11 +114,15 @@ func (p Provider) getQueryString(randomChar string) string {
 	var qs string
 
 	if p.Config.Topic != "" && p.Config.Language != "" {
-		qs = fmt.Sprintf("%s+topic:%s+language:%s", randomChar, p.Config.Topic, p.Config.Language)
+		qs = fmt.Sprintf("topic:%s+language:%s", p.Config.Topic, p.Config.Language)
 	} else if p.Config.Topic != "" {
-		qs = fmt.Sprintf("%s+topic:%s", randomChar, p.Config.Topic)
+		qs = fmt.Sprintf("topic:%s", p.Config.Topic)
 	} else {
-		qs = fmt.Sprintf("%s+language:%s", randomChar, p.Config.Language)
+		qs = fmt.Sprintf("language:%s", p.Config.Language)
+	}
+
+	if randomChar != emptyChar {
+		qs = fmt.Sprintf("%s+%s", randomChar, qs)
 	}
 
 	return qs
