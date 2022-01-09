@@ -1,4 +1,8 @@
 package publisher
 
-// Twitter is the value of the valid publisher
-const Twitter = "twitter"
+const (
+	// Twitter is the value of the valid publisher
+	Twitter = "twitter"
+	// Github is the value of the valid publisher
+	Github = "github"
+)
