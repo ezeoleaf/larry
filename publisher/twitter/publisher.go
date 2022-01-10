@@ -6,6 +6,7 @@ import (
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/domain"
 )
 
 // Publisher represents the publisher client
@@ -40,14 +41,16 @@ func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 }
 
 // PublishContent receives a content to publish and try to publish
-func (p Publisher) PublishContent(content string) (bool, error) {
+func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
 	if p.Config.SafeMode {
 		log.Print("Running in Safe Mode")
 		log.Print(content)
 		return true, nil
 	}
 
-	_, _, err := p.Client.Statuses.Update(content, nil)
+	contentStr := *content.Title + *content.Subtitle + *content.URL
+
+	_, _, err := p.Client.Statuses.Update(contentStr, nil)
 
 	if err != nil {
 		log.Print(err)

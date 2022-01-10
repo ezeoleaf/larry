@@ -10,6 +10,7 @@ import (
 
 	"github.com/ezeoleaf/larry/cache"
 	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/domain"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/go-github/v39/github"
 	"golang.org/x/oauth2"
@@ -49,10 +50,10 @@ func NewProvider(apiKey string, cfg config.Config, cacheClient cache.Client) Pro
 }
 
 // GetContentToPublish returns a string with the content to publish to be used by the publishers
-func (p Provider) GetContentToPublish() (string, error) {
+func (p Provider) GetContentToPublish() (*domain.Content, error) {
 	r, err := p.getRepo()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	return p.getContent(r), nil
 }
@@ -160,8 +161,12 @@ func (p Provider) isRepoNotInCache(repoID int64) bool {
 	return false
 }
 
-func (p Provider) getContent(repo *github.Repository) string {
+func (p Provider) getContent(repo *github.Repository) *domain.Content {
+	c := domain.Content{}
+
 	hashtags, title, stargazers, author := "", "", "", ""
+
+	title, subtitle := "", ""
 
 	hs := p.Config.GetHashtags()
 
@@ -193,10 +198,8 @@ func (p Provider) getContent(repo *github.Repository) string {
 		title += *repo.Description + "\n"
 	}
 
-	if p.Config.TweetLanguage {
-		if repo.Language != nil {
-			title += "Lang: " + *repo.Language + "\n"
-		}
+	if p.Config.TweetLanguage && repo.Language != nil {
+		subtitle += "Lang: " + *repo.Language + "\n"
 	}
 
 	if repo.StargazersCount != nil {
@@ -208,7 +211,13 @@ func (p Provider) getContent(repo *github.Repository) string {
 		author += "Author: @" + owner + "\n"
 	}
 
-	return title + stargazers + hashtags + author + *repo.HTMLURL
+	subtitle += hashtags + author
+
+	c.Title = &title
+	c.Subtitle = &subtitle
+	c.URL = repo.HTMLURL
+
+	return &c
 }
 
 func (p Provider) getRepoUser(owner *github.User) string {

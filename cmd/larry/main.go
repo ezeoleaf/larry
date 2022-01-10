@@ -21,13 +21,14 @@ import (
 
 var (
 	githubAccessToken      = envString("GITHUB_ACCESS_TOKEN", "")
+	githubPublishRepoOwner = envString("GITHUB_PUBLISH_REPO_OWNER", "")
+	githubPublishRepoName  = envString("GITHUB_PUBLISH_REPO_NAME", "")
+	githubPublishRepoFile  = envString("GITHUB_PUBLISH_REPO_FILE", "README.md")
 	redisAddress           = envString("REDIS_ADDRESS", "localhost:6379")
 	twitterConsumerKey     = envString("TWITTER_CONSUMER_KEY", "")
 	twitterConsumerSecret  = envString("TWITTER_CONSUMER_SECRET", "")
 	twitterAccessToken     = envString("TWITTER_ACCESS_TOKEN", "")
 	twitterAccessSecret    = envString("TWITTER_ACCESS_SECRET", "")
-	githubPublishRepoOwner = envString("GITHUB_PUBLISH_REPO_OWNER", "")
-	githubPublishRepoName  = envString("GITHUB_PUBLISH_REPO_NAME", "")
 )
 
 func main() {
@@ -116,7 +117,7 @@ func getPublishers(cfg config.Config) (map[string]larry.Publisher, error) {
 			}
 			pubs[v] = twitter.NewPublisher(accessKeys, cfg)
 		} else if v == publisher.Github {
-			pubs[v] = githubPub.NewPublisher(githubAccessToken, cfg, githubPublishRepoOwner, githubPublishRepoName)
+			pubs[v] = githubPub.NewPublisher(githubAccessToken, cfg, githubPublishRepoOwner, githubPublishRepoName, githubPublishRepoFile)
 		}
 	}
 
