@@ -75,12 +75,13 @@ func decodeBase64(c string) (string, error) {
 
 // PublishContent receives a content to publish and try to publish in README file
 func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
-	// if p.Config.SafeMode {
-	// 	log.Print("Running in Safe Mode")
-	// 	log.Print(content)
-	// 	fmt.Println(content)
-	// 	return true, nil
-	// }
+	contentToAdd := fmt.Sprintf("[%s](%s) %s: %s", *content.Title, *content.URL, *content.Title, *content.Subtitle)
+
+	if p.Config.SafeMode {
+		log.Print("Running in Safe Mode")
+		log.Print(contentToAdd)
+		return true, nil
+	}
 	ctx := context.Background()
 
 	repositoryContent, err := p.getReadmeContent(ctx)
@@ -93,9 +94,6 @@ func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-
-	t := strings.Split(*content.Title, ":")[0]
-	contentToAdd := fmt.Sprintf("[%s](%s) %s", t, *content.URL, *content.Title)
 
 	if strings.Contains(readmeContent, *content.Title) {
 		return false, fmt.Errorf("repository %s already exists", *content.Title)

@@ -71,7 +71,12 @@ func (p Provider) getRepositories(randomChar string) ([]*github.Repository, int,
 }
 
 func (p Provider) getRandomChar() string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
+	fmt.Println(rand.Intn(10))
+	if rand.Intn(11) > 2 {
+		return emptyChar
+	}
+
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
 	return string(letters[rand.Intn(len(letters))])
 }
@@ -162,13 +167,26 @@ func (p Provider) isRepoNotInCache(repoID int64) bool {
 }
 
 func (p Provider) getContent(repo *github.Repository) *domain.Content {
-	c := domain.Content{}
+	c := domain.Content{Title: repo.Name, Subtitle: repo.Description, URL: repo.HTMLURL, ExtraData: []string{}}
 
-	hashtags, title, stargazers, author := "", "", "", ""
+	if p.Config.TweetLanguage && repo.Language != nil {
+		l := "Lang: " + *repo.Language
+		c.ExtraData = append(c.ExtraData, l)
+	}
 
-	title, subtitle := "", ""
+	if repo.StargazersCount != nil {
+		stargazers := "⭐️ " + strconv.Itoa(*repo.StargazersCount)
+		c.ExtraData = append(c.ExtraData, stargazers)
+	}
+
+	owner := p.getRepoUser(repo.Owner)
+	if owner != "" {
+		author := "Author: @" + owner
+		c.ExtraData = append(c.ExtraData, author)
+	}
 
 	hs := p.Config.GetHashtags()
+	hashtags := ""
 
 	if len(hs) == 0 {
 		if p.Config.Topic != "" {
@@ -178,8 +196,6 @@ func (p Provider) getContent(repo *github.Repository) *domain.Content {
 		} else if repo.Language != nil {
 			hashtags += "#" + *repo.Language + " "
 		}
-
-		hashtags += "#github" + "\n"
 	} else {
 		for _, h := range hs {
 			if hashtags != "" {
@@ -187,35 +203,9 @@ func (p Provider) getContent(repo *github.Repository) *domain.Content {
 			}
 			hashtags += h
 		}
-		hashtags += "\n"
 	}
 
-	if repo.Name != nil {
-		title += *repo.Name + ": "
-	}
-
-	if repo.Description != nil {
-		title += *repo.Description + "\n"
-	}
-
-	if p.Config.TweetLanguage && repo.Language != nil {
-		subtitle += "Lang: " + *repo.Language + "\n"
-	}
-
-	if repo.StargazersCount != nil {
-		stargazers += "⭐️ " + strconv.Itoa(*repo.StargazersCount) + "\n"
-	}
-
-	owner := p.getRepoUser(repo.Owner)
-	if owner != "" {
-		author += "Author: @" + owner + "\n"
-	}
-
-	subtitle += hashtags + author
-
-	c.Title = &title
-	c.Subtitle = &subtitle
-	c.URL = repo.HTMLURL
+	c.ExtraData = append(c.ExtraData, hashtags)
 
 	return &c
 }

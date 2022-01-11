@@ -1,29 +1,40 @@
 package twitter
 
-// func TestNewPublisher(t *testing.T) {
-// 	c := config.Config{SafeMode: true}
-// 	ak := AccessKeys{}
+import (
+	"testing"
 
-// 	p := NewPublisher(ak, c)
+	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/domain"
+)
 
-// 	if p.Client == nil {
-// 		t.Error("expected new publisher, got nil")
-// 	}
-// }
+func TestNewPublisher(t *testing.T) {
+	c := config.Config{SafeMode: true}
+	ak := AccessKeys{}
 
-// func TestPublishContentInSafeMode(t *testing.T) {
-// 	c := config.Config{SafeMode: true}
-// 	ak := AccessKeys{}
+	p := NewPublisher(ak, c)
 
-// 	p := NewPublisher(ak, c)
+	if p.Client == nil {
+		t.Error("expected new publisher, got nil")
+	}
+}
 
-// 	r, err := p.PublishContent("Something to publish")
+func TestPublishContentInSafeMode(t *testing.T) {
+	c := config.Config{SafeMode: true}
+	ak := AccessKeys{}
 
-// 	if !r {
-// 		t.Error("expected content published in Safe Mode. No content published")
-// 	}
+	p := NewPublisher(ak, c)
 
-// 	if err != nil {
-// 		t.Errorf("expected no error got %v", err)
-// 	}
-// }
+	ti, s, u := "ti", "s", "u"
+
+	cont := domain.Content{Title: &ti, Subtitle: &s, URL: &u}
+
+	r, err := p.PublishContent(&cont)
+
+	if !r {
+		t.Error("expected content published in Safe Mode. No content published")
+	}
+
+	if err != nil {
+		t.Errorf("expected no error got %v", err)
+	}
+}

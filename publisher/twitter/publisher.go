@@ -1,7 +1,9 @@
 package twitter
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
@@ -40,17 +42,28 @@ func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 	return p
 }
 
+// prepareTweet convers a domain.Content in a string Tweet
+func (p Publisher) prepareTweet(content *domain.Content) string {
+	tweet := fmt.Sprintf("%s: %s\n%s\n%s",
+		*content.Title,
+		*content.Subtitle,
+		strings.Join(content.ExtraData, "\n"),
+		*content.URL)
+
+	return tweet
+}
+
 // PublishContent receives a content to publish and try to publish
 func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
+	tweet := p.prepareTweet(content)
+
 	if p.Config.SafeMode {
 		log.Print("Running in Safe Mode")
-		log.Print(content)
+		log.Print(tweet)
 		return true, nil
 	}
 
-	contentStr := *content.Title + *content.Subtitle + *content.URL
-
-	_, _, err := p.Client.Statuses.Update(contentStr, nil)
+	_, _, err := p.Client.Statuses.Update(tweet, nil)
 
 	if err != nil {
 		log.Print(err)
