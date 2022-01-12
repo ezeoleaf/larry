@@ -3,7 +3,6 @@ package github
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 	"time"
 
@@ -272,7 +271,6 @@ func TestGetContent(t *testing.T) {
 			p := Provider{GithubUserClient: tc.userClient,
 				Config: tc.mockConfig}
 			resp := p.getContent(tc.repo)
-			fmt.Println(resp)
 			if resp.Title != tc.returnValue.Title {
 				t.Errorf("expected %s as title, got %s instead", *tc.returnValue.Title, *resp.Title)
 			}

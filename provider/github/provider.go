@@ -71,7 +71,6 @@ func (p Provider) getRepositories(randomChar string) ([]*github.Repository, int,
 }
 
 func (p Provider) getRandomChar() string {
-	fmt.Println(rand.Intn(10))
 	if rand.Intn(11) > 2 {
 		return emptyChar
 	}

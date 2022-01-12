@@ -52,12 +52,12 @@ func (p Publisher) getReadmeContent(ctx context.Context) (*github.RepositoryCont
 	fc, _, _, err := p.GithubClient.GetContents(ctx, p.RepositoryData.Owner, p.RepositoryData.Name, p.RepositoryData.FileName, nil)
 
 	if err != nil {
-		fmt.Println(fmt.Errorf("could not fetch repository, got %v", err))
+		log.Print(fmt.Errorf("could not fetch repository, got %v", err))
 		return nil, err
 	}
 
 	if fc == nil || fc.Content == nil {
-		fmt.Println("content of README is empty")
+		log.Print("content of README is empty")
 		return nil, errors.New("no content")
 	}
 
@@ -75,7 +75,14 @@ func decodeBase64(c string) (string, error) {
 
 // PublishContent receives a content to publish and try to publish in README file
 func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
-	contentToAdd := fmt.Sprintf("[%s](%s) %s: %s", *content.Title, *content.URL, *content.Title, *content.Subtitle)
+	if content == nil || (content.Title == nil || content.URL == nil) {
+		return false, errors.New("no content to publish")
+	}
+
+	contentToAdd := fmt.Sprintf("[%s](%s) %s", *content.Title, *content.URL, *content.Title)
+	if content.Subtitle != nil {
+		contentToAdd += ": " + *content.Subtitle
+	}
 
 	if p.Config.SafeMode {
 		log.Print("Running in Safe Mode")
