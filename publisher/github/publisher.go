@@ -106,7 +106,7 @@ func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
 		return false, fmt.Errorf("repository %s already exists", *content.Title)
 	}
 
-	readmeContent += fmt.Sprintf("  %s", contentToAdd)
+	readmeContent += fmt.Sprintf("  \n%s", contentToAdd)
 
 	m := "Adding new repo"
 
