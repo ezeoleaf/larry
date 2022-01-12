@@ -79,7 +79,7 @@ func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
 		return false, errors.New("no content to publish")
 	}
 
-	contentToAdd := fmt.Sprintf("[%s](%s) %s", *content.Title, *content.URL, *content.Title)
+	contentToAdd := fmt.Sprintf("[%s](%s)", *content.Title, *content.URL)
 	if content.Subtitle != nil {
 		contentToAdd += ": " + *content.Subtitle
 	}
