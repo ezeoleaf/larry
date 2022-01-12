@@ -13,14 +13,20 @@ import (
 	"github.com/ezeoleaf/larry/provider"
 	"github.com/ezeoleaf/larry/provider/github"
 	"github.com/ezeoleaf/larry/publisher"
+	githubPub "github.com/ezeoleaf/larry/publisher/github"
 	"github.com/ezeoleaf/larry/publisher/twitter"
 	"github.com/go-redis/redis/v8"
 	"github.com/urfave/cli/v2"
 )
 
 var (
-	githubAccessToken     = envString("GITHUB_ACCESS_TOKEN", "")
-	redisAddress          = envString("REDIS_ADDRESS", "localhost:6379")
+	redisAddress = envString("REDIS_ADDRESS", "localhost:6379")
+
+	githubAccessToken      = envString("GITHUB_ACCESS_TOKEN", "")
+	githubPublishRepoOwner = envString("GITHUB_PUBLISH_REPO_OWNER", "")
+	githubPublishRepoName  = envString("GITHUB_PUBLISH_REPO_NAME", "")
+	githubPublishRepoFile  = envString("GITHUB_PUBLISH_REPO_FILE", "README.md")
+
 	twitterConsumerKey    = envString("TWITTER_CONSUMER_KEY", "")
 	twitterConsumerSecret = envString("TWITTER_CONSUMER_SECRET", "")
 	twitterAccessToken    = envString("TWITTER_ACCESS_TOKEN", "")
@@ -112,6 +118,8 @@ func getPublishers(cfg config.Config) (map[string]larry.Publisher, error) {
 				TwitterAccessSecret:   twitterAccessSecret,
 			}
 			pubs[v] = twitter.NewPublisher(accessKeys, cfg)
+		} else if v == publisher.Github {
+			pubs[v] = githubPub.NewPublisher(githubAccessToken, cfg, githubPublishRepoOwner, githubPublishRepoName, githubPublishRepoFile)
 		}
 	}
 

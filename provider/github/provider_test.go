@@ -9,6 +9,7 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/ezeoleaf/larry/cache"
 	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/domain"
 	"github.com/ezeoleaf/larry/mock"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/go-github/v39/github"
@@ -220,37 +221,37 @@ func TestGetContent(t *testing.T) {
 		username    *string
 		userClient  mock.UserClientMock
 		mockConfig  config.Config
-		returnValue string
+		returnValue *domain.Content
 	}{
 		{
 			Name:        "Test no repo no hashtags",
 			mockConfig:  config.Config{},
 			repo:        &github.Repository{Language: &lang, HTMLURL: &url},
-			returnValue: "#g #github\nurl",
+			returnValue: &domain.Content{URL: &url, ExtraData: []string{"#g "}},
 		},
 		{
 			Name:        "Test no repo with topic config for hashtags",
 			mockConfig:  config.Config{Topic: "t"},
 			repo:        &github.Repository{Language: &lang, HTMLURL: &url},
-			returnValue: "#t #github\nurl",
+			returnValue: &domain.Content{URL: &url, ExtraData: []string{"#t "}},
 		},
 		{
 			Name:        "Test no repo with language config for hashtags",
 			mockConfig:  config.Config{Language: "l"},
 			repo:        &github.Repository{Language: &lang, HTMLURL: &url},
-			returnValue: "#l #github\nurl",
+			returnValue: &domain.Content{URL: &url, ExtraData: []string{"#l "}},
 		},
 		{
 			Name:        "Test no repo with hashtags",
 			mockConfig:  config.Config{Hashtags: "a,b,c"},
 			repo:        &github.Repository{Language: &lang, HTMLURL: &url},
-			returnValue: "#a #b #c\nurl",
+			returnValue: &domain.Content{URL: &url, ExtraData: []string{"#a #b #c"}},
 		},
 		{
 			Name:        "Test with repo data and no hashtags",
 			mockConfig:  config.Config{TweetLanguage: true},
 			repo:        &github.Repository{Name: &name, Description: &desc, Language: &lang, HTMLURL: &url},
-			returnValue: "repo: desc\nLang: g\n#g #github\nurl",
+			returnValue: &domain.Content{Title: &name, Subtitle: &desc, URL: &url, ExtraData: []string{"Lang: g", "#g "}},
 		},
 		{
 			Name:       "Test full with username",
@@ -263,16 +264,29 @@ func TestGetContent(t *testing.T) {
 				},
 			},
 			repo:        &github.Repository{Name: &name, Description: &desc, Language: &lang, HTMLURL: &url, StargazersCount: &count, Owner: &gu},
-			returnValue: "repo: desc\nLang: g\n⭐️ 1\n#g #github\nAuthor: @twitterusername\nurl",
+			returnValue: &domain.Content{Title: &name, Subtitle: &desc, URL: &url, ExtraData: []string{"Lang: g", "⭐️ 1", "Author: @twitterusername", "#g "}},
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
 			p := Provider{GithubUserClient: tc.userClient,
 				Config: tc.mockConfig}
 			resp := p.getContent(tc.repo)
+			if resp.Title != tc.returnValue.Title {
+				t.Errorf("expected %s as title, got %s instead", *tc.returnValue.Title, *resp.Title)
+			}
 
-			if tc.returnValue != resp {
-				t.Errorf("expected %v as value, got %v instead", tc.returnValue, resp)
+			if resp.Subtitle != tc.returnValue.Subtitle {
+				t.Errorf("expected %s as subtitle, got %s instead", *tc.returnValue.Subtitle, *resp.Subtitle)
+			}
+
+			if resp.URL != tc.returnValue.URL {
+				t.Errorf("expected %s as url, got %s instead", *tc.returnValue.URL, *resp.URL)
+			}
+
+			for i, v := range resp.ExtraData {
+				if v != tc.returnValue.ExtraData[i] {
+					t.Errorf("expected %s as extra data in position %v, got %s instead", tc.returnValue.ExtraData[i], i, v)
+				}
 			}
 		})
 	}

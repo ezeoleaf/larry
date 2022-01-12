@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/domain"
 )
 
 func TestNewPublisher(t *testing.T) {
@@ -23,7 +24,11 @@ func TestPublishContentInSafeMode(t *testing.T) {
 
 	p := NewPublisher(ak, c)
 
-	r, err := p.PublishContent("Something to publish")
+	ti, s, u := "ti", "s", "u"
+
+	cont := domain.Content{Title: &ti, Subtitle: &s, URL: &u}
+
+	r, err := p.PublishContent(&cont)
 
 	if !r {
 		t.Error("expected content published in Safe Mode. No content published")

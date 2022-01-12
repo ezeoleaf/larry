@@ -10,6 +10,7 @@ import (
 
 	"github.com/ezeoleaf/larry/cache"
 	"github.com/ezeoleaf/larry/config"
+	"github.com/ezeoleaf/larry/domain"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/go-github/v39/github"
 	"golang.org/x/oauth2"
@@ -49,10 +50,10 @@ func NewProvider(apiKey string, cfg config.Config, cacheClient cache.Client) Pro
 }
 
 // GetContentToPublish returns a string with the content to publish to be used by the publishers
-func (p Provider) GetContentToPublish() (string, error) {
+func (p Provider) GetContentToPublish() (*domain.Content, error) {
 	r, err := p.getRepo()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	return p.getContent(r), nil
 }
@@ -70,7 +71,11 @@ func (p Provider) getRepositories(randomChar string) ([]*github.Repository, int,
 }
 
 func (p Provider) getRandomChar() string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ")
+	if rand.Intn(11) > 2 {
+		return emptyChar
+	}
+
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
 	return string(letters[rand.Intn(len(letters))])
 }
@@ -160,10 +165,27 @@ func (p Provider) isRepoNotInCache(repoID int64) bool {
 	return false
 }
 
-func (p Provider) getContent(repo *github.Repository) string {
-	hashtags, title, stargazers, author := "", "", "", ""
+func (p Provider) getContent(repo *github.Repository) *domain.Content {
+	c := domain.Content{Title: repo.Name, Subtitle: repo.Description, URL: repo.HTMLURL, ExtraData: []string{}}
+
+	if p.Config.TweetLanguage && repo.Language != nil {
+		l := "Lang: " + *repo.Language
+		c.ExtraData = append(c.ExtraData, l)
+	}
+
+	if repo.StargazersCount != nil {
+		stargazers := "⭐️ " + strconv.Itoa(*repo.StargazersCount)
+		c.ExtraData = append(c.ExtraData, stargazers)
+	}
+
+	owner := p.getRepoUser(repo.Owner)
+	if owner != "" {
+		author := "Author: @" + owner
+		c.ExtraData = append(c.ExtraData, author)
+	}
 
 	hs := p.Config.GetHashtags()
+	hashtags := ""
 
 	if len(hs) == 0 {
 		if p.Config.Topic != "" {
@@ -173,8 +195,6 @@ func (p Provider) getContent(repo *github.Repository) string {
 		} else if repo.Language != nil {
 			hashtags += "#" + *repo.Language + " "
 		}
-
-		hashtags += "#github" + "\n"
 	} else {
 		for _, h := range hs {
 			if hashtags != "" {
@@ -182,33 +202,11 @@ func (p Provider) getContent(repo *github.Repository) string {
 			}
 			hashtags += h
 		}
-		hashtags += "\n"
 	}
 
-	if repo.Name != nil {
-		title += *repo.Name + ": "
-	}
+	c.ExtraData = append(c.ExtraData, hashtags)
 
-	if repo.Description != nil {
-		title += *repo.Description + "\n"
-	}
-
-	if p.Config.TweetLanguage {
-		if repo.Language != nil {
-			title += "Lang: " + *repo.Language + "\n"
-		}
-	}
-
-	if repo.StargazersCount != nil {
-		stargazers += "⭐️ " + strconv.Itoa(*repo.StargazersCount) + "\n"
-	}
-
-	owner := p.getRepoUser(repo.Owner)
-	if owner != "" {
-		author += "Author: @" + owner + "\n"
-	}
-
-	return title + stargazers + hashtags + author + *repo.HTMLURL
+	return &c
 }
 
 func (p Provider) getRepoUser(owner *github.User) string {

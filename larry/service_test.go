@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/ezeoleaf/larry/domain"
 	"github.com/ezeoleaf/larry/mock"
 )
 
@@ -17,8 +18,8 @@ func TestRun(t *testing.T) {
 		{
 			Name: "Test error on get content",
 			mockProvider: mock.ProviderMock{
-				GetContentToPublishFn: func() (string, error) {
-					return "", errors.New("some error")
+				GetContentToPublishFn: func() (*domain.Content, error) {
+					return nil, errors.New("some error")
 				},
 			},
 			mockPublishers: map[string]Publisher{
@@ -29,13 +30,14 @@ func TestRun(t *testing.T) {
 		{
 			Name: "Test get content and publish",
 			mockProvider: mock.ProviderMock{
-				GetContentToPublishFn: func() (string, error) {
-					return "content", nil
+				GetContentToPublishFn: func() (*domain.Content, error) {
+					content := domain.Content{}
+					return &content, nil
 				},
 			},
 			mockPublishers: map[string]Publisher{
 				"mock": mock.PublisherMock{
-					PublishContentFn: func(content string) (bool, error) {
+					PublishContentFn: func(content *domain.Content) (bool, error) {
 						return true, nil
 					},
 				},
