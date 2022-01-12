@@ -15,6 +15,20 @@ import (
 	"github.com/google/go-github/v39/github"
 )
 
+func TestNewProvider(t *testing.T) {
+	c := config.Config{SafeMode: true}
+	apiKey := "s"
+
+	p := NewProvider(apiKey, c, nil)
+
+	if p.GithubUserClient == nil {
+		t.Error("expected new github user client, got nil")
+	}
+	if p.GithubSearchClient == nil {
+		t.Error("expected new github search client, got nil")
+	}
+}
+
 func TestQueryString(t *testing.T) {
 	mr, _ := miniredis.Run()
 	ro := &redis.Options{
