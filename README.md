@@ -112,3 +112,5 @@ For running the bot for Rust tweets every 15 minutes
 If you're having issues with or have questions about the bot, [file an issue](https://github.com/ezeoleaf/larry/issues) in this repository so anyone can get back to you.
 
 Or feel free to contact me <ezeoleaf@gmail.com> :)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H47X7QW)
