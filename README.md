@@ -67,6 +67,24 @@ For getting Twitter keys and secrets you can follow this [guide](https://develop
 
 #### Note: You will to generate both consumer and access pair of keys/tokens and secrets
 
+### Available Providers and Publishers
+#### Providers (where the information is coming from)
+
+| Name         | Key    | Environment Variables |
+|--------------|:------:|-----------------------|
+| Github       | github |   GITHUB_ACCESS_TOKEN |
+
+_NOTE: The key is used in the --provider or --pr option_
+
+#### Publishers (where the information is going to be posted)
+
+| Name         | Key     | Environment Variables | Observation |
+|--------------|:-------:|----------------------| -------------|
+| Twitter      | twitter | TWITTER_CONSUMER_KEY<br>TWITTER_CONSUMER_SECRET<br>TWITTER_ACCESS_TOKEN<br>TWITTER_ACCESS_SECRET | |
+| Github       | github  | GITHUB_PUBLISH_REPO_OWNER<br>GITHUB_PUBLISH_REPO_NAME<br>GITHUB_PUBLISH_REPO_FILE | For now it is only going to be posted in the README file and the repository must be **public** |
+
+_NOTE: The key is used in the --publisher or --pub option_
+
 ### Running the bot
 
 To run the bot, you have two ways.
