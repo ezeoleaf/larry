@@ -23,11 +23,18 @@ You can install Larry by cloning the repo and using `go install`
 
 ```bash
 git clone https://github.com/ezeoleaf/larry.git
-cd larry
+cd larry/cmd/larry
 go install
 ```
 
-Or you can run it on the go
+You can also use make for building the project and generating an executable:
+```bash
+git clone https://github.com/ezeoleaf/larry.git
+cd larry
+make build
+```
+
+Or you can just run it on the go
 ```bash
 git clone https://github.com/ezeoleaf/larry.git
 cd larry
