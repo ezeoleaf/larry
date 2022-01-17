@@ -54,6 +54,11 @@ To do this, you will need to setup the following environment variables:
 - TWITTER_CONSUMER_SECRET
 - TWITTER_ACCESS_TOKEN
 - TWITTER_ACCESS_SECRET
+
+If you want the content to be publish in a README file on a repo, you also need these variables
+- GITHUB_PUBLISH_REPO_OWNER (Your Github username)
+- GITHUB_PUBLISH_REPO_NAME (The name of the repo where your README is. It has to be public)
+- GITHUB_PUBLISH_REPO_FILE (By default is README)
 ```
 
 For generating Github access token you can follow this [guide](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
