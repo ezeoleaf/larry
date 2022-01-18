@@ -2,38 +2,40 @@ The Providers and Publishers that are currently Supported:
 
 
 Providers(The Platform From where the information is coming from)
+
 -Github
 
 Publishers(The Platform where the information will be posted)
+
 -Twitter
 -Github
 
 
 Before running the bot , you must configure it , so that it can connect to the current supported platforms
 
-To do that we must setup the environment variables for the respective platforms
+To do that we must setup the environment variables for the respective platforms:
 ----------------------------------------------------------------------
-Github
+Github 
+Key=github
 ----------------------------------------------------------------------
 - GITHUB_ACCESS_TOKEN
 
 NOTE:-
-If you want the content to be publish in a README file on a repo, you also need these variables
+If you want the content to be published in a README file on a repo, you also need these variables
 - GITHUB_PUBLISH_REPO_OWNER (Your Github username)
 - GITHUB_PUBLISH_REPO_NAME (The name of the repo where your README is. It has to be public)
 - GITHUB_PUBLISH_REPO_FILE (By default is README)
 
-======================================================================
 
 ----------------------------------------------------------------------
 Twitter
+Key=twitter
 ----------------------------------------------------------------------
 - TWITTER_CONSUMER_KEY
 - TWITTER_CONSUMER_SECRET
 - TWITTER_ACCESS_TOKEN
 - TWITTER_ACCESS_SECRET
 
-======================================================================
 
 
 
@@ -42,7 +44,9 @@ Twitter
 
 Guide To Setup The Environment Variables For The Respective Platforms
 
-1.Github
+Github
+
+
 -To generate the github access tokens follow the given steps
 
 1.Verify your email address, if it hasn't been verified yet.
@@ -63,17 +67,12 @@ Guide To Setup The Environment Variables For The Respective Platforms
 
 9.Click Generate token.
 
+For further information click [here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
-For further information click here
 
-If you are not directed to the site , copy paste this link in your web browser
-https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
-=========================================================================
 2.Twitter
--For Getting Twitter Keys And Secrets click here 
+-For Getting Twitter Keys And Secrets click [here](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide) 
 
-If you are not directed to the site , copy paste this link in your web browser
-https://developer.twitter.com/en/docs/twitter-api/getting-started/guide
 
 
 
