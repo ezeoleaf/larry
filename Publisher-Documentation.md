@@ -1,9 +1,17 @@
-The Providers and Publishers that are currently Supported:
+The Providers and Publishers that are currently Supported
+----------------------------------------------------------------------
+
+
+
 
 
 Providers(The Platform From where the information is coming from)
 
 -Github
+
+
+
+
 
 Publishers(The Platform where the information will be posted)
 
@@ -17,8 +25,6 @@ Before running the bot , you must configure it , so that it can connect to the c
 To do that we must setup the environment variables for the respective platforms:
 ----------------------------------------------------------------------
 Github 
-
-Key=github
 ----------------------------------------------------------------------
 - GITHUB_ACCESS_TOKEN
 
@@ -30,9 +36,9 @@ If you want the content to be published in a README file on a repo, you also nee
 
 
 ----------------------------------------------------------------------
+
 Twitter
 
-Key=twitter
 ----------------------------------------------------------------------
 - TWITTER_CONSUMER_KEY
 - TWITTER_CONSUMER_SECRET
