@@ -8,6 +8,7 @@ Providers(The Platform From where the information is coming from)
 Publishers(The Platform where the information will be posted)
 
 -Twitter
+
 -Github
 
 
@@ -16,6 +17,7 @@ Before running the bot , you must configure it , so that it can connect to the c
 To do that we must setup the environment variables for the respective platforms:
 ----------------------------------------------------------------------
 Github 
+
 Key=github
 ----------------------------------------------------------------------
 - GITHUB_ACCESS_TOKEN
@@ -29,6 +31,7 @@ If you want the content to be published in a README file on a repo, you also nee
 
 ----------------------------------------------------------------------
 Twitter
+
 Key=twitter
 ----------------------------------------------------------------------
 - TWITTER_CONSUMER_KEY
@@ -45,6 +48,7 @@ Key=twitter
 Guide To Setup The Environment Variables For The Respective Platforms
 
 Github
+----------------------------------------------------------------------
 
 
 -To generate the github access tokens follow the given steps
@@ -71,6 +75,7 @@ For further information click [here](https://docs.github.com/en/authentication/k
 
 
 2.Twitter
+----------------------------------------------------------------------
 -For Getting Twitter Keys And Secrets click [here](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide) 
 
 
