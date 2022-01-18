@@ -35,10 +35,8 @@ If you want the content to be published in a README file on a repo, you also nee
 - GITHUB_PUBLISH_REPO_FILE (By default is README)
 
 
-----------------------------------------------------------------------
 
 Twitter
-
 ----------------------------------------------------------------------
 - TWITTER_CONSUMER_KEY
 - TWITTER_CONSUMER_SECRET
