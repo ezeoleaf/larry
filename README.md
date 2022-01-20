@@ -67,7 +67,9 @@ For getting Twitter keys and secrets you can follow this [guide](https://develop
 
 #### Note: You will to generate both consumer and access pair of keys/tokens and secrets
 
-### Available Providers and Publishers
+### Providers and Publishers
+
+For information on publishers and providers click [here](PublishersAndProviders.md)
 #### Providers (where the information is coming from)
 
 | Name         | Key    | Environment Variables |
