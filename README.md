@@ -69,7 +69,7 @@ For getting Twitter keys and secrets you can follow this [guide](https://develop
 
 ### Available Providers and Publishers
 
-For information on publishers and providers click (here)[https://github.com/Kannav02/larry/blob/kannav/Publisher-Documentation.md]
+For information on publishers and providers click [here](Publisher-Documentation.md)
 #### Providers (where the information is coming from)
 
 | Name         | Key    | Environment Variables |
