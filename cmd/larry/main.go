@@ -67,9 +67,8 @@ func main() {
 			for {
 				err := s.Run()
 				if err != nil {
-					return err
+					log.Printf("Error in larry.Service.Run(): %v", err)
 				}
-
 				time.Sleep(time.Duration(cfg.Periodicity) * time.Minute)
 			}
 		},
