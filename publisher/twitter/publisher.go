@@ -1,14 +1,15 @@
 package twitter
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
 
 	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oauth1"
 	"github.com/ezeoleaf/larry/config"
 	"github.com/ezeoleaf/larry/domain"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 // Publisher represents the publisher client
@@ -21,18 +22,19 @@ type Publisher struct {
 type AccessKeys struct {
 	TwitterConsumerKey    string
 	TwitterConsumerSecret string
-	TwitterAccessToken    string
-	TwitterAccessSecret   string
 }
 
 // NewPublisher returns a new publisher
 func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 	log.Print("New Twitter Publisher")
 
-	oauthCfg := oauth1.NewConfig(accessKeys.TwitterConsumerKey, accessKeys.TwitterConsumerSecret)
-	oauthToken := oauth1.NewToken(accessKeys.TwitterAccessToken, accessKeys.TwitterAccessSecret)
+	config := &clientcredentials.Config{
+		ClientID:     accessKeys.TwitterConsumerKey,
+		ClientSecret: accessKeys.TwitterConsumerSecret,
+		TokenURL:     "https://api.twitter.com/oauth2/token",
+	}
 
-	client := twitter.NewClient(oauthCfg.Client(oauth1.NoContext, oauthToken))
+	client := twitter.NewClient(config.Client(context.Background()))
 
 	p := Publisher{
 		Config: cfg,
