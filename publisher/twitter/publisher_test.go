@@ -56,6 +56,6 @@ func TestCheckTweetDataInSafeMode(t *testing.T) {
 	resp := p.prepareTweet(cont)
 
 	if len(resp) > TweetLength {
-		t.Errorf("Tweet length is %v, which is greater than %v", len(resp), TweetLength)
+		t.Errorf("tweet length is %v, which is greater than %v", len(resp), TweetLength)
 	}
 }
