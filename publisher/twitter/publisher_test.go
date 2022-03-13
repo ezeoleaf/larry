@@ -38,3 +38,24 @@ func TestPublishContentInSafeMode(t *testing.T) {
 		t.Errorf("expected no error got %v", err)
 	}
 }
+
+func TestCheckTweetDataInSafeMode(t *testing.T) {
+	c := config.Config{SafeMode: true}
+	ak := AccessKeys{}
+
+	p := NewPublisher(ak, c)
+
+	subtitle := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+	subtitle += "Vitae sapien pellentesque habitant morbi tristique senectus et netus et. Nunc sed velit dignissim sodales."
+
+	ti, s, u := "Lorem Ipsum", subtitle, "https://loremipsum.io/generator/?n=3&t=s"
+	extraData := []string{"50k", "Author: @unknown"}
+
+	cont := &domain.Content{Title: &ti, Subtitle: &s, URL: &u, ExtraData: extraData}
+
+	resp := p.prepareTweet(cont)
+
+	if len(resp) > TweetLength {
+		t.Errorf("Tweet length is %v, which is greater than %v", len(resp), TweetLength)
+	}
+}
