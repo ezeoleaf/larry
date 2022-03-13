@@ -47,13 +47,13 @@ func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 
 // prepareTweet converts a domain.Content in a string Tweet
 func (p Publisher) prepareTweet(content *domain.Content) string {
-    checkTweetData(content)
+	checkTweetData(content)
 
 	tweet := fmt.Sprintf("%s: %s\n%s\n%s",
 		*content.Title,
 		*content.Subtitle,
 		strings.Join(content.ExtraData, "\n"),
-		*content.URL) 
+		*content.URL)
 
 	return tweet
 }
@@ -68,7 +68,7 @@ func checkTweetData(content *domain.Content) {
     size := titleLen + subTitleLen + urlLen + extraDataLen + 3  // '3' = extra space in string literal of tweet
 
     if size > TweetLength {
-        truncateValue := subTitleLen - ((size - TweetLength) + 4)   // '4' = space for trailing "..."
+        truncateValue := subTitleLen - ((size - TweetLength) + 5)   // '5' = space for trailing "..."
 
         desiredDesc := *content.Subtitle
         desiredDesc = desiredDesc[:truncateValue]
