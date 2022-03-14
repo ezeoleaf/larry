@@ -42,7 +42,9 @@ func main() {
 		Flags: larry.GetFlags(&cfg),
 		Authors: []*cli.Author{
 			{Name: "@ezeoleaf", Email: "ezeoleaf@gmail.com"},
-			{Name: "@beesaferoot", Email: "hikenike6@gmail.com"}},
+			{Name: "@beesaferoot", Email: "hikenike6@gmail.com"},
+			{Name: "@Shubhcoder"},
+		},
 		Action: func(c *cli.Context) error {
 			prov, err := getProvider(cfg)
 			if err != nil {
