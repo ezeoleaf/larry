@@ -1,6 +1,7 @@
 package twitter
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/ezeoleaf/larry/config"
@@ -45,17 +46,38 @@ func TestCheckTweetDataInSafeMode(t *testing.T) {
 
 	p := NewPublisher(ak, c)
 
-	subtitle := "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-	subtitle += "Vitae sapien pellentesque habitant morbi tristique senectus et netus et. Nunc sed velit dignissim sodales."
-
-	ti, s, u := "Lorem Ipsum", subtitle, "https://loremipsum.io/generator/?n=3&t=s"
+	ti, u := "Lorem Ipsum", "https://loremipsum.io/generator/?n=3&t=s"
 	extraData := []string{"50k", "Author: @unknown"}
 
-	cont := &domain.Content{Title: &ti, Subtitle: &s, URL: &u, ExtraData: extraData}
+	for _, tc := range []struct {
+		Name           string
+		Subtitle       string
+		ExpectedResult string
+	}{
+		{
+			Name:           "Test should return same content",
+			Subtitle:       "t",
+			ExpectedResult: "Lorem Ipsum: t\n50k\nAuthor: @unknown\nhttps://loremipsum.io/generator/?n=3&t=s",
+		},
+		{
+			Name:           "Test should truncate subtitle",
+			Subtitle:       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae sapien pellentesque habitant morbi tristique senectus et netus et. Nunc sed velit dignissim sodales.",
+			ExpectedResult: "Lorem Ipsum: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Vitae sapien pellentesque habitant morbi tristique senectus et netus et. Nunc ...\n50k\nAuthor: @unknown\nhttps://loremipsum.io/generator/?n=3&t=s",
+		},
+	} {
+		t.Run(tc.Name, func(t *testing.T) {
+			cont := &domain.Content{Title: &ti, Subtitle: &tc.Subtitle, URL: &u, ExtraData: extraData}
 
-	resp := p.prepareTweet(cont)
+			resp := p.prepareTweet(cont)
+			fmt.Println(resp)
+			if resp != tc.ExpectedResult {
+				t.Errorf("resp should be %v, got %v", tc.ExpectedResult, resp)
+			}
 
-	if len(resp) > TweetLength {
-		t.Errorf("tweet length is %v, which is greater than %v", len(resp), TweetLength)
+			if len(resp) > TweetLength {
+				t.Errorf("tweet length is %v, which is greater than %v", len(resp), TweetLength)
+			}
+		})
 	}
+
 }
