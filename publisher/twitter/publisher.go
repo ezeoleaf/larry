@@ -25,6 +25,9 @@ type AccessKeys struct {
 	TwitterAccessSecret   string
 }
 
+// current limit of characters in tweet
+const TweetLength int = 280
+
 // NewPublisher returns a new publisher
 func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 	log.Print("New Twitter Publisher")
@@ -42,8 +45,10 @@ func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 	return p
 }
 
-// prepareTweet convers a domain.Content in a string Tweet
+// prepareTweet converts a domain.Content in a string Tweet
 func (p Publisher) prepareTweet(content *domain.Content) string {
+	checkTweetData(content)
+
 	tweet := fmt.Sprintf("%s: %s\n%s\n%s",
 		*content.Title,
 		*content.Subtitle,
@@ -51,6 +56,25 @@ func (p Publisher) prepareTweet(content *domain.Content) string {
 		*content.URL)
 
 	return tweet
+}
+
+// changes description if generated tweet exceeds character limit
+func checkTweetData(content *domain.Content) {
+    titleLen := len(*content.Title)
+    subTitleLen := len(*content.Subtitle)
+    urlLen := len(*content.URL)
+    extraDataLen := len(strings.Join(content.ExtraData, " "))
+
+    size := titleLen + subTitleLen + urlLen + extraDataLen + 3  // '3' = extra space in string literal of tweet
+
+    if size > TweetLength {
+        truncateValue := subTitleLen - ((size - TweetLength) + 5)   // '5' = space for trailing "..."
+
+        desiredDesc := *content.Subtitle
+        desiredDesc = desiredDesc[:truncateValue]
+
+        *content.Subtitle = strings.TrimSpace(desiredDesc) + " ..."
+    }
 }
 
 // PublishContent receives a content to publish and try to publish
@@ -73,3 +97,4 @@ func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
 	log.Println("Content Published")
 	return true, nil
 }
+
