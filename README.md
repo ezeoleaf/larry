@@ -145,4 +145,8 @@ If you're having issues with or have questions about the bot, [file an issue](ht
 
 Or feel free to contact me <ezeoleaf@gmail.com> :)
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ezeoleaf/larry&type=Date)](https://star-history.com/#ezeoleaf/larry)
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H47X7QW)
