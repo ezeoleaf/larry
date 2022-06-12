@@ -1,0 +1,15 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"trace" : "verbose", 
+			"program": "${workspaceFolder}/cmd/larry/",
+			"cwd": "${workspaceFolder}/",
+			"args": ["-t", "golang", "-x", "1", "--safe-mode"]
+		}
+	]
+}

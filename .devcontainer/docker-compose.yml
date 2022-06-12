@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+  larry:
+    build:
+      target: dev
+    image: larry:dev
+    volumes:
+      - ./:/go/src/larry
+    entrypoint: sh -c "while sleep 1000; do :; done"
+    
