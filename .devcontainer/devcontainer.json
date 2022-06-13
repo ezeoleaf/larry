@@ -1,0 +1,19 @@
+{
+	"name": "larry: Go",
+	"dockerComposeFile": ["../docker-compose.yml", "docker-compose.yml"],
+	"service": "larry",
+	"workspaceFolder": "/go/src/larry",
+	"runServices": ["larry"],
+
+	"settings": {
+		"go.toolsManagement.checkForUpdates": "local",
+		"go.useLanguageServer": true,
+		"go.gopath": "/go",
+		"go.goroot": "/usr/local/go"
+	},
+
+	"extensions": [
+		"golang.Go",
+		"eamodio.gitlens"
+	]
+}
