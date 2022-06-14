@@ -6,3 +6,4 @@ GobotTweet
 bin/
 coverage.out
 .env
+larry-build
