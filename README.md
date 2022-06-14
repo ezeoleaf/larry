@@ -3,6 +3,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/ezeoleaf/larry/badge.svg?branch=main)](https://coveralls.io/github/ezeoleaf/larry?branch=main)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ezeoleaf/larry)](https://goreportcard.com/report/github.com/ezeoleaf/larry)
 [![MIT License](https://img.shields.io/github/license/ezeoleaf/larry?style=flat-square)](https://github.com/ezeoleaf/larry/blob/main/LICENSE)
+[![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/ezeoleaf/larry)
 
 Larry is a Golang cli bot that tweets random Github repositories.
 
