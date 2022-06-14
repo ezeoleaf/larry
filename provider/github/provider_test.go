@@ -448,3 +448,61 @@ func TestGetRepo(t *testing.T) {
 		})
 	}
 }
+
+func TestCacheExpiration(t *testing.T) {
+	for _, tc := range []struct {
+		Name        string
+		mockConfig  config.Config
+		cacheClient mock.CacheClientMock
+		returnValue time.Duration
+	}{
+		{
+			Name: "Test success",
+			mockConfig: config.Config{
+				CacheSize:   10,
+				Periodicity: 2,
+			},
+			cacheClient: mock.CacheClientMock{
+				SetFn: func(key string, value interface{}, exp time.Duration) error {
+					return nil
+				},
+			},
+			returnValue: time.Duration(20) * time.Minute,
+		},
+		{
+			Name: "Test negative cache size",
+			mockConfig: config.Config{
+				CacheSize:   -10,
+				Periodicity: 2,
+			},
+			cacheClient: mock.CacheClientMock{
+				SetFn: func(key string, value interface{}, exp time.Duration) error {
+					return nil
+				},
+			},
+			returnValue: time.Duration(0) * time.Minute,
+		},
+		{
+			Name: "Test negative periodicity",
+			mockConfig: config.Config{
+				CacheSize:   10,
+				Periodicity: -2,
+			},
+			cacheClient: mock.CacheClientMock{
+				SetFn: func(key string, value interface{}, exp time.Duration) error {
+					return nil
+				},
+			},
+			returnValue: time.Duration(0) * time.Minute,
+		},
+	} {
+		t.Run(tc.Name, func(t *testing.T) {
+			p := Provider{Config: tc.mockConfig, CacheClient: tc.cacheClient}
+			resp := p.cacheExpirationMinutes()
+
+			if tc.returnValue != resp {
+				t.Errorf("expected %v as value, got %v instead", tc.returnValue, resp)
+			}
+		})
+	}
+}

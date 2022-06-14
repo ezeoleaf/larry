@@ -151,7 +151,7 @@ func (p Provider) isRepoNotInCache(repoID int64) bool {
 
 	switch {
 	case err == redis.Nil:
-		err := p.CacheClient.Set(k, true, time.Duration(p.Config.Periodicity)*time.Minute)
+		err := p.CacheClient.Set(k, true, p.cacheExpirationMinutes())
 		if err != nil {
 			return false
 		}
@@ -163,6 +163,14 @@ func (p Provider) isRepoNotInCache(repoID int64) bool {
 	}
 
 	return false
+}
+
+func (p Provider) cacheExpirationMinutes() time.Duration {
+	expirationMinutes := p.Config.CacheSize * p.Config.Periodicity
+	if expirationMinutes < 0 {
+		expirationMinutes = 0
+	}
+	return time.Duration(expirationMinutes) * time.Minute
 }
 
 func (p Provider) getContent(repo *github.Repository) *domain.Content {
