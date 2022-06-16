@@ -66,7 +66,7 @@ For generating Github access token you can follow this [guide](https://docs.gith
 
 For getting Twitter keys and secrets you can follow this [guide](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide)
 
-#### Note: You will to generate both consumer and access pair of keys/tokens and secrets
+#### Note: You will have to generate both consumer and access pair of keys/tokens and secrets.
 
 ### Providers and Publishers
 
