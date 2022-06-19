@@ -38,12 +38,15 @@ func main() {
 
 	app := &cli.App{
 		Name:  "Larry",
-		Usage: "Twitter bot that publishes random information from providers",
+		Usage: "Bot that publishes information from providers to different publishers",
 		Flags: larry.GetFlags(&cfg),
 		Authors: []*cli.Author{
 			{Name: "@ezeoleaf", Email: "ezeoleaf@gmail.com"},
 			{Name: "@beesaferoot", Email: "hikenike6@gmail.com"},
-			{Name: "@Shubhcoder"},
+			{Name: "@shubhcoder"},
+			{Name: "@kannav02"},
+			{Name: "@siddhant-k-code", Email: "siddhantkhare2694@gmail.com"},
+			{Name: "@savagedev"},
 		},
 		Action: func(c *cli.Context) error {
 			prov, err := getProvider(cfg)
