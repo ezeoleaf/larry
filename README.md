@@ -106,7 +106,7 @@ As a response you will see the entire options available
 
 ```
 NAME:
-   Larry - Twitter bot that publishes random information from providers
+   Larry - Bot that publishes information from providers to different publishers
 
 USAGE:
    larry [global options] command [command options] [arguments...]
@@ -114,6 +114,10 @@ USAGE:
 AUTHORS:
    @ezeoleaf <ezeoleaf@gmail.com>
    @beesaferoot <hikenike6@gmail.com>
+   @shubhcoder
+   @kannav02
+   @siddhant-k-code <siddhantkhare2694@gmail.com>
+   @savagedev
 
 COMMANDS:
    help, h  Shows a list of commands or help for one command
