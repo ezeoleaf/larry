@@ -21,7 +21,7 @@ compile:
 	GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-freebsd-64 ./cmd/larry/.
 	# MacOS
 	GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-macos-64 ./cmd/larry/.
-	Linux
+	# Linux
 	GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-linux-64 ./cmd/larry/.
 	# Windows
 	GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-windows-64 ./cmd/larry/.
