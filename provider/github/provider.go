@@ -105,10 +105,14 @@ func (p Provider) getRepo() (*github.Repository, error) {
 
 		found = repo != nil && p.isRepoNotInCache(*repo.ID)
 
-		if found && *repo.Archived {
-			found = false
-			log.Print("repository archived")
-			log.Print(*repo.ID)
+		if found {
+			if *repo.Archived {
+				found = false
+				log.Printf("repository archived: %d\n", *repo.ID)
+			} else if p.isBlacklisted(*repo.ID) {
+				found = false
+				log.Printf("repository blacklisted: %d\n", *repo.ID)
+			}
 		}
 	}
 
@@ -145,8 +149,16 @@ func (p Provider) getSpecificRepo(randomChar string, pos int) *github.Repository
 	return repositories.Repositories[0]
 }
 
+func cacheKey(cacheKeyPrefix string, repoID int64) string {
+	return cacheKeyPrefix + strconv.FormatInt(repoID, 10)
+}
+
+func cacheKeyBlacklist(cfg config.Config, repoID int64) string {
+	return "blacklist-" + cacheKey(cfg.GetCacheKeyPrefix(), repoID)
+}
+
 func (p Provider) isRepoNotInCache(repoID int64) bool {
-	k := p.Config.Topic + "-" + strconv.FormatInt(repoID, 10)
+	k := cacheKey(p.Config.GetCacheKeyPrefix(), repoID)
 	_, err := p.CacheClient.Get(k)
 
 	switch {
@@ -162,6 +174,14 @@ func (p Provider) isRepoNotInCache(repoID int64) bool {
 		return false
 	}
 
+	return false
+}
+
+func (p Provider) isBlacklisted(repoID int64) bool {
+	k := cacheKeyBlacklist(p.Config, repoID)
+	if _, err := p.CacheClient.Get(k); err != redis.Nil {
+		return true
+	}
 	return false
 }
 

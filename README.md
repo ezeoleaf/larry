@@ -127,6 +127,7 @@ GLOBAL OPTIONS:
    --safe-mode, --sf               bool for safe mode. If safe mode is enabled, no repository is published (default: false)
    --provider value, --pr value    provider where publishable content comes from (default: "github")
    --publisher value, --pub value  list of comma separared publishers (default: "twitter")
+   --blacklist value, --bl value   optional file containing blacklisted repository Ids
    --help, -h                      show help (default: false)
 ```
 
@@ -137,6 +138,23 @@ For running the bot, the command will depend on whatever you want to tweet, but,
 For running the bot for Rust tweets every 15 minutes
 
 &nbsp;&nbsp;`larry --lang rust --time 15`
+
+For running the bot for Golang every 15 minutes and specifying a blacklist file named blacklist.txt
+
+&nbsp;&nbsp;`larry --topic golang --time 15 --blacklist ./blacklist.txt`
+
+
+## Blacklist File
+
+The optional blacklist file consists of numeric GitHub repository IDs to exclude from the publishing process. These IDs can be found on the GitHub repository page source in the meta tag `octolytics-dimension-repository_id`.
+
+An example blacklist file containing GitHub repository IDs. The file can contain comments using the # character, everything on the line after this character is ignored.
+
+```
+# Blacklisted repositories
+123 # description of the respository
+456
+```
 
 
 ## Have questions? Need help with the bot?
