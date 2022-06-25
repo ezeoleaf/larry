@@ -45,31 +45,43 @@ func (p Provider) getContentFromFile(jsonFileName string) (*domain.Content, erro
 }
 
 func (p Provider) getContentFromReader(handle io.Reader) (*domain.Content, error) {
-	decoder := json.NewDecoder(handle)
 
 	size := 1
 	reservoir := make([]domain.Content, size)
 	rand.Seed(time.Now().UnixNano())
 
+	// TODO: test with empty file or empty array
+	decoder := json.NewDecoder(handle)
 	decoder.Token()
 
 	count := 0
 	for decoder.More() {
 		data := new(domain.Content)
-		decoder.Decode(data)
-
-		// check cache/blacklist here for title
-		_, err := p.CacheClient.Get(*data.Title)
-		if err != redis.Nil {
-			continue
-		}
-		if p.isBlacklisted(*data.Title) {
-			continue
+		if err := decoder.Decode(data); err != nil {
+			return nil, err
 		}
 
+		// TODO: test with missing title
+		if data.Title == nil {
+			log.Println("content missing title")
+			continue
+		}
+
+		// check for content in cache/blacklist
+		if p.isCached(*data.Title) {
+			log.Printf("content cached: %s\n", *data.Title)
+			continue
+		} else if p.isBlacklisted(*data.Title) {
+			log.Printf("content blacklisted: %s\n", *data.Title)
+			continue
+		}
+
+		// reservoir sampling technique
 		if count < size {
+			// always fill the first x elements of the slice
 			reservoir[count] = *data
 		} else {
+			// after the first x elements find a random slot in the slice
 			j := rand.Intn(count + 1)
 			if j < size {
 				reservoir[j] = *data
@@ -81,6 +93,7 @@ func (p Provider) getContentFromReader(handle io.Reader) (*domain.Content, error
 	// jsonString, _ := json.Marshal(reservoir)
 	// fmt.Println(string(jsonString))
 
+	// TODO: handle nothing found
 	p.CacheClient.Set(*reservoir[0].Title, true, p.cacheExpirationMinutes())
 
 	return &reservoir[0], nil
@@ -88,6 +101,14 @@ func (p Provider) getContentFromReader(handle io.Reader) (*domain.Content, error
 
 func StringToPointer(in string) *string {
 	return &in
+}
+
+func (p Provider) isCached(title string) bool {
+	_, err := p.CacheClient.Get(title)
+	if err != redis.Nil {
+		return true
+	}
+	return false
 }
 
 // TODO: this is repeated - show be in cache?
