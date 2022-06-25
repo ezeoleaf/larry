@@ -71,5 +71,12 @@ func GetFlags(cfg *cfg.Config) []cli.Flag {
 			Usage:       "list of comma separared publishers",
 			Destination: &cfg.Publishers,
 		},
+		&cli.StringFlag{
+			Name:        "blacklist",
+			Aliases:     []string{"bl"},
+			Value:       "",
+			Usage:       "optional file containing blacklisted repository Ids",
+			Destination: &cfg.BlacklistFile,
+		},
 	}
 }

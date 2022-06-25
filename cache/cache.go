@@ -14,6 +14,7 @@ type Client interface {
 	Set(key string, value interface{}, exp time.Duration) error
 	Get(key string) (string, error)
 	Del(key string) error
+	Scan(key string, action func(context.Context, string) error) error
 }
 
 // repository represent the repository model
@@ -39,4 +40,17 @@ func (r *repository) Get(key string) (string, error) {
 
 func (r *repository) Del(key string) error {
 	return r.Client.Del(ctx, key).Err()
+}
+
+func (r *repository) Scan(key string, action func(context.Context, string) error) error {
+	iter := r.Client.Scan(ctx, 0, key, 0).Iterator()
+	for iter.Next(ctx) {
+		if err := action(ctx, iter.Val()); err != nil {
+			return err
+		}
+	}
+	if err := iter.Err(); err != nil {
+		return err
+	}
+	return nil
 }

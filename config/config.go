@@ -16,6 +16,7 @@ type Config struct {
 	SafeMode      bool
 	Provider      string
 	Publishers    string
+	BlacklistFile string
 }
 
 // GetHashtags return a list of hashtags from a comma separated string
@@ -32,4 +33,15 @@ func (c *Config) GetHashtags() []string {
 	}
 
 	return hs
+}
+
+func (c *Config) GetCacheKeyPrefix() string {
+	prefix := ""
+	if c.Topic != "" {
+		prefix = c.Topic + "-"
+	}
+	if c.Language != "" {
+		prefix = prefix + c.Language + "-"
+	}
+	return prefix
 }
