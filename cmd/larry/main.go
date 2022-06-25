@@ -96,7 +96,9 @@ func getProvider(cfg config.Config) (larry.Provider, error) {
 
 	cacheClient := cache.NewClient(ro)
 	if cfg.Provider == provider.Github {
-		blacklist.Load(cacheClient, cfg.BlacklistFile, cfg.GetCacheKeyPrefix())
+		if err := blacklist.Load(cacheClient, cfg.BlacklistFile, cfg.GetCacheKeyPrefix()); err != nil {
+			return nil, err
+		}
 		np := github.NewProvider(githubAccessToken, cfg, cacheClient)
 		return np, nil
 	}
