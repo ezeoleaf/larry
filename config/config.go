@@ -17,6 +17,8 @@ type Config struct {
 	Provider      string
 	Publishers    string
 	BlacklistFile string
+	LocalFile     string
+	FileFormat    string
 }
 
 // GetHashtags return a list of hashtags from a comma separated string

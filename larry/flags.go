@@ -78,5 +78,12 @@ func GetFlags(cfg *cfg.Config) []cli.Flag {
 			Usage:       "optional file containing blacklisted repository Ids",
 			Destination: &cfg.BlacklistFile,
 		},
+		&cli.StringFlag{
+			Name:        "localfile",
+			Aliases:     []string{"lf"},
+			Value:       "",
+			Usage:       "local file containing content to publish",
+			Destination: &cfg.LocalFile,
+		},
 	}
 }
