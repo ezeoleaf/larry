@@ -123,17 +123,19 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --topic value, -t value         topic for searching repos
-   --lang value, -l value          language for searching repos
-   --time value, -x value          periodicity of tweet in minutes (default: 15)
-   --cache value, -r value         size of cache for no repeating repositories (default: 50)
-   --hashtag value, --ht value     list of comma separated hashtags
-   --tweet-language, --tl          bool for allowing twetting the language of the repo (default: false)
-   --safe-mode, --sf               bool for safe mode. If safe mode is enabled, no repository is published (default: false)
-   --provider value, --pr value    provider where publishable content comes from (default: "github")
-   --publisher value, --pub value  list of comma separared publishers (default: "twitter")
-   --blacklist value, --bl value   optional file containing blacklisted repository Ids
-   --help, -h                      show help (default: false)
+   --topic value, -t value          topic for searching repos
+   --lang value, -l value           language for searching repos
+   --time value, -x value           periodicity of tweet in minutes (default: 15)
+   --cache value, -r value          size of cache for no repeating repositories (default: 50)
+   --hashtag value, --ht value      list of comma separated hashtags
+   --tweet-language, --tl           bool for allowing twetting the language of the repo (default: false)
+   --safe-mode, --sf                bool for safe mode. If safe mode is enabled, no repository is published (default: false)
+   --provider value, --pr value     provider where publishable content comes from (default: "github")
+   --publisher value, --pub value   list of comma separared publishers (default: "twitter")
+   --content-file value, --cf value file containing content to publish
+   --skip-csv-header, --sh          bool to skip CSV file header. If true, then first record of CSV file is skipped (default: false)
+   --blacklist value, --bl value    optional file containing blacklisted repository Ids
+   --help, -h                       show help (default: false)
 ```
 
 For running the bot, the command will depend on whatever you want to tweet, but, for tweeting about React repositories every 30 minutes, you could use
@@ -148,6 +150,50 @@ For running the bot for Golang every 15 minutes and specifying a blacklist file 
 
 &nbsp;&nbsp;`larry --topic golang --time 15 --blacklist ./blacklist.txt`
 
+For running the bot every 60 minutes using the "jsonfile" provider and JSON file for content
+
+&nbsp;&nbsp;`larry --time 60 --provider jsonfile --content-file ./content.json`
+
+For running the bot every 60 minutes using the "csvfile" provider to read CSV file for content and skipping the header record
+
+&nbsp;&nbsp;`larry --time 60 --provider csvfile --content-file ./content.csv --skip-csv-header`
+
+
+## Content Files
+
+Two providers, `jsonfile` and `csvfile`, publish content from files.
+
+### JSON Content File
+
+The `jsonfile` provider publishes content from a JSON file. This file is a text file and consists of an array of objects in the following format. The ExtraData string array can contain any number of elements.
+
+```
+[{
+	"Title": "larry",
+	"Subtitle": "Larry 🐦 is a bot generator that publishes random content from different providers built in Go",
+	"URL": "github.com/ezeoleaf/larry",
+	"ExtraData": ["68", "ezeoleaf", "golang"]
+}]
+```
+
+### CSV Content File
+
+The `csvfile` provider publishes content from a comma separated values (CSV) file. This file is a text file consisting of records with fields containing values delimited by a comma. The fields can be wrapped in double quotes which is useful when the value itself contains a comma. The ExtraData strings start at field 4 and can contain any number of elements. 
+
+The following file has one record with three ExtraData strings.
+
+```
+Title,Subtitle,URL,ExtraString1,"ExtraString2,has comma",ExtraString3
+```
+
+An example CSV file with real data and header record:
+
+```
+Title,Subtitle,URL,Stars,Author,Language
+larry,Larry 🐦 is a bot generator that publishes random content from different providers built in Go,github.com/ezeoleaf/larry,68,ezeoleaf,golang
+```
+
+Note: Every record in the CSV file must have the same number of fields otherwise an error will occur. This means if the records will have a variable number of ExtraData fields, each record having fewer than the maximum ExtraData fields must include empty ExtraData fields to match the maximum.
 
 ## Blacklist File
 

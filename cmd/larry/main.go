@@ -12,7 +12,9 @@ import (
 	"github.com/ezeoleaf/larry/config"
 	"github.com/ezeoleaf/larry/larry"
 	"github.com/ezeoleaf/larry/provider"
+	"github.com/ezeoleaf/larry/provider/csvfile"
 	"github.com/ezeoleaf/larry/provider/github"
+	"github.com/ezeoleaf/larry/provider/jsonfile"
 	"github.com/ezeoleaf/larry/publisher"
 	githubPub "github.com/ezeoleaf/larry/publisher/github"
 	"github.com/ezeoleaf/larry/publisher/twitter"
@@ -102,8 +104,12 @@ func getProvider(cfg config.Config) (larry.Provider, error) {
 	if cfg.Provider == provider.Github {
 		np := github.NewProvider(githubAccessToken, cfg, cacheClient)
 		return np, nil
-	} else if cfg.Provider == provider.Json {
-
+	} else if cfg.Provider == provider.Jsonfile {
+		np := jsonfile.NewProvider(cfg, cacheClient)
+		return np, nil
+	} else if cfg.Provider == provider.Csvfile {
+		np := csvfile.NewProvider(cfg, cacheClient)
+		return np, nil
 	}
 
 	return nil, nil

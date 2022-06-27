@@ -17,8 +17,9 @@ type Config struct {
 	Provider      string
 	Publishers    string
 	BlacklistFile string
-	LocalFile     string
+	ContentFile   string
 	FileFormat    string
+	SkipCsvHeader bool
 }
 
 // GetHashtags return a list of hashtags from a comma separated string

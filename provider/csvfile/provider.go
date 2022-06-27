@@ -1,7 +1,7 @@
-package jsonfile
+package csvfile
 
 import (
-	"encoding/json"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"log"
@@ -21,7 +21,7 @@ type Provider struct {
 }
 
 func NewProvider(cfg config.Config, cacheClient cache.Client) Provider {
-	log.Print("New Jsonfile Provider")
+	log.Print("New Csvfile Provider")
 	p := Provider{Config: cfg, CacheClient: cacheClient}
 	return p
 }
@@ -31,9 +31,9 @@ func (p Provider) GetContentToPublish() (*domain.Content, error) {
 	return p.getContentFromFile(p.Config.ContentFile)
 }
 
-func (p Provider) getContentFromFile(jsonFileName string) (*domain.Content, error) {
-	if jsonFileName != "" {
-		f, err := os.OpenFile(jsonFileName, os.O_RDONLY, os.ModePerm)
+func (p Provider) getContentFromFile(csvFileName string) (*domain.Content, error) {
+	if csvFileName != "" {
+		f, err := os.OpenFile(csvFileName, os.O_RDONLY, os.ModePerm)
 		if err != nil {
 			return nil, err
 		}
@@ -42,62 +42,90 @@ func (p Provider) getContentFromFile(jsonFileName string) (*domain.Content, erro
 		return p.getContentFromReader(f)
 	}
 
-	return nil, fmt.Errorf("No json file specified")
+	return nil, fmt.Errorf("No csv file specified")
 }
 
 func (p Provider) getContentFromReader(handle io.Reader) (*domain.Content, error) {
 
 	size := 1
-	reservoir := domain.Content{}
+	var reservoir []string
 	rand.Seed(time.Now().UnixNano())
 
-	decoder := json.NewDecoder(handle)
-	if _, err := decoder.Token(); err != nil {
-		if err.Error() == "EOF" {
-			return nil, nil
-		}
-		return nil, err
-	}
-
 	count := 0
-	for decoder.More() {
-		data := new(domain.Content)
-		if err := decoder.Decode(data); err != nil {
+	skipHeader := p.Config.SkipCsvHeader
+	csvReader := csv.NewReader(handle)
+	for {
+		rec, err := csvReader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
 			return nil, err
 		}
 
-		if data.Title == nil || *data.Title == "" {
+		// skip header line
+		if skipHeader {
+			skipHeader = false
+			continue
+		}
+
+		if rec[0] == "" {
 			log.Println("content missing title")
 			continue
 		}
 
 		// check for content in cache/blacklist
-		if p.isCached(*data.Title) {
-			log.Printf("content cached: %s\n", *data.Title)
+		if p.isCached(rec[0]) {
+			log.Printf("content cached: %s\n", rec[0])
 			continue
-		} else if p.isBlacklisted(*data.Title) {
-			log.Printf("content blacklisted: %s\n", *data.Title)
+		} else if p.isBlacklisted(rec[0]) {
+			log.Printf("content blacklisted: %s\n", rec[0])
 			continue
 		}
 
 		// reservoir sampling technique
 		if count < size {
-			reservoir = *data
+			reservoir = rec
 		} else {
 			j := rand.Intn(count + 1)
 			if j < size {
-				reservoir = *data
+				reservoir = rec
 			}
 		}
+
 		count++
 	}
 
 	if count > 0 {
-		p.CacheClient.Set(*reservoir.Title, true, p.cacheExpirationMinutes())
-		return &reservoir, nil
+		if content, err := convertCsvToContent(reservoir); err != nil {
+			return nil, err
+		} else {
+			p.CacheClient.Set(*content.Title, true, p.cacheExpirationMinutes())
+			return content, nil
+		}
 	}
 
 	return nil, nil
+}
+
+func convertCsvToContent(rec []string) (*domain.Content, error) {
+	content := domain.Content{ExtraData: []string{}}
+	if len(rec) > 0 {
+		content.Title = StringToPointer(rec[0])
+	}
+	if len(rec) > 1 {
+		content.Subtitle = StringToPointer(rec[1])
+	}
+	if len(rec) > 2 {
+		content.URL = StringToPointer(rec[2])
+	}
+	if len(rec) > 3 {
+		content.ExtraData = make([]string, len(rec)-3)
+		for i := 3; i < len(rec); i++ {
+			content.ExtraData[i-3] = rec[i]
+		}
+	}
+	return &content, nil
 }
 
 func StringToPointer(in string) *string {

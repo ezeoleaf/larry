@@ -47,7 +47,7 @@ func TestBlacklist(t *testing.T) {
 
 			// test loading blacklist
 			blacklistKeyPrefix := "blacklist-golang-"
-			if err := readerLoader(cc, strings.NewReader(tc.BlacklistFileContents), blacklistKeyPrefix); err != nil {
+			if err := LoadFromReader(cc, strings.NewReader(tc.BlacklistFileContents), blacklistKeyPrefix); err != nil {
 				t.Error(err)
 			}
 

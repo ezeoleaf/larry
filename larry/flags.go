@@ -79,11 +79,18 @@ func GetFlags(cfg *cfg.Config) []cli.Flag {
 			Destination: &cfg.BlacklistFile,
 		},
 		&cli.StringFlag{
-			Name:        "localfile",
-			Aliases:     []string{"lf"},
+			Name:        "content-file",
+			Aliases:     []string{"cf"},
 			Value:       "",
-			Usage:       "local file containing content to publish",
-			Destination: &cfg.LocalFile,
+			Usage:       "file containing content to publish",
+			Destination: &cfg.ContentFile,
+		},
+		&cli.BoolFlag{
+			Name:        "skip-csv-header",
+			Aliases:     []string{"sh"},
+			Value:       false,
+			Usage:       "bool to skip CSV file header. If true, then first record of CSV file is skipped",
+			Destination: &cfg.SkipCsvHeader,
 		},
 	}
 }

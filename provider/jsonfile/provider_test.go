@@ -3,12 +3,8 @@ package jsonfile
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"math/rand"
-	"os"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/ezeoleaf/larry/cache"
@@ -17,134 +13,108 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func TestWriteFile(t *testing.T) {
-
-	// content := []domain.Content{
-	// 	{
-	// 		Title:    StringToPointer("title1"),
-	// 		Subtitle: StringToPointer("subtitle1"),
-	// 		URL:      StringToPointer("url1"),
-	// 		ExtraData: []string{
-	// 			"extradata1",
-	// 			"extradata2",
-	// 		},
-	// 	},
-	// 	{
-	// 		Title:    StringToPointer("title2"),
-	// 		Subtitle: StringToPointer("subtitle2"),
-	// 		URL:      StringToPointer("url2"),
-	// 		ExtraData: []string{
-	// 			"extradata3",
-	// 			"extradata4",
-	// 		},
-	// 	},
-	// }
-
-	content := make([]domain.Content, 0)
-	for i := 0; i < 10; i++ {
-		content = append(content, domain.Content{
-			Title:    StringToPointer(fmt.Sprintf("title-%d", i)),
-			Subtitle: StringToPointer(fmt.Sprintf("subtitle-%d", i)),
-			URL:      StringToPointer(fmt.Sprintf("url-%d", i)),
-			ExtraData: []string{
-				fmt.Sprintf("extradata-%d-1", i),
-				fmt.Sprintf("extradata-%d-2", i),
-			},
-		})
-	}
-
-	f, err := os.Create("./temp.json")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	encoder := json.NewEncoder(f)
-	encoder.Encode(content)
-
-	// f.WriteString(string(jsonString))
-}
-
-func TestReadFile(t *testing.T) {
-	f, _ := os.Open("./temp.json")
-	defer f.Close()
-
-	decoder := json.NewDecoder(f)
-
-	size := 1
-	reservoir := make([]domain.Content, size)
-	rand.Seed(time.Now().UnixNano())
-
-	filteredData := make([]domain.Content, 0)
-
-	// Read the array open bracket
-	decoder.Token()
-
-	count := 0
-	for decoder.More() {
-		data := new(domain.Content)
-		decoder.Decode(data)
-
-		// check cache/blacklist here for title
-
-		filteredData = append(filteredData, *data)
-
-		if count < size {
-			reservoir[count] = *data
-		} else {
-			j := rand.Intn(count + 1)
-			if j < size {
-				fmt.Println("j:", j)
-				reservoir[j] = *data
-			}
-		}
-		count++
-	}
-
-	jsonString, _ := json.Marshal(reservoir)
-	fmt.Println(string(jsonString))
-}
-
-func TestGetContentFromFile(t *testing.T) {
-	mr, _ := miniredis.Run()
-	ro := &redis.Options{
-		Addr: mr.Addr(),
-	}
-
-	cfg := config.Config{
-		LocalFile:  "./temp.json",
-		FileFormat: "json",
-	}
-
-	cc := cache.NewClient(ro)
-	p := Provider{Config: cfg, CacheClient: cc}
-	p.getContentFromFile(cfg.LocalFile)
-
-}
-
 func TestGetContentFromReader(t *testing.T) {
-	mr, _ := miniredis.Run()
-	ro := &redis.Options{
-		Addr: mr.Addr(),
-	}
+	for _, tc := range []struct {
+		Name             string
+		CachedItems      []string
+		BlacklistedItems []string
+		ContentFile      string
+		ExpectedContent  *domain.Content
+		ExpectedError    string
+	}{
+		{
+			Name:             "Test success",
+			CachedItems:      []string{"title-1"},
+			BlacklistedItems: []string{"title-2"},
+			ContentFile:      `[{"Title":"title-0","Subtitle":"subtitle-0","URL":"url-0","ExtraData":["extradata-0-1","extradata-0-2"]},{"Title":"title-1","Subtitle":"subtitle-1","URL":"url-1","ExtraData":["extradata-1-1","extradata-1-2"]},{"Title":"title-2","Subtitle":"subtitle-2","URL":"url-2","ExtraData":["extradata-2-1","extradata-2-2"]}]`,
+			ExpectedContent: &domain.Content{
+				Title:     StringToPointer("title-0"),
+				Subtitle:  StringToPointer("subtitle-0"),
+				URL:       StringToPointer("url-0"),
+				ExtraData: []string{"extradata-0-1", "extradata-0-2"},
+			},
+		},
+		{
+			Name:             "Test missing title",
+			CachedItems:      []string{},
+			BlacklistedItems: []string{"title-2"},
+			ContentFile:      `[{"Title":"","Subtitle":"subtitle-0","URL":"url-0","ExtraData":["extradata-0-1","extradata-0-2"]},{"Title":"title-1","Subtitle":"subtitle-1","URL":"url-1","ExtraData":["extradata-1-1","extradata-1-2"]},{"Title":"title-2","Subtitle":"subtitle-2","URL":"url-2","ExtraData":["extradata-2-1","extradata-2-2"]}]`,
+			ExpectedContent: &domain.Content{
+				Title:     StringToPointer("title-1"),
+				Subtitle:  StringToPointer("subtitle-1"),
+				URL:       StringToPointer("url-1"),
+				ExtraData: []string{"extradata-1-1", "extradata-1-2"},
+			},
+		},
+		{
+			Name:             "Test empty array",
+			CachedItems:      []string{"title-1"},
+			BlacklistedItems: []string{"title-2"},
+			ContentFile:      `[]`,
+			ExpectedContent:  nil,
+		},
+		{
+			Name:             "Test empty file",
+			CachedItems:      []string{"title-1"},
+			BlacklistedItems: []string{"title-2"},
+			ContentFile:      ``,
+			ExpectedContent:  nil,
+		},
+		{
+			Name:             "Test malformed file",
+			CachedItems:      []string{},
+			BlacklistedItems: []string{},
+			ContentFile:      `"title-0"`, // CSV file provided instead of JSON
+			ExpectedContent:  nil,
+			ExpectedError:    `parse error on line 1, column 11: extraneous or missing " in quoted-field`,
+		},
+	} {
+		t.Run(tc.Name, func(t *testing.T) {
 
-	cfg := config.Config{
-		LocalFile:  "./temp.json",
-		FileFormat: "json",
-	}
+			mr, _ := miniredis.Run()
+			ro := &redis.Options{
+				Addr: mr.Addr(),
+			}
+			cc := cache.NewClient(ro)
 
-	cc := cache.NewClient(ro)
-	// TODO: load one in cache
-	// TODO: load one in blacklist
+			for _, item := range tc.CachedItems {
+				cc.Set(item, "1", 0)
+			}
+			for _, item := range tc.BlacklistedItems {
+				cc.Set("blacklist-"+item, "1", 0)
+			}
 
-	p := Provider{Config: cfg, CacheClient: cc}
+			cfg := config.Config{}
+			p := Provider{Config: cfg, CacheClient: cc}
 
-	// strings.NewReader(tc.BlacklistFileContents)
-	contentFile := `[{"Title":"title-0","Subtitle":"subtitle-0","URL":"url-0","ExtraData":["extradata-0-1","extradata-0-2"]},{"Title":"title-1","Subtitle":"subtitle-1","URL":"url-1","ExtraData":["extradata-1-1","extradata-1-2"]},{"Title":"title-2","Subtitle":"subtitle-2","URL":"url-2","ExtraData":["extradata-2-1","extradata-2-2"]}]`
-	if content, err := p.getContentFromReader(strings.NewReader(contentFile)); err != nil {
-		fmt.Println(err)
-	} else {
-		jsonString, _ := json.Marshal(content)
-		fmt.Println(string(jsonString))
+			if content, err := p.getContentFromReader(strings.NewReader(tc.ContentFile)); err != nil {
+				if tc.ExpectedError != err.Error() {
+					fmt.Println(err.Error())
+					t.Error(err)
+				}
+			} else {
+				if content == nil && tc.ExpectedContent == nil {
+					// success
+				} else if content == nil && tc.ExpectedContent != nil {
+					t.Errorf("expected %v as value, got nil instead", *tc.ExpectedContent.Title)
+				} else if content != nil && tc.ExpectedContent == nil {
+					t.Errorf("expected nil as value, got %v instead", *content.Title)
+				} else if *content.Title != *tc.ExpectedContent.Title {
+					t.Errorf("expected %v as value, got %v instead", *&tc.ExpectedContent.Title, *content.Title)
+				} else {
+					// compare returned object
+					expected, _ := json.Marshal(tc.ExpectedContent)
+					got, _ := json.Marshal(content)
+					if string(expected) != string(got) {
+						t.Errorf("expected %v as value, got %v instead", string(expected), string(got))
+					}
+
+					// check cache for returned object
+					if _, err := p.CacheClient.Get(*tc.ExpectedContent.Title); err != nil {
+						t.Errorf("expected %v not found in cache", *tc.ExpectedContent.Title)
+					}
+				}
+			}
+		})
 	}
 }
