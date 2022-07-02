@@ -67,13 +67,12 @@ func (p Provider) getContentFromReader(handle io.Reader) (*domain.Content, error
 		}
 
 		if data.Title == nil || *data.Title == "" {
-			log.Println("content missing title")
+			log.Println("content missing title, skipping record")
 			continue
 		}
 
 		// check for content in cache/blacklist
 		if p.isCached(*data.Title) {
-			log.Printf("content cached: %s\n", *data.Title)
 			continue
 		} else if p.isBlacklisted(*data.Title) {
 			log.Printf("content blacklisted: %s\n", *data.Title)
@@ -93,7 +92,8 @@ func (p Provider) getContentFromReader(handle io.Reader) (*domain.Content, error
 	}
 
 	if count > 0 {
-		p.CacheClient.Set(*reservoir.Title, true, p.cacheExpirationMinutes())
+		key := cacheKey(p.Config.GetCacheKeyPrefix(), *reservoir.Title)
+		p.CacheClient.Set(key, true, p.cacheExpirationMinutes())
 		return &reservoir, nil
 	}
 
@@ -105,14 +105,14 @@ func StringToPointer(in string) *string {
 }
 
 func (p Provider) isCached(title string) bool {
-	_, err := p.CacheClient.Get(title)
+	key := cacheKey(p.Config.GetCacheKeyPrefix(), title)
+	_, err := p.CacheClient.Get(key)
 	if err != redis.Nil {
 		return true
 	}
 	return false
 }
 
-// TODO: this is repeated - show be in cache?
 func (p Provider) cacheExpirationMinutes() time.Duration {
 	expirationMinutes := p.Config.CacheSize * p.Config.Periodicity
 	if expirationMinutes < 0 {
@@ -121,10 +121,13 @@ func (p Provider) cacheExpirationMinutes() time.Duration {
 	return time.Duration(expirationMinutes) * time.Minute
 }
 
-// TODO: this is repeated
 func (p Provider) isBlacklisted(title string) bool {
 	if _, err := p.CacheClient.Get("blacklist-" + title); err != redis.Nil {
 		return true
 	}
 	return false
+}
+
+func cacheKey(cacheKeyPrefix string, title string) string {
+	return cacheKeyPrefix + title
 }

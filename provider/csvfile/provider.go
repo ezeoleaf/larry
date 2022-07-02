@@ -70,13 +70,12 @@ func (p Provider) getContentFromReader(handle io.Reader) (*domain.Content, error
 		}
 
 		if rec[0] == "" {
-			log.Println("content missing title")
+			log.Println("content missing title, skipping record")
 			continue
 		}
 
 		// check for content in cache/blacklist
 		if p.isCached(rec[0]) {
-			log.Printf("content cached: %s\n", rec[0])
 			continue
 		} else if p.isBlacklisted(rec[0]) {
 			log.Printf("content blacklisted: %s\n", rec[0])
@@ -100,7 +99,8 @@ func (p Provider) getContentFromReader(handle io.Reader) (*domain.Content, error
 		if content, err := convertCsvToContent(reservoir); err != nil {
 			return nil, err
 		} else {
-			p.CacheClient.Set(*content.Title, true, p.cacheExpirationMinutes())
+			key := cacheKey(p.Config.GetCacheKeyPrefix(), *content.Title)
+			p.CacheClient.Set(key, true, p.cacheExpirationMinutes())
 			return content, nil
 		}
 	}
@@ -120,6 +120,7 @@ func convertCsvToContent(rec []string) (*domain.Content, error) {
 		content.URL = StringToPointer(rec[2])
 	}
 	if len(rec) > 3 {
+		// number of extra data fields is variable for CSV
 		content.ExtraData = make([]string, len(rec)-3)
 		for i := 3; i < len(rec); i++ {
 			content.ExtraData[i-3] = rec[i]
@@ -133,14 +134,14 @@ func StringToPointer(in string) *string {
 }
 
 func (p Provider) isCached(title string) bool {
-	_, err := p.CacheClient.Get(title)
+	key := cacheKey(p.Config.GetCacheKeyPrefix(), title)
+	_, err := p.CacheClient.Get(key)
 	if err != redis.Nil {
 		return true
 	}
 	return false
 }
 
-// TODO: this is repeated - show be in cache?
 func (p Provider) cacheExpirationMinutes() time.Duration {
 	expirationMinutes := p.Config.CacheSize * p.Config.Periodicity
 	if expirationMinutes < 0 {
@@ -149,10 +150,13 @@ func (p Provider) cacheExpirationMinutes() time.Duration {
 	return time.Duration(expirationMinutes) * time.Minute
 }
 
-// TODO: this is repeated
 func (p Provider) isBlacklisted(title string) bool {
 	if _, err := p.CacheClient.Get("blacklist-" + title); err != redis.Nil {
 		return true
 	}
 	return false
+}
+
+func cacheKey(cacheKeyPrefix string, title string) string {
+	return cacheKeyPrefix + title
 }

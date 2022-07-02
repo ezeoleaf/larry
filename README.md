@@ -165,7 +165,7 @@ Two providers, `jsonfile` and `csvfile`, publish content from files.
 
 ### JSON Content File
 
-The `jsonfile` provider publishes content from a JSON file. This file is a text file and consists of an array of objects in the following format. The ExtraData string array can contain any number of elements.
+The `jsonfile` provider publishes random content from a JSON file. This file consists of an array of objects in the following format. ExtraData is an array of strings.
 
 ```
 [{
@@ -178,26 +178,28 @@ The `jsonfile` provider publishes content from a JSON file. This file is a text 
 
 ### CSV Content File
 
-The `csvfile` provider publishes content from a comma separated values (CSV) file. This file is a text file consisting of records with fields containing values delimited by a comma. The fields can be wrapped in double quotes which is useful when the value itself contains a comma. The ExtraData strings start at field 4 and can contain any number of elements. 
+The `csvfile` provider publishes random content from a comma separated values (CSV) file. Each field may or may not be enclosed in double quotes. The ExtraData strings start at field 4 of the record and a record can contain any number of elements. 
 
 The following file has one record with three ExtraData strings.
 
 ```
-Title,Subtitle,URL,ExtraString1,"ExtraString2,has comma",ExtraString3
+The title,The subtitle,URL,ExtraString1,"ExtraString2,has comma",ExtraString3
 ```
 
-An example CSV file with real data and header record:
+An example CSV file with a header record followed by one record:
 
 ```
-Title,Subtitle,URL,Stars,Author,Language
+Title,Subtitle,URL,Stars,Author,Language,ExtraData1,ExtraData2,ExtraData3
 larry,Larry 🐦 is a bot generator that publishes random content from different providers built in Go,github.com/ezeoleaf/larry,68,ezeoleaf,golang
 ```
 
-Note: Every record in the CSV file must have the same number of fields otherwise an error will occur. This means if the records will have a variable number of ExtraData fields, each record having fewer than the maximum ExtraData fields must include empty ExtraData fields to match the maximum.
+Note: Every record in the CSV file, including the header record, must have the same number of fields otherwise an error will occur. This means if the records will have a variable number of ExtraData fields, each record having fewer than the maximum ExtraData fields must include empty ExtraData fields to match the maximum.
 
 ## Blacklist File
 
-The optional blacklist file consists of numeric GitHub repository IDs to exclude from the publishing process. These IDs can be found on the GitHub repository page source in the meta tag `octolytics-dimension-repository_id`.
+### Github Provider
+
+For the `github` provider, the optional blacklist file consists of numeric GitHub repository IDs to exclude from the publishing process. These IDs can be found on the GitHub repository page source in the meta tag `octolytics-dimension-repository_id`.
 
 An example blacklist file containing GitHub repository IDs. The file can contain comments using the # character, everything on the line after this character is ignored.
 
@@ -207,6 +209,9 @@ An example blacklist file containing GitHub repository IDs. The file can contain
 456
 ```
 
+### Jsonfile & Csvfile Providers
+
+For the `jsonfile` and `csvfile` providers, the optional blacklist file consists of titles to exclude from the publishing process.
 
 ## Have questions? Need help with the bot?
 
