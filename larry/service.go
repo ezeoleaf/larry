@@ -18,8 +18,10 @@ func (s Service) Run() error {
 		return err
 	}
 
-	for _, pub := range s.Publishers {
-		pub.PublishContent(content)
+	if content != nil {
+		for _, pub := range s.Publishers {
+			pub.PublishContent(content)
+		}
 	}
 
 	return nil
