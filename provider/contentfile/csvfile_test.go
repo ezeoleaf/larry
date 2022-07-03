@@ -1,4 +1,4 @@
-package csvfile
+package contentfile
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-func TestGetContentFromReader(t *testing.T) {
+func TestGetCsvContentFromReader(t *testing.T) {
 	for _, tc := range []struct {
 		Name             string
 		CachedItems      []string
@@ -159,10 +159,14 @@ title-1,subtitle-1,url-1,extradata-1-1,extradata-1-2
 				cc.Set("blacklist-"+item, "1", 0)
 			}
 
-			cfg := config.Config{SkipCsvHeader: tc.SkipHeader}
-			p := Provider{Config: cfg, CacheClient: cc}
+			cfg := config.Config{SkipCsvHeader: tc.SkipHeader, ContentFile: "./test.csv"}
+			p, err := NewProvider(cfg, cc)
+			if err != nil {
+				fmt.Println(err)
+				t.Error(err)
+			}
 
-			if content, err := p.getContentFromReader(strings.NewReader(tc.ContentFile)); err != nil {
+			if content, err := p.FileReader.getContentFromReader(strings.NewReader(tc.ContentFile), p.skipCachedRecord); err != nil {
 				if tc.ExpectedError != err.Error() {
 					fmt.Println(err)
 					t.Error(err)
@@ -182,11 +186,6 @@ title-1,subtitle-1,url-1,extradata-1-1,extradata-1-2
 					got, _ := json.Marshal(content)
 					if string(expected) != string(got) {
 						t.Errorf("expected %v as value, got %v instead", string(expected), string(got))
-					}
-
-					// check cache for returned object
-					if _, err := p.CacheClient.Get(*tc.ExpectedContent.Title); err != nil {
-						t.Errorf("expected %v not found in cache", *tc.ExpectedContent.Title)
 					}
 				}
 			}

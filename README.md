@@ -131,7 +131,7 @@ GLOBAL OPTIONS:
    --tweet-language, --tl           bool for allowing twetting the language of the repo (default: false)
    --safe-mode, --sf                bool for safe mode. If safe mode is enabled, no repository is published (default: false)
    --provider value, --pr value     provider where publishable content comes from (default: "github")
-   --publisher value, --pub value   list of comma separared publishers (default: "twitter")
+   --publisher value, --pub value   list of comma separated publishers (default: "twitter")
    --content-file value, --cf value file containing content to publish
    --skip-csv-header, --sh          bool to skip CSV file header. If true, then first record of CSV file is skipped (default: false)
    --blacklist value, --bl value    optional file containing blacklisted repository Ids
@@ -150,22 +150,22 @@ For running the bot for Golang every 15 minutes and specifying a blacklist file 
 
 &nbsp;&nbsp;`larry --topic golang --time 15 --blacklist ./blacklist.txt`
 
-For running the bot every 60 minutes using the "jsonfile" provider and JSON file for content
+For running the bot every 60 minutes using the "contentfile" provider and JSON file for content
 
-&nbsp;&nbsp;`larry --time 60 --provider jsonfile --content-file ./content.json`
+&nbsp;&nbsp;`larry --time 60 --provider contentfile --content-file ./content.json`
 
-For running the bot every 60 minutes using the "csvfile" provider to read CSV file for content and skipping the header record
+For running the bot every 60 minutes using the "contentfile" provider to read CSV file for content and skipping the header record
 
-&nbsp;&nbsp;`larry --time 60 --provider csvfile --content-file ./content.csv --skip-csv-header`
+&nbsp;&nbsp;`larry --time 60 --provider contentfile --content-file ./content.csv --skip-csv-header`
 
 
 ## Content Files
 
-Two providers, `jsonfile` and `csvfile`, publish content from files.
+The `contentfile` provider serves content from CSV and JSON files.
 
 ### JSON Content File
 
-The `jsonfile` provider publishes random content from a JSON file. This file consists of an array of objects in the following format. ExtraData is an array of strings.
+When the `contentfile` provider receives a `content-file` filename with a `.json` extension, the provider serves random content from the JSON file. This file consists of an array of objects in the following format. ExtraData is an array of strings.
 
 ```
 [{
@@ -178,7 +178,7 @@ The `jsonfile` provider publishes random content from a JSON file. This file con
 
 ### CSV Content File
 
-The `csvfile` provider publishes random content from a comma separated values (CSV) file. Each field may or may not be enclosed in double quotes. The ExtraData strings start at field 4 of the record and a record can contain any number of elements. 
+When the `contentfile` provider receives a `content-file` filename with a `.csv` extension, the provider serves random content from the CSV file. Each field may or may not be enclosed in double quotes. The ExtraData strings start at field 4 of the record and a record can contain any number of elements. 
 
 The following file has one record with three ExtraData strings.
 
@@ -209,9 +209,9 @@ An example blacklist file containing GitHub repository IDs. The file can contain
 456
 ```
 
-### Jsonfile & Csvfile Providers
+### Contentfile Provider
 
-For the `jsonfile` and `csvfile` providers, the optional blacklist file consists of titles to exclude from the publishing process.
+For the `contentfile` provider, the optional blacklist file consists of content titles to exclude from the publishing process.
 
 ## Have questions? Need help with the bot?
 

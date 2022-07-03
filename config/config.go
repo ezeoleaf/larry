@@ -18,7 +18,6 @@ type Config struct {
 	Publishers    string
 	BlacklistFile string
 	ContentFile   string
-	FileFormat    string
 	SkipCsvHeader bool
 }
 

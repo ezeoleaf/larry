@@ -11,8 +11,8 @@
 			"cwd": "${workspaceFolder}/",
 			"args": ["-t", "golang", "-x", "1", "--safe-mode"]
 			// "args": ["-t", "golang", "-x", "1", "-bl", "./bl.txt", "--safe-mode"]
-			// "args": ["--pr", "csvfile", "-x", "1", "-r", "9", "--cf", "./test.csv", "--safe-mode", "--sh", "--topic", "csv"]
-			// "args": ["--pr", "jsonfile", "-x", "1", "-r", "9", "--cf", "./test.json", "--safe-mode", "--topic", "json"]
+			// "args": ["--pr", "contentfile", "-x", "1", "-r", "9", "--cf", "./test.csv", "--safe-mode", "--sh", "--topic", "csv"]
+			// "args": ["--pr", "contentfile", "-x", "1", "-r", "9", "--cf", "./test.json", "--safe-mode", "--topic", "json"]
 		}
 	]
 }
