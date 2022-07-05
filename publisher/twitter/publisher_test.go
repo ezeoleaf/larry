@@ -4,48 +4,43 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ezeoleaf/larry/config"
+	// "github.com/ezeoleaf/larry/config"
 	"github.com/ezeoleaf/larry/domain"
 )
 
-func TestNewPublisher(t *testing.T) {
-	c := config.Config{SafeMode: true}
-	ak := AccessKeys{}
+// func TestNewPublisher(t *testing.T) {
+// 	c := config.Config{SafeMode: true}
+// 	ak := AccessKeys{"id", "secret"}
+//
+// 	p := NewPublisher(ak, c)
+//
+// 	if p.Client == nil {
+// 		t.Error("expected new publisher, got nil")
+// 	}
+// }
+//
+// func TestPublishContentInSafeMode(t *testing.T) {
+// 	c := config.Config{SafeMode: true}
+// 	ak := AccessKeys{"id", "secret"}
+//
+// 	p := NewPublisher(ak, c)
+//
+// 	ti, s, u := "ti", "s", "u"
+//
+// 	cont := domain.Content{Title: &ti, Subtitle: &s, URL: &u}
+//
+// 	r, err := p.PublishContent(&cont)
+//
+// 	if !r {
+// 		t.Error("expected content published in Safe Mode. No content published")
+// 	}
+//
+// 	if err != nil {
+// 		t.Errorf("expected no error got %v", err)
+// 	}
+// }
 
-	p := NewPublisher(ak, c)
-
-	if p.Client == nil {
-		t.Error("expected new publisher, got nil")
-	}
-}
-
-func TestPublishContentInSafeMode(t *testing.T) {
-	c := config.Config{SafeMode: true}
-	ak := AccessKeys{}
-
-	p := NewPublisher(ak, c)
-
-	ti, s, u := "ti", "s", "u"
-
-	cont := domain.Content{Title: &ti, Subtitle: &s, URL: &u}
-
-	r, err := p.PublishContent(&cont)
-
-	if !r {
-		t.Error("expected content published in Safe Mode. No content published")
-	}
-
-	if err != nil {
-		t.Errorf("expected no error got %v", err)
-	}
-}
-
-func TestCheckTweetDataInSafeMode(t *testing.T) {
-	c := config.Config{SafeMode: true}
-	ak := AccessKeys{}
-
-	p := NewPublisher(ak, c)
-
+func TestCheckTweetData(t *testing.T) {
 	ti, u := "Lorem Ipsum", "https://loremipsum.io/generator/?n=3&t=s"
 	extraData := []string{"50k", "Author: @unknown"}
 
@@ -68,7 +63,8 @@ func TestCheckTweetDataInSafeMode(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			cont := &domain.Content{Title: &ti, Subtitle: &tc.Subtitle, URL: &u, ExtraData: extraData}
 
-			resp := p.prepareTweet(cont)
+			// resp := p.prepareTweet(cont)
+            resp := checkTweetData(cont)
 			fmt.Println(resp)
 			if resp != tc.ExpectedResult {
 				t.Errorf("resp should be %v, got %v", tc.ExpectedResult, resp)
