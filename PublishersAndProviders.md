@@ -71,7 +71,6 @@ To generate the Twitter client id and secret, follow the given steps
 ![add app](./img/add-app.png)
 
 4. Now, click on app's setting and do the following steps:-
-
     1. Under authentication settings, click on setup option.
     ![app setup](./img/app-setup.png)
 
@@ -81,7 +80,7 @@ To generate the Twitter client id and secret, follow the given steps
     3. Set **Type of App** --> "Automated App or bot".
     4. Set **Callback URI** --> "http://localhost:8080/callback".
     5. Set **Website URL** --> "https://ezeoleaf.github.io/larry/".
-    ![oauth settings](./img/oauth-settings.png)
+    ![oauth settings](./img/app-oauth-settings.png)
 
     6. Then click save.
 
