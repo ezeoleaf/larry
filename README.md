@@ -156,6 +156,12 @@ For running the bot every 60 minutes using the "contentfile" provider to read CS
 
 &nbsp;&nbsp;`larry --time 60 --provider contentfile --content-file ./content.csv --skip-csv-header`
 
+## Twitter Authorization
+
+You have to authorize the bot once(which is a one time process). If the bot is not authorized or for the first time you are using it.
+
+The authorization page looks something like this...<br>
+![authorize larry](./img/app-authorize.png)
 
 ## Content Files
 

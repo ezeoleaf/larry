@@ -63,14 +63,14 @@ Twitter
 
 To generate the Twitter client id and secret, follow the given steps
 
-1. Create an developer account, if you don't have any visit this [link](https://developer.twitter.com/en/portal/petition/essential/basic-info). Otherwise follow next step.
+1. Create a developer account, if you don't have any visit this [link](https://developer.twitter.com/en/portal/petition/essential/basic-info). Otherwise follow next step.
 
 2. Visit the twitter [developer dashboard](https://developer.twitter.com/en/portal/dashboard).
 
 3. Create or add an app. Give it a name and finally you will be prompted with access-tokens(not needed).
 ![add app](./img/add-app.png)
 
-4. Now, click on app's setting and do the following steps:-
+4. Now, click on app's setting and do the following steps:-<br>
     1. Under authentication settings, click on setup option.
     ![app setup](./img/app-setup.png)
 
@@ -86,4 +86,4 @@ To generate the Twitter client id and secret, follow the given steps
 
 5. Save the generated Client ID and Secret to somewhere.
 
-For getting Twitter keys and secrets click [here](https://developer.twitter.com/en/docs/apps/overview) 
+For more information click [here](https://developer.twitter.com/en/docs/apps/overview).
