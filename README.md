@@ -146,14 +146,6 @@ For running the bot for Golang every 15 minutes and specifying a blacklist file 
 
 &nbsp;&nbsp;`larry --topic golang --time 15 --blacklist ./blacklist.txt`
 
-## Twitter Authorization
-
-If you are using larry for the first time or larry is not authorized.
-
-It will redirect you to authorization page, where you will have to login(if not already) and then authorize the app.
-
-The authorization page will look something like this:-
-![authorize larry](./img/app-authorize.png)
 
 ## Blacklist File
 
