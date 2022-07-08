@@ -96,7 +96,8 @@ func getProvider(cfg config.Config) (larry.Provider, error) {
 	}
 
 	cacheClient := cache.NewClient(ro)
-	if err := blacklist.Load(cacheClient, cfg.BlacklistFile, cfg.GetCacheKeyPrefix()); err != nil {
+	blacklistClient := blacklist.NewClient(cacheClient)
+	if err := blacklistClient.Load(cfg.BlacklistFile, cfg.GetCacheKeyPrefix()); err != nil {
 		return nil, err
 	}
 
