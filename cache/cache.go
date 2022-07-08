@@ -7,8 +7,6 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var ctx = context.Background()
-
 // Client represent the repositories
 type Client interface {
 	Set(key string, value interface{}, exp time.Duration) error
@@ -29,20 +27,21 @@ func NewClient(ro *redis.Options) Client {
 
 // Set attaches the redis repository and set the data
 func (r *repository) Set(key string, value interface{}, exp time.Duration) error {
-	return r.Client.Set(ctx, key, value, exp).Err()
+	return r.Client.Set(context.Background(), key, value, exp).Err()
 }
 
 // Get attaches the redis repository and get the data
 func (r *repository) Get(key string) (string, error) {
-	get := r.Client.Get(ctx, key)
+	get := r.Client.Get(context.Background(), key)
 	return get.Result()
 }
 
 func (r *repository) Del(key string) error {
-	return r.Client.Del(ctx, key).Err()
+	return r.Client.Del(context.Background(), key).Err()
 }
 
 func (r *repository) Scan(key string, action func(context.Context, string) error) error {
+	ctx := context.Background()
 	iter := r.Client.Scan(ctx, 0, key, 0).Iterator()
 	for iter.Next(ctx) {
 		if err := action(ctx, iter.Val()); err != nil {
