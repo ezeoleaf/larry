@@ -33,6 +33,17 @@ func TestLoad(t *testing.T) {
 			BlacklistFileName: "some-name.txt",
 		},
 		{
+			Name: "Should fail do to clear function",
+			CacheClient: mock.CacheClientMock{
+				ScanFn: func(key string, action func(context.Context, string) error) error {
+					return errors.New("some error")
+				},
+			},
+			ShouldError:       true,
+			Key:               "some-key",
+			BlacklistFileName: "some-name.txt",
+		},
+		{
 			Name: "Should fail do to not existing file",
 			CacheClient: mock.CacheClientMock{
 				ScanFn: func(key string, action func(context.Context, string) error) error {
