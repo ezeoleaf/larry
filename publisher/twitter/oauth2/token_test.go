@@ -70,8 +70,8 @@ func TestGetFileContent(t *testing.T) {
 		t.Error(err)
 	}
 
-	if len(lines) != 8 {
-		t.Errorf("found length=%v instead of 8\n", len(lines))
+	if len(lines) != 5 {
+		t.Errorf("found length=%v instead of 5\n", len(lines))
 	}
 }
 
