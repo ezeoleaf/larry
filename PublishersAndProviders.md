@@ -26,10 +26,8 @@ _NOTE: If you want the content to be published in a README file on a repo, you a
 
 Twitter
 ----------------------------------------------------------------------
-- TWITTER_CONSUMER_KEY
-- TWITTER_CONSUMER_SECRET
-- TWITTER_ACCESS_TOKEN
-- TWITTER_ACCESS_SECRET
+- TWITTER_CLIENT_ID
+- TWITTER_CLIENT_SECRET
 
 How to setup the environment variables for the platforms
 ----------------------------------------------------------------------
@@ -62,4 +60,31 @@ For further information click [here](https://docs.github.com/en/authentication/k
 
 Twitter
 ----------------------------------------------------------------------
-For getting Twitter keys and secrets click [here](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide) 
+
+To generate the Twitter client id and secret, follow the given steps
+
+1. Create an developer account, if you don't have any visit this [link](https://developer.twitter.com/en/portal/petition/essential/basic-info). Otherwise follow next step.
+
+2. Visit the twitter [developer dashboard](https://developer.twitter.com/en/portal/dashboard).
+
+3. Create or add an app. Give it a name and finally you will be prompted with access-tokens(not needed).
+![add app](./img/add-app.png)
+
+4. Now, click on app's setting and do the following steps:-
+
+    1. Under authentication settings, click on setup option.
+    ![app setup](./img/app-setup.png)
+
+    2. Then enable OAuth2.0 option.
+    ![enable oauth2.0](./img/app-settings.png)
+
+    3. Set **Type of App** --> "Automated App or bot".
+    4. Set **Callback URI** --> "http://localhost:8080/callback".
+    5. Set **Website URL** --> "https://ezeoleaf.github.io/larry/".
+    ![oauth settings](./img/oauth-settings.png)
+
+    6. Then click save.
+
+5. Save the generated Client ID and Secret to somewhere.
+
+For getting Twitter keys and secrets click [here](https://developer.twitter.com/en/docs/apps/overview) 

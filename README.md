@@ -51,10 +51,8 @@ Before running the bot, you must first set it up so it can connect to Github and
 To do this, you will need to setup the following environment variables:
 ```
 - GITHUB_ACCESS_TOKEN
-- TWITTER_CONSUMER_KEY
-- TWITTER_CONSUMER_SECRET
-- TWITTER_ACCESS_TOKEN
-- TWITTER_ACCESS_SECRET
+- TWITTER_CLIENT_ID
+- TWITTER_CLIENT_SECRET
 
 If you want the content to be publish in a README file on a repo, you also need these variables
 - GITHUB_PUBLISH_REPO_OWNER (Your Github username)
@@ -64,7 +62,7 @@ If you want the content to be publish in a README file on a repo, you also need 
 
 For generating Github access token you can follow this [guide](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
 
-For getting Twitter keys and secrets you can follow this [guide](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide)
+For getting Twitter client id and secret you can follow this [guide](https://developer.twitter.com/en/docs/apps/overview)
 
 #### Note: You will have to generate both consumer and access pair of keys/tokens and secrets.
 
@@ -83,7 +81,7 @@ _NOTE: The key is used in the --provider or --pr option_
 
 | Name         | Key     | Environment Variables | Observation |
 |--------------|:-------:|----------------------| -------------|
-| Twitter      | twitter | TWITTER_CONSUMER_KEY<br>TWITTER_CONSUMER_SECRET<br>TWITTER_ACCESS_TOKEN<br>TWITTER_ACCESS_SECRET | |
+| Twitter      | twitter | TWITTER_CLIENT_ID<br>TWITTER_CLIENT_SECRET | |
 | Github       | github  | GITHUB_PUBLISH_REPO_OWNER<br>GITHUB_PUBLISH_REPO_NAME<br>GITHUB_PUBLISH_REPO_FILE | For now it is only going to be posted in the README file and the repository must be **public** |
 
 _NOTE: The key is used in the --publisher or --pub option_
@@ -148,6 +146,14 @@ For running the bot for Golang every 15 minutes and specifying a blacklist file 
 
 &nbsp;&nbsp;`larry --topic golang --time 15 --blacklist ./blacklist.txt`
 
+## Twitter Authorization
+
+If you are using larry for the first time or larry is not authorized.
+
+It will redirect you to authorization page, where you will have to login(if not already) and then authorize the app.
+
+The authorization page will look something like this:-
+![authorize larry](./img/app-authorize.png)
 
 ## Blacklist File
 
