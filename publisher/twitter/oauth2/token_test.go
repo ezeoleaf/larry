@@ -21,7 +21,7 @@ func TestFileName(t *testing.T) {
 }
 
 func TestStore(t *testing.T) {
-	filename = "./test_files/.env"
+	filename = "./test_files/larry.env"
 
 	err := store("TESTED", "TRUE")
 	if err != nil {
@@ -30,7 +30,7 @@ func TestStore(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	filename = "./test_files/.env"
+	filename = "./test_files/larry.env"
 
 	for _, test := range []struct {
 		name     string
@@ -59,7 +59,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetFileContent(t *testing.T) {
-	file, err := os.Open("./test_files/.env")
+	file, err := os.Open("./test_files/larry.env")
 	if err != nil {
 		t.Error("failed to open file")
 	}
@@ -116,7 +116,7 @@ func TestGetKey(t *testing.T) {
 }
 
 func TestGetToken(t *testing.T) {
-	filename = "./test_files/.env"
+	filename = "./test_files/larry.env"
 
     expected := &oauth.Token{}
 
