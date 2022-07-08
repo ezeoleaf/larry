@@ -27,13 +27,13 @@ func Load(cc cache.Client, blacklistFileName, cacheKeyPrefix string) error {
 		}
 		defer f.Close()
 
-		return readerLoader(cc, f, keyPrefix)
+		return LoadFromReader(cc, f, keyPrefix)
 	}
 
 	return nil
 }
 
-func readerLoader(cc cache.Client, handle io.Reader, keyPrefix string) error {
+func LoadFromReader(cc cache.Client, handle io.Reader, keyPrefix string) error {
 	sc := bufio.NewScanner(handle)
 	for sc.Scan() {
 		parts := strings.Split(sc.Text(), "#")

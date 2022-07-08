@@ -10,8 +10,9 @@
 			"program": "${workspaceFolder}/cmd/larry/",
 			"cwd": "${workspaceFolder}/",
 			"args": ["-t", "golang", "-x", "1", "--safe-mode"]
-			// pass a blacklist file name
 			// "args": ["-t", "golang", "-x", "1", "-bl", "./bl.txt", "--safe-mode"]
+			// "args": ["--pr", "contentfile", "-x", "1", "-r", "9", "--cf", "./test.csv", "--safe-mode", "--sh", "--topic", "csv"]
+			// "args": ["--pr", "contentfile", "-x", "1", "-r", "9", "--cf", "./test.json", "--safe-mode", "--topic", "json"]
 		}
 	]
 }

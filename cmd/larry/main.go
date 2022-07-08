@@ -12,6 +12,7 @@ import (
 	"github.com/ezeoleaf/larry/config"
 	"github.com/ezeoleaf/larry/larry"
 	"github.com/ezeoleaf/larry/provider"
+	"github.com/ezeoleaf/larry/provider/contentfile"
 	"github.com/ezeoleaf/larry/provider/github"
 	"github.com/ezeoleaf/larry/publisher"
 	githubPub "github.com/ezeoleaf/larry/publisher/github"
@@ -95,12 +96,16 @@ func getProvider(cfg config.Config) (larry.Provider, error) {
 	}
 
 	cacheClient := cache.NewClient(ro)
+	if err := blacklist.Load(cacheClient, cfg.BlacklistFile, cfg.GetCacheKeyPrefix()); err != nil {
+		return nil, err
+	}
+
 	if cfg.Provider == provider.Github {
-		if err := blacklist.Load(cacheClient, cfg.BlacklistFile, cfg.GetCacheKeyPrefix()); err != nil {
-			return nil, err
-		}
 		np := github.NewProvider(githubAccessToken, cfg, cacheClient)
 		return np, nil
+	} else if cfg.Provider == provider.Contentfile {
+		np, err := contentfile.NewProvider(cfg, cacheClient)
+		return np, err
 	}
 
 	return nil, nil
