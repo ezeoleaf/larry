@@ -51,5 +51,6 @@ func (r *repository) Scan(key string, action func(context.Context, string) error
 	if err := iter.Err(); err != nil {
 		return err
 	}
+
 	return nil
 }

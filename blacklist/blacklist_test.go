@@ -24,7 +24,7 @@ func TestLoad(t *testing.T) {
 		{
 			Name: "Should fail do to clear function",
 			CacheClient: mock.CacheClientMock{
-				ScanFn: func(key string, action func(context.Context, string) error) error {
+				DelFn: func(key string) error {
 					return errors.New("some error")
 				},
 			},
