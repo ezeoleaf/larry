@@ -1,11 +1,15 @@
 package oauth2
 
 import (
+	"context"
 	"os"
 	"testing"
+	"time"
 
 	oauth "golang.org/x/oauth2"
 )
+
+var now = time.Now()
 
 func TestFileName(t *testing.T) {
 	name := getFileName("test.env")
@@ -115,14 +119,67 @@ func TestGetKey(t *testing.T) {
 	}
 }
 
+func TestStoreToken(t *testing.T) {
+	filename = "./test_files/token.env"
+
+	tok := &oauth.Token{
+		AccessToken:  "accesstoken",
+		RefreshToken: "refreshtoken",
+		Expiry:       now,
+	}
+
+	err := storeToken(tok)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestGetToken(t *testing.T) {
-	filename = "./test_files/larry.env"
+	time, _ := time.Parse(time.RFC1123, now.Format(time.RFC1123))
 
-    expected := &oauth.Token{}
+	for _, test := range []struct {
+		name     string
+		filename string
+		expected *oauth.Token
+	}{
+		{
+			name:     "Test to perform unsuccessful token retrieval",
+			filename: "./test_files/larry.env",
+			expected: &oauth.Token{},
+		},
+		{
+			name:     "Test to perform successful token retrieval",
+			filename: "./test_files/token.env",
+			expected: &oauth.Token{
+				AccessToken:  "accesstoken",
+				RefreshToken: "refreshtoken",
+				Expiry:       time,
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			filename = test.filename
 
-    got := getToken()
+			got := getToken()
 
-    if *got != *expected {
-        t.Errorf("got %v and expected %v\n", *got, *expected)
+			if *got != *test.expected {
+				t.Errorf("got %v and expected %v\n", *got, *test.expected)
+			}
+		})
+	}
+}
+
+func TestRegenerateToken(t *testing.T) {
+    filename = "./test_files/token.env"
+
+    ctx := context.Background()
+    config := NewConfig("randomID", "superSecret")
+
+    expected := getToken()
+
+    tok, _ := regenerateToken(ctx, config, expected)
+
+    if tok != expected {
+        t.Errorf("expected %v; got %v\n", expected, tok)
     }
 }
