@@ -2,29 +2,182 @@ package blacklist
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"strings"
 	"testing"
+	"time"
 
-	"github.com/alicebob/miniredis/v2"
-	"github.com/ezeoleaf/larry/cache"
-	"github.com/go-redis/redis/v8"
+	"github.com/ezeoleaf/larry/mock"
 )
 
-func TestBlacklist(t *testing.T) {
+func TestLoad(t *testing.T) {
+	expectedResults := []string{}
+
+	for _, tc := range []struct {
+		Name              string
+		Key               string
+		BlacklistFileName string
+		ExpectedResults   []string
+		CacheClient       mock.CacheClientMock
+		ShouldError       bool
+	}{
+		{
+			Name: "Should fail do to clear function",
+			CacheClient: mock.CacheClientMock{
+				DelFn: func(key string) error {
+					return errors.New("some error")
+				},
+			},
+			ShouldError:       true,
+			Key:               "some-key",
+			BlacklistFileName: "some-name.txt",
+		},
+		{
+			Name: "Should fail do to clear function",
+			CacheClient: mock.CacheClientMock{
+				ScanFn: func(key string, action func(context.Context, string) error) error {
+					return errors.New("some error")
+				},
+			},
+			ShouldError:       true,
+			Key:               "some-key",
+			BlacklistFileName: "some-name.txt",
+		},
+		{
+			Name: "Should fail do to not existing file",
+			CacheClient: mock.CacheClientMock{
+				ScanFn: func(key string, action func(context.Context, string) error) error {
+					return nil
+				},
+				DelFn: func(key string) error {
+					return nil
+				},
+			},
+			ShouldError:       true,
+			Key:               "some-key",
+			BlacklistFileName: "some-file.txt",
+		},
+		{
+			Name: "Should fail do to cache set failing",
+			CacheClient: mock.CacheClientMock{
+				ScanFn: func(key string, action func(context.Context, string) error) error {
+					return nil
+				},
+				DelFn: func(key string) error {
+					return nil
+				},
+				SetFn: func(key string, value interface{}, exp time.Duration) error {
+					return errors.New("some errors")
+				},
+			},
+			ShouldError:       true,
+			Key:               "some-key",
+			BlacklistFileName: "./testdata/blacklist.txt",
+		},
+		{
+			Name: "Should not fail due to no file",
+			CacheClient: mock.CacheClientMock{
+				ScanFn: func(key string, action func(context.Context, string) error) error {
+					return nil
+				},
+				DelFn: func(key string) error {
+					return nil
+				},
+				SetFn: func(key string, value interface{}, exp time.Duration) error {
+					return errors.New("some errors")
+				},
+			},
+			ShouldError:       false,
+			Key:               "some-key",
+			BlacklistFileName: "",
+		},
+		{
+			Name: "Should not fail",
+			CacheClient: mock.CacheClientMock{
+				ScanFn: func(key string, action func(context.Context, string) error) error {
+					return nil
+				},
+				DelFn: func(key string) error {
+					return nil
+				},
+				SetFn: func(key string, value interface{}, exp time.Duration) error {
+					expectedResults = append(expectedResults, key)
+					return nil
+				},
+			},
+			ShouldError:       false,
+			Key:               "some-key-",
+			BlacklistFileName: "./testdata/blacklist.txt",
+			ExpectedResults:   []string{"blacklist-some-key-test", "blacklist-some-key-test2"},
+		},
+	} {
+		t.Run(tc.Name, func(t *testing.T) {
+			blacklistClient := NewClient(tc.CacheClient)
+			err := blacklistClient.Load(tc.BlacklistFileName, tc.Key)
+
+			if err == nil && tc.ShouldError {
+				t.Error("should error but not error received")
+			} else if err != nil && !tc.ShouldError {
+				t.Errorf("should not error but got %s", err)
+			}
+
+			if len(expectedResults) != len(tc.ExpectedResults) {
+				t.Errorf("expected %v results, but got %v", len(expectedResults), len(tc.ExpectedResults))
+			}
+
+			for i, er := range tc.ExpectedResults {
+				if er != expectedResults[i] {
+					t.Errorf("expected %s in position %v, but got %s", er, i, expectedResults[i])
+				}
+			}
+
+			expectedResults = []string{}
+		})
+
+	}
+}
+
+func TestLoadFromReader(t *testing.T) {
+
+	expectedResults := []string{}
+
 	for _, tc := range []struct {
 		Name                  string
 		BlacklistFileContents string
+		Key                   string
 		ExpectedResults       []string
+		CacheClient           mock.CacheClientMock
+		ShouldError           bool
 	}{
 		{
-			Name: "Simple file",
-			BlacklistFileContents: `111
-			222`,
-			ExpectedResults: []string{"blacklist-golang-111", "blacklist-golang-222"},
+			Name: "Should fail do to not able to set",
+			CacheClient: mock.CacheClientMock{
+				SetFn: func(key string, value interface{}, exp time.Duration) error {
+					return errors.New("some error")
+				},
+			},
+			ShouldError: true,
+			Key:         "some-key",
+			BlacklistFileContents: `# Comment in first line
+			777 # Comment after repo Id
+			888
+			# Blank line follows
+
+				# Tab then comment
+			999
+			# Last line is comment`,
+			ExpectedResults: []string{},
 		},
 		{
-			Name: "Complex file",
+			Name: "Should not fail",
+			CacheClient: mock.CacheClientMock{
+				SetFn: func(key string, value interface{}, exp time.Duration) error {
+					expectedResults = append(expectedResults, key)
+					return nil
+				},
+			},
+			ShouldError: false,
+			Key:         "blacklist-golang-",
 			BlacklistFileContents: `# Comment in first line
 			777 # Comment after repo Id
 			888
@@ -37,58 +190,26 @@ func TestBlacklist(t *testing.T) {
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
+			blacklistClient := NewClient(tc.CacheClient)
+			err := blacklistClient.LoadFromReader(strings.NewReader(tc.BlacklistFileContents), tc.Key)
 
-			mr, _ := miniredis.Run()
-			ro := &redis.Options{
-				Addr: mr.Addr(),
+			if err == nil && tc.ShouldError {
+				t.Error("should error but not error received")
+			} else if err != nil && !tc.ShouldError {
+				t.Errorf("should not error but got %s", err)
 			}
 
-			cc := cache.NewClient(ro)
-
-			// test loading blacklist
-			blacklistKeyPrefix := "blacklist-golang-"
-			if err := LoadFromReader(cc, strings.NewReader(tc.BlacklistFileContents), blacklistKeyPrefix); err != nil {
-				t.Error(err)
+			if len(expectedResults) != len(tc.ExpectedResults) {
+				t.Errorf("expected %v results, but got %v", len(expectedResults), len(tc.ExpectedResults))
 			}
 
-			if count, err := keyCount(cc); err != nil {
-				t.Error("Error retrieving key count")
-			} else if len(tc.ExpectedResults) != count {
-				t.Errorf("Key count found %d doesn't match expected count %d", count, len(tc.ExpectedResults))
-			}
-
-			for _, ex := range tc.ExpectedResults {
-				if _, err := cc.Get(ex); !keyFound(err) {
-					t.Errorf("No value found for expected result %s", ex)
+			for i, er := range tc.ExpectedResults {
+				if er != expectedResults[i] {
+					t.Errorf("expected %s in position %v, but got %s", er, i, expectedResults[i])
 				}
 			}
 
-			// test clearing blacklist
-			if err := clear(cc, blacklistKeyPrefix); err != nil {
-				t.Error(err)
-			}
-
-			for _, ex := range tc.ExpectedResults {
-				if _, err := cc.Get(ex); keyFound(err) {
-					t.Error(fmt.Sprintf("Expected key to be deleted %s", ex))
-				}
-			}
+			expectedResults = []string{}
 		})
 	}
-}
-
-func keyFound(err error) bool {
-	if err != redis.Nil {
-		return true
-	}
-	return false
-}
-
-func keyCount(cc cache.Client) (int, error) {
-	count := 0
-	cc.Scan("*", func(ctx context.Context, s string) error {
-		count++
-		return nil
-	})
-	return count, nil
 }
