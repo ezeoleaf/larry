@@ -150,11 +150,11 @@ For running the bot for Golang every 15 minutes and specifying a blacklist file 
 
 &nbsp;&nbsp;`larry --topic golang --time 15 --blacklist ./blacklist.txt`
 
-For running the bot every 60 minutes using the "contentfile" provider and JSON file for content
+For running the bot every 60 minutes using the `contentfile` provider and JSON file for content
 
 &nbsp;&nbsp;`larry --time 60 --provider contentfile --content-file ./content.json`
 
-For running the bot every 60 minutes using the "contentfile" provider to read CSV file for content and skipping the header record
+For running the bot every 60 minutes using the `contentfile` provider to read CSV file for content and skipping the header record
 
 &nbsp;&nbsp;`larry --time 60 --provider contentfile --content-file ./content.csv --skip-csv-header`
 
@@ -194,6 +194,24 @@ larry,Larry 🐦 is a bot generator that publishes random content from different
 ```
 
 Note: Every record in the CSV file, including the header record, must have the same number of fields otherwise an error will occur. This means if the records will have a variable number of ExtraData fields, each record having fewer than the maximum ExtraData fields must include empty ExtraData fields to match the maximum.
+
+## Content File Source
+
+The file consumed by the `contentfile` provider can be sourced from a file from the local file system or from an object in an AWS S3 bucket.
+
+### Local File
+
+```
+--content-file ./my-data/example.json
+```
+
+### AWS S3 Bucket
+
+Use the S3 URI format to specify an S3 source where `my-bucket` is the bucket name and `my-data/example.json` is the object key:
+
+```
+--content-file S3://my-bucket/my-data/example.json
+```
 
 ## Blacklist File
 

@@ -160,7 +160,7 @@ title-1,subtitle-1,url-1,extradata-1-1,extradata-1-2
 			}
 
 			cfg := config.Config{SkipCsvHeader: tc.SkipHeader, ContentFile: "./test.csv"}
-			p, err := NewProvider(cfg, cc)
+			p, err := NewProvider(cfg, cc, NewMockS3Client())
 			if err != nil {
 				fmt.Println(err)
 				t.Error(err)

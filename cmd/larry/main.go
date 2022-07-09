@@ -104,7 +104,7 @@ func getProvider(cfg config.Config) (larry.Provider, error) {
 		np := github.NewProvider(githubAccessToken, cfg, cacheClient)
 		return np, nil
 	} else if cfg.Provider == provider.Contentfile {
-		np, err := contentfile.NewProvider(cfg, cacheClient)
+		np, err := contentfile.NewProvider(cfg, cacheClient, contentfile.NewS3Client())
 		return np, err
 	}
 
