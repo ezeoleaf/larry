@@ -32,10 +32,11 @@ func regenerateToken(ctx context.Context, conf *oauth.Config, tok *oauth.Token) 
 
 	if tok != nil && conf != nil {
 		source := conf.TokenSource(ctx, tok)
-		tok, err = source.Token()
+        newTok, err := source.Token()
 		if err != nil {
 			return tok, err
 		}
+        tok = newTok
 	} else {
 		return nil, errors.New("err: token or config is invalid")
 	}
