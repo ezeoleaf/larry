@@ -67,7 +67,10 @@ func (p Provider) GetContentToPublish() (*domain.Content, error) {
 	}
 
 	if content != nil {
-		p.addToCache(*content.Title)
+		err := p.addToCache(*content.Title)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return content, err
