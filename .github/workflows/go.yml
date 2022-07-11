@@ -32,11 +32,5 @@ jobs:
     - name: Build
       run: go build -v -o larry-build ./cmd/larry/.
 
-    - name: Lint
-      uses: golangci/golangci-lint-action@v3
-      with:
-        # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-        version: latest
-
     - name: Test
       run: go test -v ./...
