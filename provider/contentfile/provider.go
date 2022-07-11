@@ -64,7 +64,10 @@ func (p Provider) getContentFromFile(fileName string) (*domain.Content, error) {
 		if content, err := p.FileReader.getContentFromReader(f, p.skipCachedRecord); err != nil {
 			return nil, err
 		} else {
-			p.addToCache(*content.Title)
+			err := p.addToCache(*content.Title)
+			if err != nil {
+				return nil, err
+			}
 			return content, nil
 		}
 	}
@@ -110,7 +113,7 @@ func cacheKey(cacheKeyPrefix string, title string) string {
 	return cacheKeyPrefix + title
 }
 
-func (p Provider) addToCache(title string) {
+func (p Provider) addToCache(title string) error {
 	key := cacheKey(p.Config.GetCacheKeyPrefix(), title)
-	p.CacheClient.Set(key, true, p.cacheExpirationMinutes())
+	return p.CacheClient.Set(key, true, p.cacheExpirationMinutes())
 }
