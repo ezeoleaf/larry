@@ -26,6 +26,9 @@ compile:
 	# Windows
 	GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-windows-64 ./cmd/larry/.
 
+lint:
+	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.46.2 golangci-lint run
+
 ## help: prints this help message
 help:
 	@echo "Usage: \n"
