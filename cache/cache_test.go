@@ -23,7 +23,10 @@ func TestGetKey(t *testing.T) {
 		t.Error("No value expected for key not saved in cache")
 	}
 
-	r.Set("key", "v", 1)
+	err := r.Set("key", "v", 1)
+	if err != nil {
+		t.Error("could not set key")
+	}
 
 	_, e = r.Get("key")
 
@@ -40,7 +43,10 @@ func TestSetKey(t *testing.T) {
 
 	r := NewClient(ro)
 
-	r.Set("key", "v", 1)
+	err := r.Set("key", "v", 1)
+	if err != nil {
+		t.Error("could not set key")
+	}
 
 	v, e := r.Get("key")
 
@@ -61,9 +67,15 @@ func TestDetKey(t *testing.T) {
 
 	r := NewClient(ro)
 
-	r.Set("key", "v", 1)
+	err := r.Set("key", "v", 1)
+	if err != nil {
+		t.Error("could not set key")
+	}
 
-	r.Del("key")
+	err = r.Del("key")
+	if err != nil {
+		t.Error("could not del key")
+	}
 
 	_, e := r.Get("key")
 
@@ -80,9 +92,12 @@ func TestScanKey(t *testing.T) {
 
 	r := NewClient(ro)
 
-	r.Set("key", "v", 1)
+	err := r.Set("key", "v", 1)
+	if err != nil {
+		t.Error("could not set key")
+	}
 
-	err := r.Scan("key", func(ctx context.Context, key string) error {
+	err = r.Scan("key", func(ctx context.Context, key string) error {
 		return errors.New("some error")
 	})
 
@@ -90,7 +105,10 @@ func TestScanKey(t *testing.T) {
 		t.Error("expected error but got none")
 	}
 
-	r.Set("key", "v", 1)
+	err = r.Set("key", "v", 1)
+	if err != nil {
+		t.Error("could not set key")
+	}
 
 	err = r.Scan("key", func(ctx context.Context, key string) error {
 		return nil

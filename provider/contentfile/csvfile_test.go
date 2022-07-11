@@ -153,10 +153,16 @@ title-1,subtitle-1,url-1,extradata-1-1,extradata-1-2
 			cc := cache.NewClient(ro)
 
 			for _, item := range tc.CachedItems {
-				cc.Set(item, "1", 0)
+				err := cc.Set(item, "1", 0)
+				if err != nil {
+					t.Error("could not set key")
+				}
 			}
 			for _, item := range tc.BlacklistedItems {
-				cc.Set("blacklist-"+item, "1", 0)
+				err := cc.Set("blacklist-"+item, "1", 0)
+				if err != nil {
+					t.Error("could not set key")
+				}
 			}
 
 			cfg := config.Config{SkipCsvHeader: tc.SkipHeader, ContentFile: "./test.csv"}
@@ -179,7 +185,7 @@ title-1,subtitle-1,url-1,extradata-1-1,extradata-1-2
 				} else if content != nil && tc.ExpectedContent == nil {
 					t.Errorf("expected nil as value, got %v instead", *content.Title)
 				} else if *content.Title != *tc.ExpectedContent.Title {
-					t.Errorf("expected %v as value, got %v instead", *&tc.ExpectedContent.Title, *content.Title)
+					t.Errorf("expected %v as value, got %v instead", tc.ExpectedContent.Title, *content.Title)
 				} else {
 					// compare returned object
 					expected, _ := json.Marshal(tc.ExpectedContent)

@@ -2,6 +2,7 @@ package larry
 
 import (
 	"errors"
+	"log"
 	"testing"
 
 	"github.com/ezeoleaf/larry/domain"
@@ -49,6 +50,7 @@ func TestRun(t *testing.T) {
 			s := Service{
 				Provider:   tc.mockProvider,
 				Publishers: tc.mockPublishers,
+				Logger:     log.Default(),
 			}
 
 			resp := s.Run()

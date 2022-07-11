@@ -92,7 +92,7 @@ func (p Provider) getContentFromFile(fileName string) (*domain.Content, error) {
 		return p.FileReader.getContentFromReader(f, p.skipCachedRecord)
 	}
 
-	return nil, fmt.Errorf("No content file specified")
+	return nil, fmt.Errorf("no content file specified")
 }
 
 func StringToPointer(in string) *string {
@@ -111,10 +111,7 @@ func (p Provider) skipCachedRecord(title string) bool {
 func (p Provider) isCached(title string) bool {
 	key := cacheKey(p.Config.GetCacheKeyPrefix(), title)
 	_, err := p.CacheClient.Get(key)
-	if err != redis.Nil {
-		return true
-	}
-	return false
+	return err != redis.Nil
 }
 
 func (p Provider) isBlacklisted(title string) bool {
@@ -136,7 +133,7 @@ func cacheKey(cacheKeyPrefix string, title string) string {
 	return cacheKeyPrefix + title
 }
 
-func (p Provider) addToCache(title string) {
+func (p Provider) addToCache(title string) error {
 	key := cacheKey(p.Config.GetCacheKeyPrefix(), title)
-	p.CacheClient.Set(key, true, p.cacheExpirationMinutes())
+	return p.CacheClient.Set(key, true, p.cacheExpirationMinutes())
 }
