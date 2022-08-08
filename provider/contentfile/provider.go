@@ -3,8 +3,10 @@ package contentfile
 import (
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/ezeoleaf/larry/cache"
@@ -17,13 +19,14 @@ type Provider struct {
 	CacheClient cache.Client
 	Config      config.Config
 	FileReader  ContentFileReader
+	S3Client    s3FileReader
 }
 
 type ContentFileReader interface {
 	getContentFromReader(handle io.Reader, skip func(string) bool) (*domain.Content, error)
 }
 
-func NewProvider(cfg config.Config, cacheClient cache.Client) (Provider, error) {
+func NewProvider(cfg config.Config, cacheClient cache.Client, s3client s3FileReader) (Provider, error) {
 
 	ext := filepath.Ext(cfg.ContentFile)
 	if ext == "" {
@@ -44,13 +47,41 @@ func NewProvider(cfg config.Config, cacheClient cache.Client) (Provider, error) 
 		Config:      cfg,
 		CacheClient: cacheClient,
 		FileReader:  fileReader,
+		S3Client:    s3client,
 	}
 	return p, nil
 }
 
 // GetContentToPublish returns content to publish to be used by the publishers
 func (p Provider) GetContentToPublish() (*domain.Content, error) {
-	return p.getContentFromFile(p.Config.ContentFile)
+	u, err := url.Parse(p.Config.ContentFile)
+	if err != nil {
+		return nil, err
+	}
+
+	var content *domain.Content
+	if strings.ToLower(u.Scheme) == "s3" {
+		content, err = p.getContentFromS3Bucket(u.Hostname(), u.Path[1:])
+	} else {
+		content, err = p.getContentFromFile(p.Config.ContentFile)
+	}
+
+	if content != nil {
+		err := p.addToCache(*content.Title)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return content, err
+}
+
+func (p Provider) getContentFromS3Bucket(bucket, key string) (*domain.Content, error) {
+	if objectReader, err := p.S3Client.GetObject(bucket, key); err != nil {
+		return nil, err
+	} else {
+		return p.FileReader.getContentFromReader(objectReader, p.skipCachedRecord)
+	}
 }
 
 func (p Provider) getContentFromFile(fileName string) (*domain.Content, error) {
@@ -61,15 +92,7 @@ func (p Provider) getContentFromFile(fileName string) (*domain.Content, error) {
 		}
 		defer f.Close()
 
-		if content, err := p.FileReader.getContentFromReader(f, p.skipCachedRecord); err != nil {
-			return nil, err
-		} else {
-			err := p.addToCache(*content.Title)
-			if err != nil {
-				return nil, err
-			}
-			return content, nil
-		}
+		return p.FileReader.getContentFromReader(f, p.skipCachedRecord)
 	}
 
 	return nil, fmt.Errorf("no content file specified")

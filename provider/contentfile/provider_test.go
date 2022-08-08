@@ -3,6 +3,8 @@ package contentfile
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 	"testing"
 
 	"github.com/alicebob/miniredis/v2"
@@ -25,7 +27,7 @@ func TestGetContentFromFile(t *testing.T) {
 			Name:             "Success json",
 			CachedItems:      []string{"title-0"},
 			BlacklistedItems: []string{"title-1"},
-			ContentFile:      "test.json",
+			ContentFile:      "./testdata/test.json",
 			ExpectedContent: &domain.Content{
 				Title:     StringToPointer("title-2"),
 				Subtitle:  StringToPointer("subtitle-2"),
@@ -37,7 +39,7 @@ func TestGetContentFromFile(t *testing.T) {
 			Name:             "Success csv",
 			CachedItems:      []string{"title-0"},
 			BlacklistedItems: []string{"title-1"},
-			ContentFile:      "test.json",
+			ContentFile:      "./testdata/test.json",
 			ExpectedContent: &domain.Content{
 				Title:     StringToPointer("title-2"),
 				Subtitle:  StringToPointer("subtitle-2"),
@@ -49,7 +51,7 @@ func TestGetContentFromFile(t *testing.T) {
 			Name:             "Error no file extension",
 			CachedItems:      []string{"title-0"},
 			BlacklistedItems: []string{"title-1"},
-			ContentFile:      "test", // no file extension provided
+			ContentFile:      "./testdata/test", // no file extension provided
 			ExpectedContent:  nil,
 			ExpectedError:    "no file extension provided, unable to determine file format",
 		},
@@ -57,9 +59,21 @@ func TestGetContentFromFile(t *testing.T) {
 			Name:             "Error invalid file extension",
 			CachedItems:      []string{"title-0"},
 			BlacklistedItems: []string{"title-1"},
-			ContentFile:      "test.txt", // this file extension is not supported
+			ContentFile:      "./testdata/test.txt", // this file extension is not supported
 			ExpectedContent:  nil,
 			ExpectedError:    "unsupported content file format: .txt",
+		},
+		{
+			Name:             "Success json S3",
+			CachedItems:      []string{"title-0"},
+			BlacklistedItems: []string{"title-1"},
+			ContentFile:      "s3://testdata/test.json", // S3, bucket, key
+			ExpectedContent: &domain.Content{
+				Title:     StringToPointer("title-2"),
+				Subtitle:  StringToPointer("subtitle-2"),
+				URL:       StringToPointer("url-2"),
+				ExtraData: []string{"extradata-2-1", "extradata-2-2"},
+			},
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
@@ -83,8 +97,8 @@ func TestGetContentFromFile(t *testing.T) {
 				}
 			}
 
-			cfg := config.Config{ContentFile: fmt.Sprintf("./testdata/%s", tc.ContentFile)}
-			p, err := NewProvider(cfg, cc)
+			cfg := config.Config{ContentFile: tc.ContentFile}
+			p, err := NewProvider(cfg, cc, NewMockS3Client())
 			if err != nil {
 				if tc.ExpectedError != err.Error() {
 					fmt.Println(err.Error())
@@ -123,4 +137,20 @@ func TestGetContentFromFile(t *testing.T) {
 			}
 		})
 	}
+}
+
+type MockS3Client struct {
+}
+
+func NewMockS3Client() MockS3Client {
+	return MockS3Client{}
+}
+
+func (s MockS3Client) GetObject(bucket, key string) (io.Reader, error) {
+	// convert bucket and key to a local filename
+	f, err := os.OpenFile(fmt.Sprintf("./%s/%s", bucket, key), os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
 }

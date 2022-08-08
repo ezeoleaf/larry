@@ -91,7 +91,7 @@ func TestGetJsonContentFromReader(t *testing.T) {
 			}
 
 			cfg := config.Config{ContentFile: "./test.json"}
-			p, err := NewProvider(cfg, cc)
+			p, err := NewProvider(cfg, cc, NewMockS3Client())
 			if err != nil {
 				fmt.Println(err)
 				t.Error(err)
