@@ -53,8 +53,6 @@ To do this, you will need to setup the following environment variables:
 - GITHUB_ACCESS_TOKEN
 - TWITTER_CONSUMER_KEY
 - TWITTER_CONSUMER_SECRET
-- TWITTER_ACCESS_TOKEN
-- TWITTER_ACCESS_SECRET
 
 If you want the content to be publish in a README file on a repo, you also need these variables
 - GITHUB_PUBLISH_REPO_OWNER (Your Github username)
@@ -83,7 +81,7 @@ _NOTE: The key is used in the --provider or --pr option_
 
 | Name         | Key     | Environment Variables | Observation |
 |--------------|:-------:|----------------------| -------------|
-| Twitter      | twitter | TWITTER_CONSUMER_KEY<br>TWITTER_CONSUMER_SECRET<br>TWITTER_ACCESS_TOKEN<br>TWITTER_ACCESS_SECRET | |
+| Twitter      | twitter | TWITTER_CONSUMER_KEY<br>TWITTER_CONSUMER_SECRET | |
 | Github       | github  | GITHUB_PUBLISH_REPO_OWNER<br>GITHUB_PUBLISH_REPO_NAME<br>GITHUB_PUBLISH_REPO_FILE | For now it is only going to be posted in the README file and the repository must be **public** |
 
 _NOTE: The key is used in the --publisher or --pub option_

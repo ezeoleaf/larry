@@ -31,8 +31,6 @@ var (
 
 	twitterConsumerKey    = envString("TWITTER_CONSUMER_KEY", "")
 	twitterConsumerSecret = envString("TWITTER_CONSUMER_SECRET", "")
-	twitterAccessToken    = envString("TWITTER_ACCESS_TOKEN", "")
-	twitterAccessSecret   = envString("TWITTER_ACCESS_SECRET", "")
 )
 
 func main() {
@@ -128,8 +126,6 @@ func getPublishers(cfg config.Config) (map[string]larry.Publisher, error) {
 			accessKeys := twitter.AccessKeys{
 				TwitterConsumerKey:    twitterConsumerKey,
 				TwitterConsumerSecret: twitterConsumerSecret,
-				TwitterAccessToken:    twitterAccessToken,
-				TwitterAccessSecret:   twitterAccessSecret,
 			}
 			pubs[v] = twitter.NewPublisher(accessKeys, cfg)
 		} else if v == publisher.Github {
