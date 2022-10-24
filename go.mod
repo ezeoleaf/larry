@@ -8,7 +8,7 @@ require (
 	github.com/dghubble/oauth1 v0.7.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/go-github/v39 v39.2.0
-	github.com/urfave/cli/v2 v2.20.2
+	github.com/urfave/cli/v2 v2.20.3
 	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
 )
 
