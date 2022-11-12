@@ -3,7 +3,7 @@ module github.com/ezeoleaf/larry
 go 1.18
 
 require (
-	github.com/alicebob/miniredis/v2 v2.23.0
+	github.com/alicebob/miniredis/v2 v2.23.1
 	github.com/dghubble/go-twitter v0.0.0-20220608135633-47eb18e5aab5
 	github.com/dghubble/oauth1 v0.7.1
 	github.com/go-redis/redis/v8 v8.11.5
