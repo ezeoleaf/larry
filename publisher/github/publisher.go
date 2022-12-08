@@ -103,7 +103,8 @@ func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
 	}
 
 	if strings.Contains(readmeContent, *content.Title) {
-		return false, fmt.Errorf("repository %s already exists", *content.Title)
+		log.Printf("repository %s already exists", *content.Title)
+		return false, nil
 	}
 
 	readmeContent += fmt.Sprintf("  \n%s", contentToAdd)
