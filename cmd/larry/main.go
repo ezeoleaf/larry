@@ -24,7 +24,7 @@ import (
 var (
 	redisAddress = envString("REDIS_ADDRESS", "localhost:6379")
 
-	githubAccessToken      = envString("GITHUB_ACCESS_TOKEN", "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")
+	githubAccessToken      = envString("GITHUB_ACCESS_TOKEN", "")
 	githubPublishRepoOwner = envString("GITHUB_PUBLISH_REPO_OWNER", "")
 	githubPublishRepoName  = envString("GITHUB_PUBLISH_REPO_NAME", "")
 	githubPublishRepoFile  = envString("GITHUB_PUBLISH_REPO_FILE", "README.md")
