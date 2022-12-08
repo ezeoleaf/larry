@@ -195,7 +195,7 @@ func TestPublishContent(t *testing.T) {
 		{
 			Name:          "Test repo already added",
 			expectedValue: false,
-			shouldFail:    true,
+			shouldFail:    false,
 			cfg:           config.Config{},
 			content:       &domain.Content{Title: &ti, Subtitle: &sub, URL: &url},
 			repoClient: mock.RepoClientMock{
