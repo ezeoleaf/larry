@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -53,20 +54,20 @@ func main() {
 		Action: func(c *cli.Context) error {
 			prov, err := getProvider(cfg)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			if prov == nil {
-				log.Fatalf("could not initialize provider for %v", cfg.Provider)
+				return fmt.Errorf("could not initialize provider for %v", cfg.Provider)
 			}
 
 			pubs, err := getPublishers(cfg)
 			if err != nil {
-				log.Fatal(err)
+				return fmt.Errorf("error initializing publishers: %w", err)
 			}
 
 			if len(pubs) == 0 {
-				log.Fatalln("no publishers initialized")
+				return fmt.Errorf("no publishers initialized")
 			}
 
 			s := larry.Service{Provider: prov, Publishers: pubs, Logger: log.Default()}
