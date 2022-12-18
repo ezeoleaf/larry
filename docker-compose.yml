@@ -15,7 +15,11 @@ services:
       - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
       - TWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}
       - TWITTER_ACCESS_SECRET=${TWITTER_ACCESS_SECRET}
-    entrypoint: sh -c "/larry --topic golang -x 1 --safe-mode"
+      - MASTODON_CLIENT_ID=${MASTODON_CLIENT_ID}
+      - MASTODON_CLIENT_SECRET=${MASTODON_CLIENT_SECRET}
+      - MASTODON_SERVER=${MASTODON_SERVER}
+      - MASTODON_ACCESS_TOKEN=${MASTODON_ACCESS_TOKEN}
+    entrypoint: sh -c "/larry --publisher=mastodon --topic golang -x 1 --safe-mode"
     depends_on:
       - redis
   # ----

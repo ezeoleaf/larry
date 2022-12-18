@@ -17,8 +17,10 @@ import (
 	"github.com/ezeoleaf/larry/provider/github"
 	"github.com/ezeoleaf/larry/publisher"
 	githubPub "github.com/ezeoleaf/larry/publisher/github"
+	mastodonPub "github.com/ezeoleaf/larry/publisher/mastodon"
 	"github.com/ezeoleaf/larry/publisher/twitter"
 	"github.com/go-redis/redis/v8"
+	"github.com/mattn/go-mastodon"
 	"github.com/urfave/cli/v2"
 )
 
@@ -34,6 +36,13 @@ var (
 	twitterConsumerSecret = envString("TWITTER_CONSUMER_SECRET", "")
 	twitterAccessToken    = envString("TWITTER_ACCESS_TOKEN", "")
 	twitterAccessSecret   = envString("TWITTER_ACCESS_SECRET", "")
+
+	mastodonClientId     = envString("MASTODON_CLIENT_ID", "")
+	mastodonClientSecret = envString("MASTODON_CLIENT_SECRET", "")
+	mastodonServer       = envString("MASTODON_SERVER", "")
+	mastodonAccessToken  = envString("MASTODON_ACCESS_TOKEN", "")
+	mastodonAccount      = envString("MASTODON_ACCOUNT", "")
+	mastodonPassword     = envString("MASTODON_PASSWORD", "")
 )
 
 func main() {
@@ -50,6 +59,7 @@ func main() {
 			{Name: "@kannav02"},
 			{Name: "@siddhant-k-code", Email: "siddhantkhare2694@gmail.com"},
 			{Name: "@savagedev"},
+			{Name: "@till"},
 		},
 		Action: func(c *cli.Context) error {
 			prov, err := getProvider(cfg)
@@ -115,6 +125,7 @@ func getProvider(cfg config.Config) (larry.Provider, error) {
 
 func getPublishers(cfg config.Config) (map[string]larry.Publisher, error) {
 	pubs := make(map[string]larry.Publisher)
+	var err error
 
 	ps := strings.Split(cfg.Publishers, ",")
 
@@ -135,10 +146,21 @@ func getPublishers(cfg config.Config) (map[string]larry.Publisher, error) {
 			pubs[v] = twitter.NewPublisher(accessKeys, cfg)
 		} else if v == publisher.Github {
 			pubs[v] = githubPub.NewPublisher(githubAccessToken, cfg, githubPublishRepoOwner, githubPublishRepoName, githubPublishRepoFile)
+		} else if v == publisher.Mastodon {
+			pubs[v], err = mastodonPub.NewPublisher(mastodonPub.PublisherConfig{
+				ClientCfg: &mastodon.Config{
+					Server:       mastodonServer,
+					ClientID:     mastodonClientId,
+					ClientSecret: mastodonClientSecret,
+					AccessToken:  mastodonAccessToken,
+				},
+				Username: mastodonAccount,
+				Password: mastodonPassword,
+			}, cfg)
 		}
 	}
 
-	return pubs, nil
+	return pubs, err
 }
 
 func envString(key string, fallback string) string {

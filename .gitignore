@@ -6,4 +6,5 @@ GobotTweet
 bin/
 coverage.out
 .env
+.envrc
 larry-build
