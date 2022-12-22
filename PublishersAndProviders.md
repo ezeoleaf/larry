@@ -9,6 +9,7 @@ Providers and Publishers that are currently supported
 
 - Twitter
 - Github
+- Mastodon
 
 
 Before running the bot, you must configure it  so that it can connect to the current supported platforms
@@ -30,6 +31,15 @@ Twitter
 - TWITTER_CONSUMER_SECRET
 - TWITTER_ACCESS_TOKEN
 - TWITTER_ACCESS_SECRET
+
+Mastodon
+----------------------------------------------------------------------
+- MASTODON_SERVER (the instance for your (bot) account)
+- MASTODON_CLIENT_ID (the application's client id)
+- MASTODON_CLIENT_SECRET (the application's secret)
+- MASTODON_ACCESS_TOKEN (the access token)
+- MASTODON_ACCOUNT (optional, without access token)
+- MASTODON_PASSWIRD (optional, without access token)
 
 How to setup the environment variables for the platforms
 ----------------------------------------------------------------------
@@ -63,3 +73,14 @@ For further information click [here](https://docs.github.com/en/authentication/k
 Twitter
 ----------------------------------------------------------------------
 For getting Twitter keys and secrets click [here](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide) 
+
+
+Mastodon
+----------------------------------------------------------------------
+
+Register an application on your instance:
+
+- Redirect URI: urn:ietf:wg:oauth:2.0:oob
+- Scopes: read:statuses, write:statuses
+
+Capture: ID, Client ID, Client Secret and Access Token.
