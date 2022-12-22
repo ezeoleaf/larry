@@ -8,13 +8,13 @@ require (
 	github.com/dghubble/oauth1 v0.7.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/go-github/v39 v39.2.0
-	github.com/stretchr/testify v1.7.2
+	github.com/stretchr/testify v1.8.1
 	github.com/urfave/cli/v2 v2.23.6
 	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/tomnomnom/linkheader v0.0.0-20180905144013-02ca5825eb80 // indirect
