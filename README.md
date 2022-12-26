@@ -46,47 +46,17 @@ go run . [options]
 
 ### Configuring the bot
 
-Before running the bot, you must first set it up so it can connect to Github and Twitter API.
+Before running the bot, you must first set it up so it can connect to Github and the publisher's API.
 
 To do this, you will need to setup the following environment variables:
-```
-- GITHUB_ACCESS_TOKEN
-- TWITTER_CONSUMER_KEY
-- TWITTER_CONSUMER_SECRET
-- TWITTER_ACCESS_TOKEN
-- TWITTER_ACCESS_SECRET
 
-If you want the content to be publish in a README file on a repo, you also need these variables
-- GITHUB_PUBLISH_REPO_OWNER (Your Github username)
-- GITHUB_PUBLISH_REPO_NAME (The name of the repo where your README is. It has to be public)
-- GITHUB_PUBLISH_REPO_FILE (By default is README)
-```
+- GITHUB_ACCESS_TOKEN
 
 For generating Github access token you can follow this [guide](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
-
-For getting Twitter keys and secrets you can follow this [guide](https://developer.twitter.com/en/docs/twitter-api/getting-started/guide)
-
-#### Note: You will have to generate both consumer and access pair of keys/tokens and secrets.
 
 ### Providers and Publishers
 
 For information on publishers and providers click [here](PublishersAndProviders.md)
-#### Providers (where the information is coming from)
-
-| Name         | Key    | Environment Variables |
-|--------------|:------:|-----------------------|
-| Github       | github |   GITHUB_ACCESS_TOKEN |
-
-_NOTE: The key is used in the --provider or --pr option_
-
-#### Publishers (where the information is going to be posted)
-
-| Name         | Key     | Environment Variables | Observation |
-|--------------|:-------:|----------------------| -------------|
-| Twitter      | twitter | TWITTER_CONSUMER_KEY<br>TWITTER_CONSUMER_SECRET<br>TWITTER_ACCESS_TOKEN<br>TWITTER_ACCESS_SECRET | |
-| Github       | github  | GITHUB_PUBLISH_REPO_OWNER<br>GITHUB_PUBLISH_REPO_NAME<br>GITHUB_PUBLISH_REPO_FILE | For now it is only going to be posted in the README file and the repository must be **public** |
-
-_NOTE: The key is used in the --publisher or --pub option_
 
 ### Running the bot
 
@@ -167,12 +137,12 @@ The `contentfile` provider serves content from CSV and JSON files.
 
 When the `contentfile` provider receives a `content-file` filename with a `.json` extension, the provider serves random content from the JSON file. This file consists of an array of objects in the following format. ExtraData is an array of strings.
 
-```
+```json
 [{
-	"Title": "larry",
-	"Subtitle": "Larry 🐦 is a bot generator that publishes random content from different providers built in Go",
-	"URL": "github.com/ezeoleaf/larry",
-	"ExtraData": ["68", "ezeoleaf", "golang"]
+   "Title": "larry",
+   "Subtitle": "Larry 🐦 is a bot generator that publishes random content from different providers built in Go",
+   "URL": "github.com/ezeoleaf/larry",
+   "ExtraData": ["68", "ezeoleaf", "golang"]
 }]
 ```
 
@@ -182,13 +152,13 @@ When the `contentfile` provider receives a `content-file` filename with a `.csv`
 
 The following file has one record with three ExtraData strings.
 
-```
+```csv
 The title,The subtitle,URL,ExtraString1,"ExtraString2,has comma",ExtraString3
 ```
 
 An example CSV file with a header record followed by one record:
 
-```
+```csv
 Title,Subtitle,URL,Stars,Author,Language,ExtraData1,ExtraData2,ExtraData3
 larry,Larry 🐦 is a bot generator that publishes random content from different providers built in Go,github.com/ezeoleaf/larry,68,ezeoleaf,golang
 ```
@@ -203,7 +173,7 @@ For the `github` provider, the optional blacklist file consists of numeric GitHu
 
 An example blacklist file containing GitHub repository IDs. The file can contain comments using the # character, everything on the line after this character is ignored.
 
-```
+```csv
 # Blacklisted repositories
 123 # description of the respository
 456
