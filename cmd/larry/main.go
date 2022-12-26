@@ -43,15 +43,19 @@ var (
 	mastodonAccessToken  = envString("MASTODON_ACCESS_TOKEN", "")
 	mastodonAccount      = envString("MASTODON_ACCOUNT", "")
 	mastodonPassword     = envString("MASTODON_PASSWORD", "")
+
+	// injected via build/goreleaser
+	version = ""
 )
 
 func main() {
 	cfg := config.Config{}
 
 	app := &cli.App{
-		Name:  "Larry",
-		Usage: "Bot that publishes information from providers to different publishers",
-		Flags: larry.GetFlags(&cfg),
+		Name:    "Larry",
+		Version: version,
+		Usage:   "Bot that publishes information from providers to different publishers",
+		Flags:   larry.GetFlags(&cfg),
 		Authors: []*cli.Author{
 			{Name: "@ezeoleaf", Email: "ezeoleaf@gmail.com"},
 			{Name: "@beesaferoot", Email: "hikenike6@gmail.com"},

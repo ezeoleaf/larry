@@ -8,3 +8,5 @@ coverage.out
 .env
 .envrc
 larry-build
+
+dist/

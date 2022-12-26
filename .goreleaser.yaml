@@ -1,0 +1,26 @@
+---
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: larry
+    main: ./cmd/larry/main.go
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - freebsd
+      - linux
+      - windows
+    goarch:
+      - "amd64"
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
