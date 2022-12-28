@@ -30,7 +30,10 @@ jobs:
         fi
 
     - name: Build
-      run: go build -v -o larry-build ./cmd/larry/.
+      uses: goreleaser/goreleaser-action@v4
+      with:
+        version: latest
+        args: build --single-target --snapshot --rm-dist
 
     - name: Run golangci-lint
       uses: golangci/golangci-lint-action@v3.2.0

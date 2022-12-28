@@ -1,0 +1,61 @@
+---
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: larry
+    main: ./cmd/larry/main.go
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - freebsd
+      - linux
+      - windows
+    goarch:
+      - "amd64"
+nfpms:
+  - id: larry
+    package_name: larry
+    builds:
+      - larry
+    dependencies: []
+    recommends: []
+    suggests: []
+    conflicts: []
+    replaces: []
+    provides:
+      - larry
+    bindir: /usr/bin
+    vendor: "Eze Olea Figueroa"
+    homepage: "https://github.com/ezeoleaf/larry"
+    maintainer: "Eze Olea Figueroa <ezeoleaf@gmail.com>"
+    description: |
+      Larry 🐦 is a bot generator that post content from
+      different providers to one or multiple publishers
+    license: MIT
+    formats:
+      - apk
+      - deb
+      - rpm
+    changelog: ""
+    contents:
+      - src: ./larry
+        dst: /usr/bin/larry
+    version_metadata: git
+    deb:
+      lintian_overrides:
+        - statically-linked-binary
+        - changelog-file-missing-in-native-package
+    rpm:
+      summary: Larry is a bot generator
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

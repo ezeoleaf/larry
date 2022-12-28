@@ -1,6 +1,6 @@
-## build: build the application and place the built app in the bin folder
+## build: build the application (for current GOOS/GOARCH) and place the built app in the dist folder
 build:
-	go build -o bin/larry ./cmd/larry/.
+	goreleaser build --single-target --snapshot --rm-dist
 
 ## start: start container
 start:
@@ -14,17 +14,9 @@ run-dev:
 test:
 	go test -v ./... --cover
 
-## compile: compiles the application for multiple environments and place the output executables under the bin folder
+## compile: compiles the application for multiple environments and place the output under the dist folder
 compile:
-	# 64-Bit
-	# FreeBDS
-	GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-freebsd-64 ./cmd/larry/.
-	# MacOS
-	GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-macos-64 ./cmd/larry/.
-	# Linux
-	GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-linux-64 ./cmd/larry/.
-	# Windows
-	GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ./bin/larry-windows-64 ./cmd/larry/.
+	goreleaser release --snapshot --rm-dist
 
 lint:
 	docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.46.2 golangci-lint run
