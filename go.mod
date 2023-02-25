@@ -10,7 +10,7 @@ require (
 	github.com/google/go-github/v39 v39.2.0
 	github.com/stretchr/testify v1.8.1
 	github.com/urfave/cli/v2 v2.24.4
-	golang.org/x/oauth2 v0.0.0-20220608161450-d0670ef3b1eb
+	golang.org/x/oauth2 v0.5.0
 )
 
 require (
@@ -29,7 +29,6 @@ require (
 	github.com/dghubble/sling v1.4.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/mattn/go-mastodon v0.0.6
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
