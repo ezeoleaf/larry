@@ -3,7 +3,7 @@ module github.com/ezeoleaf/larry
 go 1.18
 
 require (
-	github.com/alicebob/miniredis/v2 v2.30.0
+	github.com/alicebob/miniredis/v2 v2.30.2
 	github.com/dghubble/go-twitter v0.0.0-20220608135633-47eb18e5aab5
 	github.com/dghubble/oauth1 v0.7.2
 	github.com/go-redis/redis/v8 v8.11.5
@@ -33,7 +33,7 @@ require (
 	github.com/mattn/go-mastodon v0.0.6
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
-	github.com/yuin/gopher-lua v0.0.0-20220504180219-658193537a64 // indirect
+	github.com/yuin/gopher-lua v1.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/net v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
