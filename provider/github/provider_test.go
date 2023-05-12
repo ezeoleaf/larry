@@ -228,6 +228,7 @@ func TestGetRepoUser(t *testing.T) {
 func TestGetContent(t *testing.T) {
 	login, lang, url, name, desc := "t2", "g", "url", "repo", "desc"
 	count := 1
+	updatedAt, _ := time.Parse("2006-01-02", "2000-07-12")
 	gu := github.User{Login: &login}
 	for _, tc := range []struct {
 		Name        string
@@ -268,6 +269,12 @@ func TestGetContent(t *testing.T) {
 			returnValue: &domain.Content{Title: &name, Subtitle: &desc, URL: &url, ExtraData: []string{"Lang: g", "#g "}},
 		},
 		{
+			Name:        "Test no repo data with only updated at",
+			mockConfig:  config.Config{},
+			repo:        &github.Repository{Language: &lang, HTMLURL: &url, UpdatedAt: &github.Timestamp{Time: updatedAt}},
+			returnValue: &domain.Content{URL: &url, ExtraData: []string{"Updated on : 2000-07-12", "#g "}},
+		},
+		{
 			Name:       "Test full with username",
 			mockConfig: config.Config{TweetLanguage: true},
 			userClient: mock.UserClientMock{
@@ -277,8 +284,8 @@ func TestGetContent(t *testing.T) {
 					return &u, nil, nil
 				},
 			},
-			repo:        &github.Repository{Name: &name, Description: &desc, Language: &lang, HTMLURL: &url, StargazersCount: &count, Owner: &gu},
-			returnValue: &domain.Content{Title: &name, Subtitle: &desc, URL: &url, ExtraData: []string{"Lang: g", "⭐️ 1", "Author: @twitterusername", "#g "}},
+			repo:        &github.Repository{Name: &name, Description: &desc, Language: &lang, HTMLURL: &url, StargazersCount: &count, Owner: &gu, UpdatedAt: &github.Timestamp{Time: updatedAt}},
+			returnValue: &domain.Content{Title: &name, Subtitle: &desc, URL: &url, ExtraData: []string{"Lang: g", "⭐️ 1", "Author: @twitterusername", "Updated on : 2000-07-12", "#g "}},
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
