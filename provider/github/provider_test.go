@@ -272,7 +272,7 @@ func TestGetContent(t *testing.T) {
 			Name:        "Test no repo data with only updated at",
 			mockConfig:  config.Config{},
 			repo:        &github.Repository{Language: &lang, HTMLURL: &url, UpdatedAt: &github.Timestamp{Time: updatedAt}},
-			returnValue: &domain.Content{URL: &url, ExtraData: []string{"Updated on : 2000-07-12", "#g "}},
+			returnValue: &domain.Content{URL: &url, ExtraData: []string{"Updated on: 2000-07-12", "#g "}},
 		},
 		{
 			Name:       "Test full with username",
@@ -285,7 +285,7 @@ func TestGetContent(t *testing.T) {
 				},
 			},
 			repo:        &github.Repository{Name: &name, Description: &desc, Language: &lang, HTMLURL: &url, StargazersCount: &count, Owner: &gu, UpdatedAt: &github.Timestamp{Time: updatedAt}},
-			returnValue: &domain.Content{Title: &name, Subtitle: &desc, URL: &url, ExtraData: []string{"Lang: g", "⭐️ 1", "Author: @twitterusername", "Updated on : 2000-07-12", "#g "}},
+			returnValue: &domain.Content{Title: &name, Subtitle: &desc, URL: &url, ExtraData: []string{"Lang: g", "⭐️ 1", "Author: @twitterusername", "Updated on: 2000-07-12", "#g "}},
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
