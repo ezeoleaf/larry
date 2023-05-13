@@ -213,7 +213,7 @@ func (p Provider) getContent(repo *github.Repository) *domain.Content {
 	}
 
 	if repo.UpdatedAt != nil {
-		lastUpdatedAt := "Updated on : " + repo.GetUpdatedAt().Format("2006-01-02")
+		lastUpdatedAt := fmt.Sprintf("Updated on: %s", repo.GetUpdatedAt().Format("2006-01-02"))
 		c.ExtraData = append(c.ExtraData, lastUpdatedAt)
 	}
 
