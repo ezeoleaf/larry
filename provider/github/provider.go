@@ -212,6 +212,11 @@ func (p Provider) getContent(repo *github.Repository) *domain.Content {
 		c.ExtraData = append(c.ExtraData, author)
 	}
 
+	if repo.UpdatedAt != nil {
+		lastUpdatedAt := "Updated on : " + repo.GetUpdatedAt().Format("2006-01-02")
+		c.ExtraData = append(c.ExtraData, lastUpdatedAt)
+	}
+
 	hs := p.Config.GetHashtags()
 	hashtags := ""
 
