@@ -1,19 +1,25 @@
 package twitter
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
 
-	"github.com/dghubble/go-twitter/twitter"
-	"github.com/dghubble/oauth1"
+	// "github.com/dghubble/go-twitter/twitter"
+
 	"github.com/ezeoleaf/larry/config"
 	"github.com/ezeoleaf/larry/domain"
+
+	// twitter "github.com/g8rswimmer/go-twitter/v2"
+	"github.com/michimani/gotwi"
+	"github.com/michimani/gotwi/tweet/managetweet"
+	"github.com/michimani/gotwi/tweet/managetweet/types"
 )
 
 // Publisher represents the publisher client
 type Publisher struct {
-	Client *twitter.Client
+	Client *gotwi.Client
 	Config config.Config
 }
 
@@ -32,14 +38,20 @@ const TweetLength int = 280
 func NewPublisher(accessKeys AccessKeys, cfg config.Config) Publisher {
 	log.Print("New Twitter Publisher")
 
-	oauthCfg := oauth1.NewConfig(accessKeys.TwitterConsumerKey, accessKeys.TwitterConsumerSecret)
-	oauthToken := oauth1.NewToken(accessKeys.TwitterAccessToken, accessKeys.TwitterAccessSecret)
+	in := &gotwi.NewClientInput{
+		AuthenticationMethod: gotwi.AuthenMethodOAuth1UserContext,
+		OAuthToken:           accessKeys.TwitterAccessToken,
+		OAuthTokenSecret:     accessKeys.TwitterAccessSecret,
+	}
 
-	client := twitter.NewClient(oauthCfg.Client(oauth1.NoContext, oauthToken))
+	c, err := gotwi.NewClient(in)
+	if err != nil {
+		panic(err)
+	}
 
 	p := Publisher{
 		Config: cfg,
-		Client: client,
+		Client: c,
 	}
 
 	return p
@@ -60,21 +72,21 @@ func (p Publisher) prepareTweet(content *domain.Content) string {
 
 // changes description if generated tweet exceeds character limit
 func checkTweetData(content *domain.Content) {
-    titleLen := len(*content.Title)
-    subTitleLen := len(*content.Subtitle)
-    urlLen := len(*content.URL)
-    extraDataLen := len(strings.Join(content.ExtraData, " "))
+	titleLen := len(*content.Title)
+	subTitleLen := len(*content.Subtitle)
+	urlLen := len(*content.URL)
+	extraDataLen := len(strings.Join(content.ExtraData, " "))
 
-    size := titleLen + subTitleLen + urlLen + extraDataLen + 3  // '3' = extra space in string literal of tweet
+	size := titleLen + subTitleLen + urlLen + extraDataLen + 3 // '3' = extra space in string literal of tweet
 
-    if size > TweetLength {
-        truncateValue := subTitleLen - ((size - TweetLength) + 5)   // '5' = space for trailing "..."
+	if size > TweetLength {
+		truncateValue := subTitleLen - ((size - TweetLength) + 5) // '5' = space for trailing "..."
 
-        desiredDesc := *content.Subtitle
-        desiredDesc = desiredDesc[:truncateValue]
+		desiredDesc := *content.Subtitle
+		desiredDesc = desiredDesc[:truncateValue]
 
-        *content.Subtitle = strings.TrimSpace(desiredDesc) + " ..."
-    }
+		*content.Subtitle = strings.TrimSpace(desiredDesc) + " ..."
+	}
 }
 
 // PublishContent receives a content to publish and try to publish
@@ -87,7 +99,11 @@ func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
 		return true, nil
 	}
 
-	_, _, err := p.Client.Statuses.Update(tweet, nil)
+	tweetInput := &types.CreateInput{
+		Text: gotwi.String(tweet),
+	}
+
+	_, err := managetweet.Create(context.Background(), p.Client, tweetInput)
 
 	if err != nil {
 		log.Print(err)
@@ -97,4 +113,3 @@ func (p Publisher) PublishContent(content *domain.Content) (bool, error) {
 	log.Println("Content Published")
 	return true, nil
 }
-

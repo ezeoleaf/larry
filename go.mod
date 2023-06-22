@@ -4,10 +4,9 @@ go 1.18
 
 require (
 	github.com/alicebob/miniredis/v2 v2.30.2
-	github.com/dghubble/go-twitter v0.0.0-20220608135633-47eb18e5aab5
-	github.com/dghubble/oauth1 v0.7.2
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/go-github/v39 v39.2.0
+	github.com/michimani/gotwi v0.14.0
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.25.5
 	golang.org/x/oauth2 v0.9.0
@@ -23,10 +22,8 @@ require (
 
 require (
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
-	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
-	github.com/dghubble/sling v1.4.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
