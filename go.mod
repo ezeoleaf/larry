@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/alicebob/miniredis/v2 v2.31.0
 	github.com/dghubble/go-twitter v0.0.0-20220608135633-47eb18e5aab5
-	github.com/dghubble/oauth1 v0.7.2
+	github.com/dghubble/oauth1 v0.7.3
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/google/go-github/v39 v39.2.0
 	github.com/stretchr/testify v1.8.4
